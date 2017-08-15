@@ -1,4 +1,4 @@
-# AnisHakbot
+# Anis Hakbot
 
 Bot der Ru ein wenig aufmöbelt
 
