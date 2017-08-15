@@ -17,4 +17,6 @@ Bot der Ru ein wenig aufmöbelt
 
 ## TODO
 
-antwort makros ('rt','hahaha','- hurensohn'), konfigurierbar
+* Kommentar Makros
+* Blacklist Interface Benutzerfreundlicher machen
+* Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften
