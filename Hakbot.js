@@ -20,7 +20,8 @@
     'use strict';
     GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
     GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
-	var botRunning =  GM_getValue("running");	
+	var botRunning =  GM_getValue("running");
+    var botSites = getGMArray("botSites");
     //=======================================================
     //Setting the Interface
     //=======================================================    		
@@ -33,19 +34,24 @@
     //hideBot - Versteckt upvote Fenster
     //reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
     //=======================================================      
-    if (botRunning){
-        hakBot();    
-        hideBot();
-        reloadBot();
-    }
-    //=======================================================      
-    //Folgende Bots sind immer an:
-    //commentBot - Macht Links anklickbar, bindet Youtube und Bilder ein
-    //statusBot - Ändert die Farbe des Namens, abhängig ob Bots an sind oder nicht.
-    //=======================================================      
-    commentBot();    
-    statusBot(botRunning);
-    repostBot();
+    var checkDisqus = setInterval(function(){
+        if (document.getElementById("community-tab")){
+            if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
+                hakBot();    
+                hideBot();
+                reloadBot();
+            }
+            //=======================================================      
+            //Folgende Bots sind immer an:
+            //commentBot - Macht Links anklickbar, bindet Youtube und Bilder ein
+            //statusBot - Ändert die Farbe des Namens, abhängig ob Bots an sind oder nicht.
+            //=======================================================      
+            commentBot();    
+            statusBot(botRunning,botSites);
+            repostBot();
+            clearInterval(checkDisqus);
+        }
+    },100);
 })();
 
 
@@ -360,13 +366,28 @@ function setInterface(botRunning){
         setGMArray("blacklist",[]);
         blacklist = getGMArray("blacklist");
         console.log("Blacklist reset");
+    }else{
+        console.log("Blacklist: "+blacklist);
     }
+        
     var blacklistClan = getGMArray("blacklistClan");
     if(typeof blacklistClan == 'undefined' || blacklistClan.length<0){
         setGMArray("blacklistClan",[]);
         blacklistClan = getGMArray("blacklistClan");
         console.log("Blacklist Clan reset");
+    }else{
+        console.log("BlacklistClan: "+blacklistClan);
     }
+    
+    var botSites = getGMArray("botSites");
+    if(typeof botSites == 'undefined' || botSites.length<=0) {
+        setGMArray("botSites",[]);
+        blacklist = getGMArray("botSites");
+        console.log("botSites reset");
+    }else{
+        console.log("botSites: "+botSites);
+    }
+    
     var checkExistDisqus = setInterval(function() {
         if (document.getElementsByClassName("nav-tab--secondary").length) {
             //=======================================================
@@ -439,7 +460,7 @@ function setInterface(botRunning){
             //=======================================================
             var botButton = document.createElement ('li');            
             var checked= "";
-            if( botRunning){
+            if(botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
                 checked = "checked";
             }
             botButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="AutoHak Ein/Aus"><input type="checkbox" id="HakBot" '+checked+'><span class="label">Hak Bot</span></a>';
@@ -523,13 +544,29 @@ function removeFromClanListOnClick(evt){
 function addBlacklistButton(){
     var dropdowns=document.getElementsByClassName("dropdown-menu");
     var userDropdowns=[];
-    for (var i=0;i<dropdowns.length;i++){
-        if (dropdowns[i].classList.length==1){                    
-            var blacklistUser = document.createElement ('li');                        
-            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';                                        
+    var blacklist = getGMArray("blacklist");                            
+    for (var i=1;i<dropdowns.length;i++){
+        var blacklistUser = document.createElement ('li');
+        if (dropdowns[i].classList.length==1){
+            var comment = dropdowns[i].parentNode.parentNode.parentNode.parentNode;            
+            var link=$(comment).find(".post-byline").find(".author.publisher-anchor-color").find("a").get(0);
+            link=link.href;
+            //console.log(link);
+            if (blacklist.length>0){
+                for(var j=0; j<blacklist.length; j++){                                    
+                    if(link.indexOf(blacklist[j])>-1){                        
+                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Blacklist entfernen</a>';                                                            
+                    }else{
+                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';                                                            
+                    }
+                }                       
+            }else{
+                blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';                                                            
+            }
             blacklistUser.addEventListener('click', toggleBlacklist);        
-            dropdowns[i].classList.add("done");
-            dropdowns[i].append(blacklistUser);               
+            dropdowns[i].append(blacklistUser);
+            dropdowns[i].classList.add("done");                           
+            //console.log("Erledigt");
 
         }
     }
@@ -573,9 +610,21 @@ function toggleBot(){
     var botRunning = GM_getValue("running");
     if(botRunning){
         GM_setValue("running", false);
+        var botSites = getGMArray("botSites");
+        for(var i=0; i<botSites.length; i++){
+            console.log(botSites[i]);
+            if(document.getElementsByClassName("community-name")[0].innerText.indexOf(botSites[i])>-1){                                                  
+                botSites.splice(i, 1);            
+                remove=true;                        
+            }
+        }   
+        setGMArray("botSites",botSites);
         location.reload();  
     }else{
         GM_setValue("running", true);
+        var botSites = getGMArray("botSites");
+        botSites.push(document.getElementsByClassName("community-name")[0].innerText);
+        setGMArray("botSites",botSites);
         location.reload();  
     }
 }
@@ -591,10 +640,10 @@ function hakBot(){
 //=======================================================      
 //Changes the Color of the Name to Symbolize if the Bot is running or not
 //=======================================================      
-function statusBot(running) {
+function statusBot(running,botSites) {
     var checkExistStatus = setInterval(function() {
         if (document.getElementsByClassName("community-name").length) {
-            if(running){
+            if(running && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
                 document.getElementsByClassName("community-name")[0].style.color = "#228b22";
             }else{
                 document.getElementsByClassName("community-name")[0].style.color = "#ee3b3b";
@@ -635,16 +684,7 @@ function myLoop (upvoteLinks,i) {           //  create a loop function
 //=======================================================
 function blacklistedUser(upvoteLink){   
     var blacklist = getGMArray("blacklist");
-    if(typeof blacklist == 'undefined' || blacklist.length<0) {
-        setGMArray("blacklist",["patricionuevohombre"]);        
-        blacklist = getGMArray("blacklist");
-    }
     var blacklistClan = getGMArray("blacklistClan");
-    if(typeof blacklistClan == 'undefined' || blacklistClan.length<0){
-        setGMArray("blacklistClan",[]);
-        blacklistClan = getGMArray("blacklistClan");
-    }
-
     for(var i=0; i<blacklist.length; i++){
         var link=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].href;                
         if(link.indexOf(blacklist[i])>-1){
@@ -1005,16 +1045,6 @@ function getGMArray(key)
         extracted[k] = GM_getValue(key+k);
     }
     return extracted;
-}
-
-function hexc(colorval) {
-    var parts = colorval.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-    delete(parts[0]);
-    for (var i = 1; i <= 3; ++i) {
-        parts[i] = parseInt(parts[i]).toString(16);
-        if (parts[i].length == 1) parts[i] = '0' + parts[i];
-    }
-    color = '#' + parts.join('');
 }
 
 function findClass(element, className) {
