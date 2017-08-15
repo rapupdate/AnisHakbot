@@ -19,4 +19,4 @@ Bot der Ru ein wenig aufmöbelt
 
 * Kommentar Makros
 * Blacklist Interface Benutzerfreundlicher machen
-* Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften
+* ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
