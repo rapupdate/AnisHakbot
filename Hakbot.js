@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         RU Bot
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      0.7
 // @description  Make RU great Again
-// @author       Anis Fencheltee
+// @author       You
 // @match        https://disqus.com/embed/comments/*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @grant        GM_getValue
@@ -26,7 +26,7 @@
 	GM_addStyle('.clickableText{cursor:pointer;}');
     GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
 	var botRunning =  GM_getValue("running");
-    var botSites = getGMArray("botSites");
+    var botSites = getGMArray("botSites");	
     //=======================================================
     //Setting the Interface
     //=======================================================	
@@ -68,8 +68,8 @@ function setReplyOnclick(){
 	var checkExistDisqus = setInterval(function() {
 		var replies = document.getElementsByClassName("reply");
 		for (var i=0; i<replies.length;i++){
-			if(!replies[i].classList.contains("linked")&&replies[i].classList.length==1&& replies[i].tagName=="LI"){
-				replies[i].classList.add("linked");
+			if(!replies[i].classList.contains("edited")&&replies[i].classList.length==1&& replies[i].tagName=="LI"){
+				replies[i].classList.add("edited");
 				replies[i].addEventListener('click', addAdvancedEditor);      				
 			}
 		}
@@ -77,8 +77,7 @@ function setReplyOnclick(){
 }
 
 function addAdvancedEditor(){
-	setAdvancedEditorReply(this);	
-	removeMakroDiv();
+	setAdvancedEditorReply(this);		
 }
 
 function setAdvancedEditor(){
@@ -123,7 +122,7 @@ function setAdvancedEditor(){
 			
 			var makroButton = document.createElement ('div');				
 			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
-			makroButton.setAttribute ('class', 'editBtnBig editMakro btn post-action__button');	
+			makroButton.setAttribute ('class', 'editMain editBtnBig editMakro btn post-action__button');	
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(makroButton);			
 			$(".editMakro").click(function(e) {
@@ -134,7 +133,7 @@ function setAdvancedEditor(){
 		clearInterval(checkExistDisqus); 
 	}, 1000);
 }
-function createMakroDiv(hidden,caller){
+function createMakroDiv(hidden,caller,sibling){
 	var makros = getGMArray("makros");
 	if(typeof makros == 'undefined' || makros.length<=0){
 		setGMArray("makros",[]);
@@ -152,16 +151,20 @@ function createMakroDiv(hidden,caller){
 	}                
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
 	// 			
-	document.getElementsByClassName("nav nav-secondary")[0].after(makroDiv); 
+	if(sibling.classList.contains("nav-secondary")){
+		sibling.after(makroDiv); 
+	}else{
+		sibling.before(makroDiv);
+	}
 	if(hidden){
 		$("#MakroContainer").hide();     
 	}
 
 	$("#saveAsMakro").click(function(e) {		
-		saveMakro();
+		saveMakro(caller,sibling);
 	});			
 	$(".deleteImageMakro").click(function(e) {
-		deleteMakro(this.parentNode);
+		deleteMakro(this.parentNode,caller,sibling);
 	});		
 	$(".confirmImageMakro").click(function(e) {
 		useMakro(this.parentNode,caller);
@@ -170,13 +173,23 @@ function createMakroDiv(hidden,caller){
 
 function removeMakroDiv(){
 	console.log("MakroDiv wird gelöscht");
-	document.getElementById("MakroContainer").remove();
+	var container = document.getElementById("MakroContainer")
+	console.log(container);
+	if (typeof container != "undefined" && container != null){
+		document.getElementById("MakroContainer").remove();
+	}
 }
 function openMakro(caller){	
 	var container = document.getElementById("MakroContainer")
 	console.log(container);
 	if (typeof container == "undefined" || container == null){
-		createMakroDiv(false,caller)
+		if(caller.classList.contains("editMain")){
+			createMakroDiv(false,caller,document.getElementsByClassName("nav-secondary")[0]);
+		}else{
+			createMakroDiv(false,caller,caller.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
+		}
+		console.log("Creating Makro Div");
+		
 	}else{
 		removeMakroDiv();
 	}
@@ -190,27 +203,34 @@ function useMakro(parent,caller){
 	$(caller).parent().parent().parent().parent().parent().find(".btn.post-action__button").get(0).click();   	    
 	removeMakroDiv();
 }
-function saveMakro(){
+function saveMakro(caller,sibling){
 	var makros = getGMArray("makros");
-	if(confirm("Soll der Text: "+document.getElementsByClassName("textarea")[0].innerText+" als Makro gespeichert werden")){
-		makros.push(document.getElementsByClassName("textarea")[0].innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-		setGMArray("makros",makros);		
-	}	
-	removeMakroDiv();
-	createMakroDiv(false);
+	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);		
+	if(textarea.innerText.length<2){
+		alert("Makros müssen mindestens 2 Buchstaben lang sein!");
+	}else{
+		if(confirm("Soll der Text: "+textarea.innerText+" als Makro gespeichert werden")){		
+			makros.push(textarea.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+			setGMArray("makros",makros);		
+		}	
+		removeMakroDiv();
+		createMakroDiv(false,caller,sibling);
+	}
 }
 
-function deleteMakro(parent){
+function deleteMakro(parent,caller,sibling){
 	console.log(parent.id);
 	var makros=getGMArray("makros");
 	if(makros.length>1){
+		console.log("Removing Entry " + i);
 		makros.splice(i,1);
 	}else{
+		console.log("Resetting Array");
 		makros=[];
 	}
 	setGMArray("makros",makros);
 	removeMakroDiv();
-	createMakroDiv(false);
+	createMakroDiv(false,caller,sibling);
 }
 function makeBold(){
 	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
@@ -295,6 +315,7 @@ function makeScribble(){
 
 function setAdvancedEditorReply(link){	
 	setTimeout(function(){		
+		removeMakroDiv();
 		var container = $(link).parent().parent().parent().parent();	
 		console.log(container.get(0));
 		var div = container.find(".temp-post");		
