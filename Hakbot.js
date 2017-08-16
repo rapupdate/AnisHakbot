@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RU Bot
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.9
 // @description  Make RU great Again
 // @author       You
 // @match        https://disqus.com/embed/comments/*
