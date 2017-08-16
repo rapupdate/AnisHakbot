@@ -19,7 +19,11 @@
 (function() {
     'use strict';
     GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
-	GM_addStyle('.deleteImage{height:17px;float:right;}');
+	GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
+	GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
+	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
+	GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
+	GM_addStyle('.clickableText{cursor:pointer;}');
     GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
 	var botRunning =  GM_getValue("running");
     var botSites = getGMArray("botSites");
@@ -113,12 +117,91 @@ function setAdvancedEditor(){
 			$(".editscribble").click(function(e) {
 				makeScribble();
 			});			
+						
+			
+			var makroButton = document.createElement ('div');				
+			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
+			makroButton.setAttribute ('class', 'editBtnBig editMakro btn post-action__button');	
+			// 			
+			document.getElementsByClassName("temp-post")[0].appendChild(makroButton);			
+			$(".editMakro").click(function(e) {
+				openMakro();
+			});			
+			
+            createMakroDiv(true);
 			document.getElementsByClassName("temp-post")[0].classList.add("advanced");
 		}
 		clearInterval(checkExistDisqus); 
 	}, 1000);
 }
+function createMakroDiv(hidden){
+	var makros = getGMArray("makros");
+	if(typeof makros == 'undefined' || makros.length<=0){
+		setGMArray("makros",[]);
+		makros = getGMArray("makros");
+		console.log("Makros reset");
+	}else{
+		console.log("Makros: "+makros);
+	}
 
+	var makroDiv = document.createElement ('div');
+	makroDiv.setAttribute ('id', 'MakroContainer');            
+	makroDiv.innerHTML='<h3>Makros</h3><hr>';										
+	for (var i = 0; i<makros.length; i++){                    					     
+		makroDiv.innerHTML+= "<span id='"+i+"'>"+makros[i].replace(new RegExp("<br>", 'g'),"").replace(new RegExp("<p>", 'g'),"").replace(new RegExp("</p>", 'g'),"") + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+	}                
+	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
+	// 			
+	document.getElementsByClassName("nav nav-secondary")[0].after(makroDiv); 
+	if(hidden){
+		$("#MakroContainer").hide();     
+	}
+
+	$("#saveAsMakro").click(function(e) {
+		saveMakro();
+	});			
+	$(".deleteImageMakro").click(function(e) {
+		deleteMakro(this.parentNode);
+	});		
+	$(".confirmImageMakro").click(function(e) {
+		useMakro(this.parentNode);
+	});			
+}
+
+function removeMakroDiv(){
+	document.getElementById("MakroContainer").remove();
+}
+function openMakro(){
+	$("#MakroContainer").slideToggle();
+}
+
+function useMakro(parent){
+	var makros = getGMArray("makros");
+	document.getElementsByClassName("textarea")[0].innerHTML=makros[parent.id];
+    document.getElementsByClassName("btn post-action__button")[0].click();   	
+}
+function saveMakro(){
+	var makros = getGMArray("makros");
+	if(confirm("Soll der Text: "+document.getElementsByClassName("textarea")[0].innerText+" als Makro gespeichert werden")){
+		makros.push(document.getElementsByClassName("textarea")[0].innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+		setGMArray("makros",makros);		
+	}	
+	removeMakroDiv();
+	createMakroDiv(false);
+}
+
+function deleteMakro(parent){
+	console.log(parent.id);
+	var makros=getGMArray("makros");
+	if(makros.length>1){
+		makros.splice(i,1);
+	}else{
+		makros=[];
+	}
+	setGMArray("makros",makros);
+	removeMakroDiv();
+	createMakroDiv(false);
+}
 function makeBold(){
 	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
 	textArea.focus();	
@@ -1112,11 +1195,15 @@ function findClass(element, className) {
 function repostBot(){
     var checkExist3 = setInterval(function() {
         if (document.getElementsByClassName("alert error").length && document.getElementsByClassName("alert error").length>0) {    
-            document.getElementsByClassName("textarea")[0].innerHTML=document.getElementsByClassName("textarea")[0].innerHTML.replace("</p>",""); 
-            document.getElementsByClassName("textarea")[0].innerHTML=document.getElementsByClassName("textarea")[0].innerHTML+".</p>"; 
-            document.getElementsByClassName("textarea")[0].innerHTML=document.getElementsByClassName("textarea")[0].innerHTML.replace("<br>",""); 
+			var container = $(document.getElementsByClassName("alert error")[0]).parent().parent();
+			var textArea = container.find(".textarea").get(0);
+			console.log(textArea);
+            textArea.innerHTML=textArea.innerHTML.replace("</p>",""); 
+            textArea.innerHTML=textArea.innerHTML+".</p>"; 
+            textArea.innerHTML=textArea.innerHTML.replace("<br>",""); 
             //console.log(document.getElementsByClassName("textarea")[0].innerHTML);
-            document.getElementsByClassName("btn post-action__button")[0].click();
+			console.log(container);
+            container.find(".btn.post-action__button").get(0).click();
         }
     }, 1500);     
 }
