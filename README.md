@@ -26,11 +26,14 @@ Bot der Ru ein wenig aufmöbelt
 * ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
 
 ## Screenshots
-
-> ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20%C3%9Cbersicht.PNG)
-***
+<details> 
+  <summary>Q1: What is the best Language in the World? </summary>
+  > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20%C3%9Cbersicht.PNG)
+   <summary>Q1: What is the best Language in the World? </summary>
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Youtube%20Embed.PNG)
-***
+   <summary>Q1: What is the best Language in the World? </summary>
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Image%20Embed.PNG)
-***
+   <summary>Q1: What is the best Language in the World? </summary>
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG)
+
+</details>
