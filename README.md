@@ -14,10 +14,11 @@ Bot der Ru ein wenig aufmöbelt
 * Hak Bot,Komentare nachladen, automatischer Reload des Disqus Plugins können per Userinterface ausgeschaltet werden 
 * Statusanzeige im Communitynamen (Rot=Bot aus, Grün=Bot an) 
 * Bot differenziert zwischen den Seiten, er startet nur, wenn die Seite ihm bekannt ist.
-
+* Makros - User können sich Texte als Makro speichern und diese per Mausklick posten
 ## TODO
 
-* Kommentar Makros
+* Antwort Makros
+* ~~Kommentar Makros~~
 * ~~Repost Bot bei Antworten-Bug beheben~~
 * ~~Blacklist Interface Benutzerfreundlicher machen~~
 * ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
