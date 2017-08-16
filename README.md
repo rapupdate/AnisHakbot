@@ -32,14 +32,14 @@ Bot der Ru ein wenig aufmöbelt
   </details> 
   <details> 
    <summary>Youtube Einbettung </summary>
-> ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Youtube%20Embed.PNG)
+<img src="https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Youtube%20Embed.PNG">
 </details> 
   <details> 
    <summary>Bild Einbettung </summary>
-> ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Image%20Embed.PNG)
+<img src="https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Image%20Embed.PNG">
 	</details> 
   <details> 
    <summary>Makro Seite </summary>
-> ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG)
+<img src="(https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG">
 
 </details>
