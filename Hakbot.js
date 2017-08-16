@@ -19,6 +19,7 @@
 (function() {
     'use strict';
     GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
+	GM_addStyle('.deleteImage{height:17px;float:right;}');
     GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
 	var botRunning =  GM_getValue("running");
     var botSites = getGMArray("botSites");
@@ -369,9 +370,9 @@ function setInterface(botRunning){
     }else{
         console.log("Blacklist: "+blacklist);
     }
-        
+	
     var blacklistClan = getGMArray("blacklistClan");
-    if(typeof blacklistClan == 'undefined' || blacklistClan.length<0){
+    if(typeof blacklistClan == 'undefined' || blacklistClan.length<=0){
         setGMArray("blacklistClan",[]);
         blacklistClan = getGMArray("blacklistClan");
         console.log("Blacklist Clan reset");
@@ -395,18 +396,18 @@ function setInterface(botRunning){
             //=======================================================
             var blacklistDiv = document.createElement ('div');
             blacklistDiv.setAttribute ('id', 'BlacklistContainer');
-            blacklistDiv.innerHTML = '<h3 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h3>';
+            blacklistDiv.innerHTML = '<h3 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h3><hr>';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<ol>';
             for (var i = 0; i<blacklist.length; i++){
-                blacklistDiv.innerHTML = blacklistDiv.innerHTML + "<li><a data-dsq-mention=\""+blacklist[i]+":disqus\" href=\"https://disqus.com/by/"+blacklist[i]+"/\" rel=\"nofollow noopener\" data-action=\"profile\" data-username=\""+blacklist[i]+"\">@" + blacklist[i] + "</a></li><br>";
-
-            }
+                blacklistDiv.innerHTML = blacklistDiv.innerHTML + "<li><a data-dsq-mention=\""+blacklist[i]+":disqus\" href=\"https://disqus.com/by/"+blacklist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+blacklist[i]+"\">@" + blacklist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";				
+            }						
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</ol>';
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<br><h3 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Blacklisted Clans/Names: </h3>';
+            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<br><h3 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Blacklisted Clans/Names: </h3><hr>';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<div id="blacklistClanList">';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</div><br>';                        
+			                           
             setTimeout(function(){                                
-                blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Clannamen einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Abschicken" style="margin:20px"></input><br><br>';                            
+                blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input><hr><br>';                            
                 //blacklistDiv.setAttribute ('style', 'display:none');                        
                 document.getElementsByClassName("nav nav-secondary")[0].after(blacklistDiv);                                       
                 var addClanBlacklist = document.getElementById("addToClanBlacklist");
@@ -414,7 +415,7 @@ function setInterface(botRunning){
                 var blacklistClanLi=document.getElementById("blacklistClanList");                       
                 for (var i = 0; i<blacklistClan.length; i++){
                     var blacklistClanLis = document.createElement ('li');                    
-                    blacklistClanLis.innerText = blacklistClan[i];      
+                    blacklistClanLis.innerHTML = blacklistClan[i] + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage'><hr>";      
                     blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
                     blacklistClanLi.appendChild(blacklistClanLis);
                 }                
@@ -424,7 +425,10 @@ function setInterface(botRunning){
                         console.log(li);
                         li.addEventListener('click', removeFromClanListOnClick);                                
                     });
-                }                
+                }
+				$(".deleteImage.disqusId").click(function(e){
+					removeBlacklist(this);
+				});     
                 $("#BlacklistContainer").hide();     
             },1000);                                               
             //=======================================================
@@ -472,6 +476,33 @@ function setInterface(botRunning){
                         
         }    
     }, 100);
+}
+
+function removeBlacklist(image){
+	var container=image.parentNode;
+	console.log(container.firstChild.href);
+    var link =  container.firstChild.href;  
+	console.log(link);
+    var blacklist = getGMArray("blacklist");
+    console.log("Blacklist: "+ blacklist);
+    var remove=false;
+    for(var i=0; i<blacklist.length; i++){
+        console.log(blacklist[i]);
+        if(link.indexOf(blacklist[i])>-1){                                    
+            console.log("Freigeschaltet: "+blacklist[i]);
+            blacklist.splice(i, 1);            
+            remove=true;                        
+        }
+    }   
+    if(!remove){
+        var disqusID= link.substr(0,link.lastIndexOf("/"));            
+        disqusID= disqusID.substr(disqusID.lastIndexOf("/")+1);        
+        blacklist.push(disqusID);        
+        console.log("Gesperrt: "+blacklist[i]);        
+    }
+    console.log("Blacklist: "+ blacklist);
+    setGMArray("blacklist",blacklist);       
+    location.reload();
 }
 
 function zinkus(){
@@ -524,14 +555,14 @@ function removeFromClanList(){
 //=======================================================      
 //Removes a Clan or a Namepattern from the Blacklist Onclick Event 
 //=======================================================      
-function removeFromClanListOnClick(evt){
+function removeFromClanListOnClick(evt){	
     var blacklistClan = getGMArray("blacklistClan");    
     for(var i=0; i<blacklistClan.length; i++){        
-        if(blacklistClan[i].indexOf(this.innerText)>-1){                        
+        if(blacklistClan[i].indexOf(this.innerText.substr(0,document.getElementById("blacklistClanList").childNodes[0].innerText.length-1))>-1){                        
             blacklistClan.splice(i, 1);                                    
         }
     }   
-    if(confirm("Soll User/Clan \""+this.innerText+"\" von der Blacklist genommen werden?")){
+    if(confirm("Soll User/Clan \""+this.innerText.substr(0,document.getElementById("blacklistClanList").childNodes[0].innerText.length-1)+"\" von der Blacklist genommen werden?")){
         setGMArray("blacklistClan",blacklistClan);               
         location.reload();
     }
@@ -628,6 +659,11 @@ function toggleBot(){
         location.reload();  
     }
 }
+
+//======================================================
+//======================================================
+//Hakbot
+//======================================================
 function hakBot(){        
     console.log("Injected");        
     initialHak();
@@ -1069,6 +1105,10 @@ function findClass(element, className) {
 	return foundElement;
 }
 
+//=======================================================      
+//=======================================================      
+//Gets Around Repost Alert, does not work in Responses so far.
+//=======================================================
 function repostBot(){
     var checkExist3 = setInterval(function() {
         if (document.getElementsByClassName("alert error").length && document.getElementsByClassName("alert error").length>0) {    
