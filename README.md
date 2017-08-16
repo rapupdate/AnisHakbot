@@ -18,7 +18,7 @@ Bot der Ru ein wenig aufmöbelt
 
 ## TODO
 
-* Bugfixing hinsichtlich Antwortmakros
+* ~~Bugfixing hinsichtlich Antwortmakros~~
 * ~~Antwort Makros~~
 * ~~Kommentar Makros~~
 * ~~Repost Bot bei Antworten-Bug beheben~~
