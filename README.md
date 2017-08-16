@@ -31,6 +31,6 @@ Bot der Ru ein wenig aufmöbelt
 ***
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Youtube%20Embed.PNG)
 ***
-> ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%Image%20Embed.PNG)
+> ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Image%20Embed.PNG)
 ***
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG)
