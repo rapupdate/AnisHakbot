@@ -83,7 +83,8 @@ function addAdvancedEditor(){
 function setAdvancedEditor(){
 	var checkExistDisqus = setInterval(function() {
 		console.log(document.getElementsByClassName("btn post-action__button"));
-        if (document.getElementsByClassName("btn post-action__button").length && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced")) {
+        if (document.getElementsByClassName("btn post-action__button").length > 0 && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced")) {
+            console.log(document.getElementsByClassName("btn post-action__button"));
 			var sndButton = document.getElementsByClassName("btn post-action__button")[0];
 			console.log(sndButton);
 			var boldButton = document.createElement ('div');				
@@ -116,7 +117,7 @@ function setAdvancedEditor(){
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(scribbleButton);			
 			$(".editscribble").click(function(e) {
-				makeScribble();
+				makeScribble();8
 			});			
 						
 			
@@ -129,8 +130,8 @@ function setAdvancedEditor(){
 				openMakro(this);
 			});						
 			document.getElementsByClassName("temp-post")[0].classList.add("advanced");
-		}
-		clearInterval(checkExistDisqus); 
+            clearInterval(checkExistDisqus); 
+		}		
 	}, 1000);
 }
 function createMakroDiv(hidden,caller,sibling){
