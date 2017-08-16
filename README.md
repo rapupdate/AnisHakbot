@@ -24,3 +24,5 @@ Bot der Ru ein wenig aufmöbelt
 * ~~Repost Bot bei Antworten-Bug beheben~~
 * ~~Blacklist Interface Benutzerfreundlicher machen~~
 * ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
+
+![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20%C3%9Cbersicht.PNG)
