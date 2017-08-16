@@ -28,7 +28,7 @@ Bot der Ru ein wenig aufmöbelt
 ## Screenshots
 <details> 
   <summary>Übersicht </summary>
-  > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20%C3%9Cbersicht.PNG)
+  <img src="https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20%C3%9Cbersicht.PNG">
   </details> 
   <details> 
    <summary>Youtube Einbettung </summary>
