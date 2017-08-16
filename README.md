@@ -18,5 +18,6 @@ Bot der Ru ein wenig aufmöbelt
 ## TODO
 
 * Kommentar Makros
-* Blacklist Interface Benutzerfreundlicher machen
+* Repost Bot bei Antworten-Bug beheben
+* ~~Blacklist Interface Benutzerfreundlicher machen~~
 * ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
