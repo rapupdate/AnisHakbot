@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         RU Bot
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.9
 // @description  Make RU great Again
-// @author       You
+// @author       Anis Fencheltee
 // @match        https://disqus.com/embed/comments/*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @grant        GM_getValue
@@ -29,7 +29,7 @@
     var botSites = getGMArray("botSites");
     //=======================================================
     //Setting the Interface
-    //=======================================================    		
+    //=======================================================	
     setInterface(botRunning);
 	setAdvancedEditor();
 	setReplyOnclick();
@@ -53,8 +53,9 @@
             //=======================================================      
             commentBot();    
             statusBot(botRunning,botSites);
-            repostBot();
-            clearInterval(checkDisqus);
+            repostBot();			
+            clearInterval(checkDisqus);	
+			
         }
     },100);
 })();
@@ -67,7 +68,7 @@ function setReplyOnclick(){
 	var checkExistDisqus = setInterval(function() {
 		var replies = document.getElementsByClassName("reply");
 		for (var i=0; i<replies.length;i++){
-			if(!replies[i].classList.contains("linked")){
+			if(!replies[i].classList.contains("linked")&&replies[i].classList.length==1&& replies[i].tagName=="LI"){
 				replies[i].classList.add("linked");
 				replies[i].addEventListener('click', addAdvancedEditor);      				
 			}
@@ -76,7 +77,8 @@ function setReplyOnclick(){
 }
 
 function addAdvancedEditor(){
-	setAdvancedEditorReply(this);
+	setAdvancedEditorReply(this);	
+	removeMakroDiv();
 }
 
 function setAdvancedEditor(){
@@ -125,16 +127,14 @@ function setAdvancedEditor(){
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(makroButton);			
 			$(".editMakro").click(function(e) {
-				openMakro();
-			});			
-			
-            createMakroDiv(true);
+				openMakro(this);
+			});						
 			document.getElementsByClassName("temp-post")[0].classList.add("advanced");
 		}
 		clearInterval(checkExistDisqus); 
 	}, 1000);
 }
-function createMakroDiv(hidden){
+function createMakroDiv(hidden,caller){
 	var makros = getGMArray("makros");
 	if(typeof makros == 'undefined' || makros.length<=0){
 		setGMArray("makros",[]);
@@ -157,28 +157,38 @@ function createMakroDiv(hidden){
 		$("#MakroContainer").hide();     
 	}
 
-	$("#saveAsMakro").click(function(e) {
+	$("#saveAsMakro").click(function(e) {		
 		saveMakro();
 	});			
 	$(".deleteImageMakro").click(function(e) {
 		deleteMakro(this.parentNode);
 	});		
 	$(".confirmImageMakro").click(function(e) {
-		useMakro(this.parentNode);
+		useMakro(this.parentNode,caller);
 	});			
 }
 
 function removeMakroDiv(){
+	console.log("MakroDiv wird gelöscht");
 	document.getElementById("MakroContainer").remove();
 }
-function openMakro(){
-	$("#MakroContainer").slideToggle();
+function openMakro(caller){	
+	var container = document.getElementById("MakroContainer")
+	console.log(container);
+	if (typeof container == "undefined" || container == null){
+		createMakroDiv(false,caller)
+	}else{
+		removeMakroDiv();
+	}
 }
 
-function useMakro(parent){
+function useMakro(parent,caller){
 	var makros = getGMArray("makros");
-	document.getElementsByClassName("textarea")[0].innerHTML=makros[parent.id];
-    document.getElementsByClassName("btn post-action__button")[0].click();   	
+	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);		
+	textarea.innerHTML=makros[parent.id];
+	console.log("Textarea:" + textarea.innerHTML);
+	$(caller).parent().parent().parent().parent().parent().find(".btn.post-action__button").get(0).click();   	    
+	removeMakroDiv();
 }
 function saveMakro(){
 	var makros = getGMArray("makros");
@@ -284,7 +294,7 @@ function makeScribble(){
 
 
 function setAdvancedEditorReply(link){	
-	setTimeout(function(){
+	setTimeout(function(){		
 		var container = $(link).parent().parent().parent().parent();	
 		console.log(container.get(0));
 		var div = container.find(".temp-post");		
@@ -321,6 +331,12 @@ function setAdvancedEditorReply(link){
 			// 
 			console.log("Bold" + div);
 			div.appendChild(boldButton);			
+			
+			var makroButton = document.createElement ('div');				
+			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
+			makroButton.setAttribute ('class', 'editBtnBig editMakro btn post-action__button');	
+			// 			
+									
 			$(".editBoldReply").click(function(e) {				
 				makeBoldReply(this);
 			});			
@@ -336,7 +352,11 @@ function setAdvancedEditorReply(link){
 			div.appendChild(scribbleButton);			
 			$(".editscribbleReply").click(function(e) {
 				makeScribbleReply(this);
-			});			
+			});						
+			div.appendChild(makroButton);
+			$(".editMakro").click(function(e) {
+				openMakro(this);
+			});						
 			div.classList.add("advanced");
 			//       clearInterval(checkExist);
 		}            				
