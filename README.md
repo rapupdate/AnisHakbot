@@ -40,6 +40,6 @@ Bot der Ru ein wenig aufmöbelt
 	</details> 
   <details> 
    <summary>Makro Seite </summary>
-<img src="(https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG">
+<img src="https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG">
 
 </details>
