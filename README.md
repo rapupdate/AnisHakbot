@@ -27,13 +27,19 @@ Bot der Ru ein wenig aufmöbelt
 
 ## Screenshots
 <details> 
-  <summary>Q1: What is the best Language in the World? </summary>
+  <summary>Übersicht </summary>
   > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20%C3%9Cbersicht.PNG)
-   <summary>Q1: What is the best Language in the World? </summary>
+  </details> 
+  <details> 
+   <summary>Youtube Einbettung </summary>
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Youtube%20Embed.PNG)
-   <summary>Q1: What is the best Language in the World? </summary>
+</details> 
+  <details> 
+   <summary>Bild Einbettung </summary>
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Image%20Embed.PNG)
-   <summary>Q1: What is the best Language in the World? </summary>
+	</details> 
+  <details> 
+   <summary>Makro Seite </summary>
 > ![Screenshot](https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG)
 
 </details>
