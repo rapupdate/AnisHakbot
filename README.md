@@ -18,7 +18,7 @@ Bot der Ru ein wenig aufmöbelt
 
 ## TODO
 
-* Makros Bearbeiten hinzufügen
+* ~~Makros Bearbeiten hinzufügen~~
 * ~~Advanced Editor lädt nicht immer~~
 * ~~Bugfixing hinsichtlich Antwortmakros~~
 * ~~Antwort Makros~~
