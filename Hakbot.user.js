@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.1.2
+//@version      1.1.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -153,6 +153,7 @@ function createMakroDiv(hidden,caller,sibling){
 		text=text.replace(new RegExp("</p>", 'g'),"");
 		text=text.replace(new RegExp("<br>", 'g'),"");
 		text=text.replace(new RegExp("<br />", 'g'),"");
+		text=text.substr(0,40);
 		console.log(text);
 		makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
 	}                
