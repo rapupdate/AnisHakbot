@@ -24,12 +24,17 @@
 	GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
 	GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
     GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
-	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
+	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
+    GM_addStyle('.upImageMakro{cursor:pointer;height:17px;padding-right:20px;}');
+    GM_addStyle('.upImageMakroLast{cursor:pointer;height:17px;margin-right:37px}');
+    GM_addStyle('.downImageMakro{cursor:pointer;height:17px;}');
+    GM_addStyle('.downImageMakroFirst{cursor:pointer;height:17px;margin-right:37px}');
 	GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 	GM_addStyle('.clickableText{cursor:pointer;}');
     	GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
 	var botRunning =  GM_getValue("running");
     var botSites = getGMArray("botSites");	
+    //setGMArray("makros",[]);
     //=======================================================
     //Setting the Interface
     //=======================================================	
@@ -156,7 +161,14 @@ function createMakroDiv(hidden,caller,sibling){
 		text=text.replace(new RegExp("<br />", 'g'),"");
 		text=text.substr(0,40);
 		console.log(text);
-		makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+        makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
+        //if (i==0){
+        //    makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+        //}else if (i==makros.length-1){
+        //    makroDiv.innerHTML+= "<span id='"+i+"'><img src='http://cdn.onlinewebfonts.com/svg/img_109156.svg' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+        //}else{
+        //    makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='http://cdn.onlinewebfonts.com/svg/img_109156.svg' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
+        //}		
 	}                
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
 	// 			
@@ -175,12 +187,40 @@ function createMakroDiv(hidden,caller,sibling){
 	$(".deleteImageMakro").click(function(e) {
 		deleteMakro(this.parentNode,caller,sibling);
 	});		
+    $(".downImageMakro").click(function(e) {
+		moveDownMakro(this.parentNode,caller,sibling);
+	});		
+    $(".downImageMakroFirst").click(function(e) {
+		moveDownMakro(this.parentNode,caller,sibling);
+	});		
+    $(".upImageMakro").click(function(e) {
+		moveUpMakro(this.parentNode,caller,sibling);
+	});		
+    $(".upImageMakroLast").click(function(e) {
+		moveUpMakro(this.parentNode,caller,sibling);
+	});		
 	$(".confirmImageMakro").click(function(e) {
 		useMakro(this.parentNode,caller);
 	});			
     $(".editImageMakro").click(function(e) {
 		editMakro(this.parentNode,caller,sibling);
 	});		
+}
+function moveUpMakro (parent,caller,sibling){
+    var makros = getGMArray("makros");
+    makros.move(parent.id,parent.id-1);
+    console.log(makros);
+    setGMArray("makros",makros);
+    removeMakroDiv();
+    openMakro(caller);
+}
+function moveDownMakro (parent,caller,sibling){
+    var makros = getGMArray("makros");
+    makros.move(parent.id,parent.id+1);
+    console.log(makros);
+    setGMArray("makros",makros);
+    removeMakroDiv();
+    openMakro(caller);
 }
 function editMakro (parent,caller,sibling){
     createEdit(parent,caller,sibling);
@@ -1300,7 +1340,16 @@ function repostBot(){
     }, 1500);     
 }
 
-
+Array.prototype.move = function (old_index, new_index) {
+    if (new_index >= this.length) {
+        var k = new_index - this.length;
+        while ((k--) + 1) {
+            this.push(undefined);
+        }
+    }
+    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+    return this; // for testing purposes
+};
 
 //=======================================================      
 //=======================================================      
