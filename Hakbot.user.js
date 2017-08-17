@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.1
+//@version      1.1.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -175,25 +175,31 @@ function createMakroDiv(hidden,caller,sibling){
 
 function removeMakroDiv(){
 	console.log("MakroDiv wird gelöscht");
-	var container = document.getElementById("MakroContainer")
+	var container = document.getElementById("MakroContainer");
 	console.log(container);
 	if (typeof container != "undefined" && container != null){
 		document.getElementById("MakroContainer").remove();
 	}
 }
 function openMakro(caller){	
-	var container = document.getElementById("MakroContainer")
+	var container = document.getElementById("MakroContainer");
 	console.log(container);
 	if (typeof container == "undefined" || container == null){
-		if(caller.classList.contains("editMain")){
+		if(caller.classList.contains("editMain")){			
 			createMakroDiv(false,caller,document.getElementsByClassName("nav-secondary")[0]);
 		}else{
 			createMakroDiv(false,caller,caller.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
 		}
 		console.log("Creating Makro Div");
 		
-	}else{
-		removeMakroDiv();
+	}else{		
+		var isMain = container.parentNode.id == "conversation";
+		if (caller.classList.contains("editMain")&&!isMain){
+			removeMakroDiv();
+			openMakro(caller);
+		}else{
+			removeMakroDiv();
+		}
 	}
 }
 
@@ -357,7 +363,7 @@ function setAdvancedEditorReply(link){
 			
 			var makroButton = document.createElement ('div');				
 			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
-			makroButton.setAttribute ('class', 'editBtnBig editMakro btn post-action__button');	
+			makroButton.setAttribute ('class', 'editBtnBig editMakroReply btn post-action__button');	
 			// 			
 									
 			$(".editBoldReply").click(function(e) {				
@@ -377,7 +383,7 @@ function setAdvancedEditorReply(link){
 				makeScribbleReply(this);
 			});						
 			div.appendChild(makroButton);
-			$(".editMakro").click(function(e) {
+			$(".editMakroReply").click(function(e) {
 				openMakro(this);
 			});						
 			div.classList.add("advanced");
