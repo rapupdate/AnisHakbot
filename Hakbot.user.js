@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.1.1
+//@version      1.1.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -230,8 +230,8 @@ function deleteMakro(parent,caller,sibling){
 	console.log(parent.id);
 	var makros=getGMArray("makros");
 	if(makros.length>1){
-		console.log("Removing Entry " + i);
-		makros.splice(i,1);
+		console.log("Removing Entry " + parent.id);
+		makros.splice(parent.id,1);
 	}else{
 		console.log("Resetting Array");
 		makros=[];
