@@ -1,18 +1,18 @@
-// ==UserScript==
-// @name         RU Bot
-// @namespace    http://tampermonkey.net/
-// @version      0.9.1
-// @description  Make RU great Again
-// @downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.js
-// @author       You
-// @match        https://disqus.com/embed/comments/*
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
-// @grant        GM_getValue
-// @grant        GM_setValue
-// @grant        GM_listValues
-// @grant        GM_deleteValue
-// @grant        GM_addStyle
-// ==/UserScript==
+//==UserScript==
+//@name         RU Bot
+//@namespace    http://tampermonkey.net/
+//@version      1.0
+//@description  Make RU great Again
+//@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.js
+//@author       You
+//@match        https://disqus.com/embed/comments/*
+//@require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
+//@grant        GM_getValue
+//@grant        GM_setValue
+//@grant        GM_listValues
+//@grant        GM_deleteValue
+//@grant        GM_addStyle
+//==/UserScript==
 
 //=======================================================      
 //Mainprogramm
