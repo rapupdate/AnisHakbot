@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RU Bot
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      0.9.1
 // @description  Make RU great Again
 // @downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.js
 // @author       You
