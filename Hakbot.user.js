@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.2
+//@version      1.2.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -207,8 +207,8 @@ function saveEdit(parent,caller,sibling){
     console.log(document.getElementById("editText").value);
     setGMArray("makros",makros);
     removeEdit();
-    //removeMakroDiv();
-    //openMakro(caller);
+    removeMakroDiv();
+    openMakro(caller);
 }
 
 function removeEdit(){
