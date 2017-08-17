@@ -3,6 +3,7 @@
 //@namespace    http://tampermonkey.net/
 //@version      1.0
 //@description  Make RU great Again
+//@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.js
 //@author       You
 //@match        https://disqus.com/embed/comments/*
