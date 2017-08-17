@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.0
+//@version      1.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.js
@@ -20,13 +20,13 @@
 //=======================================================      
 (function() {
     'use strict';
-    GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
+   	GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
 	GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
 	GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
 	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
 	GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 	GM_addStyle('.clickableText{cursor:pointer;}');
-    GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
+    	GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
 	var botRunning =  GM_getValue("running");
     var botSites = getGMArray("botSites");	
     //=======================================================
@@ -87,8 +87,7 @@ function setAdvancedEditor(){
 		console.log(document.getElementsByClassName("btn post-action__button"));
         if (document.getElementsByClassName("btn post-action__button").length > 0 && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced")) {
             console.log(document.getElementsByClassName("btn post-action__button"));
-			var sndButton = document.getElementsByClassName("btn post-action__button")[0];
-			console.log(sndButton);
+			var sndButton = document.getElementsByClassName("btn post-action__button")[0];			
 			var boldButton = document.createElement ('div');				
 			boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';							
 			boldButton.setAttribute ('class', 'editBtn editBold btn post-action__button');	
