@@ -149,7 +149,12 @@ function createMakroDiv(hidden,caller,sibling){
 	makroDiv.setAttribute ('id', 'MakroContainer');            
 	makroDiv.innerHTML='<h3>Makros</h3><hr>';										
 	for (var i = 0; i<makros.length; i++){                    					     
-		makroDiv.innerHTML+= "<span id='"+i+"'>"+makros[i].replace(new RegExp("<br>", 'g'),"").replace(new RegExp("<p>", 'g'),"").replace(new RegExp("</p>", 'g'),"") + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+		var text=makros[i].replace(new RegExp("<p>", 'g'),"");
+		text=text.replace(new RegExp("</p>", 'g'),"");
+		text=text.replace(new RegExp("<br>", 'g'),"");
+		text=text.replace(new RegExp("<br />", 'g'),"");
+		console.log(text);
+		makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
 	}                
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
 	// 			
@@ -217,7 +222,8 @@ function saveMakro(caller,sibling){
 	if(textarea.innerText.length<2){
 		alert("Makros müssen mindestens 2 Buchstaben lang sein!");
 	}else{
-		if(confirm("Soll der Text: "+textarea.innerText+" als Makro gespeichert werden")){		
+		console.log(textarea.innerHTML);
+		if(confirm("Soll der Text: "+textarea.innerText+" als Makro gespeichert werden")){					
 			makros.push(textarea.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br />'));
 			setGMArray("makros",makros);		
 		}	
