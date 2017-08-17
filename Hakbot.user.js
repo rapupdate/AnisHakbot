@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.1.3
+//@version      1.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -23,6 +23,7 @@
    	GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
 	GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
 	GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
+    GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
 	GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 	GM_addStyle('.clickableText{cursor:pointer;}');
@@ -155,7 +156,7 @@ function createMakroDiv(hidden,caller,sibling){
 		text=text.replace(new RegExp("<br />", 'g'),"");
 		text=text.substr(0,40);
 		console.log(text);
-		makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+		makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
 	}                
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
 	// 			
@@ -177,8 +178,43 @@ function createMakroDiv(hidden,caller,sibling){
 	$(".confirmImageMakro").click(function(e) {
 		useMakro(this.parentNode,caller);
 	});			
+    $(".editImageMakro").click(function(e) {
+		editMakro(this.parentNode,caller,sibling);
+	});		
+}
+function editMakro (parent,caller,sibling){
+    createEdit(parent,caller,sibling);
 }
 
+function createEdit(parent,caller,sibling){
+    var makros = getGMArray("makros");
+    var editDiv = document.createElement ('div');
+    editDiv.setAttribute ('id', 'editContainer');            
+    editDiv.innerHTML="<textarea id='editText' rows='4' cols='50'>"+makros[parent.id]+"</textarea>";
+    editDiv.innerHTML+="<br><input type='button' value='speichern' id='saveEdit'><input type='button' value='abbrechen' id='cancelEdit'>"
+    parent.append(editDiv);
+    $("#cancelEdit").click(function(e) {
+		removeEdit();
+	});		
+    $("#saveEdit").click(function(e) {
+		saveEdit(parent,caller,sibling);
+	});		
+}
+
+function saveEdit(parent,caller,sibling){
+    var makros = getGMArray("makros");
+    makros[parent.id] = document.getElementById("editText").value;
+    console.log(document.getElementById("editText").value);
+    setGMArray("makros",makros);
+    removeEdit();
+    //removeMakroDiv();
+    //openMakro(caller);
+}
+
+function removeEdit(){
+    console.log("remove");
+    document.getElementById("editContainer").remove();
+}
 function removeMakroDiv(){
 	console.log("MakroDiv wird gelöscht");
 	var container = document.getElementById("MakroContainer");
