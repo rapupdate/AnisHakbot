@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.4.1
+//@version      1.4.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -55,7 +55,7 @@
     //reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
     //=======================================================      
     var checkDisqus = setInterval(function(){
-        if (document.getElementById("community-tab")){
+        if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0){
             if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
                 hakBot();    
                 hideBot();
