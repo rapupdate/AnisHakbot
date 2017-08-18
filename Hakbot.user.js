@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.4
+//@version      1.4.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -675,7 +675,7 @@ function setInterface(botRunning){
             //=======================================================
             var blacklistDiv = document.createElement ('div');
             blacklistDiv.setAttribute ('id', 'BlacklistContainer');
-            blacklistDiv.innerHTML = '<h3 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h3><hr>';
+            blacklistDiv.innerHTML = '<h3>Blacklist Einstellungen</h3><h3 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h3><hr>';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<ol>';
             for (var i = 0; i<blacklist.length; i++){
                 blacklistDiv.innerHTML = blacklistDiv.innerHTML + "<li><a data-dsq-mention=\""+blacklist[i]+":disqus\" href=\"https://disqus.com/by/"+blacklist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+blacklist[i]+"\">@" + blacklist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";				
@@ -683,10 +683,18 @@ function setInterface(botRunning){
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</ol>';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<br><h3 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Blacklisted Clans/Names: </h3><hr>';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<div id="blacklistClanList">';
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</div><br>';                        
-			                           
+            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</div><br>';                        			                           
             setTimeout(function(){                                
-                blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input><hr><br>';                            
+				var fakeLinks = GM_getValue("checkLinks");
+				console.log(fakeLinks);
+                blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input><hr><br>';                            				
+				blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<h3>Bot Einstellungen</h3>';
+				if(fakeLinks){
+					var boxStatus = "checked";
+				}else{
+					var boxStatus = "";
+				}
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle" style="cursor: pointer;" title="AutoHak Ein/Aus"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br><br>';						
                 //blacklistDiv.setAttribute ('style', 'display:none');                        
                 document.getElementsByClassName("nav nav-secondary")[0].after(blacklistDiv);                                       
                 var addClanBlacklist = document.getElementById("addToClanBlacklist");
@@ -705,6 +713,9 @@ function setInterface(botRunning){
                         li.addEventListener('click', removeFromClanListOnClick);                                
                     });
                 }
+				$("#fakeBot").click(function(e){
+					toggleFakeBot(this);
+				});     
 				$(".deleteImage.disqusId").click(function(e){
 					removeBlacklist(this);
 				});     
@@ -722,7 +733,7 @@ function setInterface(botRunning){
             //Sets Toggle Blacklist Button
             //=======================================================
             var blacklistButton = document.createElement ('li');                        
-            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="Öffnet die Konfigurationsseite für die Blacklist"><span class="label">Blacklist Kofiguration</span></a>';
+            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="Öffnet die Konfigurationsseite für die RU-Toolbox"><span class="label">Einstellungen</span></a>';
             blacklistButton.setAttribute ('id', 'blacklistToggle');
             blacklistButton.setAttribute ('class', 'nav-tab nav-tab--secondary dropdown sorting pull-right');
             blacklistButton.addEventListener('click', toggleBlacklistContainer);
@@ -756,7 +767,10 @@ function setInterface(botRunning){
         }    
     }, 100);
 }
-
+function toggleFakeBot(box){
+	GM_setValue('checkLinks',box.checked);
+	location.reload();
+}
 function removeBlacklist(image){
 	var container=image.parentNode;
 	console.log(container.firstChild.href);
