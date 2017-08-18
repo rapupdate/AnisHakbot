@@ -32,35 +32,41 @@ Bot der Ru ein wenig aufmöbelt
 ## FAQ
 <details> 
   <summary>Was hast du davon?</summary>
-  <blockquote>Ich habe den Hakbot ursprünglich für mich entwickelt.
-  Als Buddha dann kam und geile Funktionen einbaute, dachte ich, ich kann das auch. Rausgekommen ist eine RU-Toolbox.
+  <blockquote>Ich habe den Hakbot ursprünglich für mich entwickelt.<br>
+  Als Buddha dann kam und geile Funktionen einbaute, dachte ich, ich kann das auch. Rausgekommen ist eine RU-Toolbox.<br>
   Mir macht die Entwicklung des "HakBots" Spaß, das ist mein einziger Motivator, neben eurer dankbarkeit und der optimierung meines RU 	Erlebnisses</blockquote>
 </details> 
 <details> 
   <summary>Wirst du mich leaken wenn ich den Bot nutze</summary>
   <blockquote>
-   Ich weiß dass ist nicht viel Wert, aber ich habe kein Interesse an irgendwelchen Leaks.
-   Ich bin kein Hurensohn und finde jeder sollte sorgenfrei RU nutzen können.
-   Ich habe keine Ahnung wer meinen Bot benutzt und ich habe auch nicht vor dies zu ändern.
+   Ich weiß dass ist nicht viel Wert, aber ich habe kein Interesse an irgendwelchen Leaks.<br>
+   Ich bin kein Hurensohn und finde jeder sollte sorgenfrei RU nutzen können.<br>
+   Ich habe keine Ahnung wer meinen Bot benutzt und ich habe auch nicht vor dies zu ändern.<br>
    Sämtliche HTTP Requests werden über die GM_XMLHTTPrequest Schnittstelle versendet, so werdet ihr, wenn es ein neues Ziel gibt jedes mal informiert wenn es einen neuen Zielserver gibt. Bis auf rapupdate.de ist es bisher allerdings nicht notwendig dass ihr andere Ziele akzeptiert.
    </blockquote>
 </details> 
 <details> 
   <summary>Fakelinkchecker Domain nicht zugelassen</summary>
   <blockquote>
-   Dieses Problem entsteht wenn ihr im Tampermonkey Popup nicht die Domain zugelassen habt oder diese sogar Aktiv gesperrt habt.
-   * Solltet ihr versehendlich die Domain gesperrt haben:
-    	* Clickt auf das Tampermonkey Icon in eurem Browser.
-	* Rechtsklick auf "RU-Bot.
- 	* Einstellungen.
- 	* Entfernt "rapupdate.de" aus der "Domain Negativliste" im Unterpunkt "XHR-Sicherheit".
- 	* Fügt "rapupdate.de" zu "Benutzer-definierte Domain-Positivlist" im Unterpunkt "XHR-Sicherheit" hinzu.
- 	* Ladet die Rapupdate Seite neu
-   * Solltet ihr absichtlich die Domain gesperrt haben:
-   	* Clickt auf das Tampermonkey Icon in eurem Browser.
- 	* Rechtsklick auf "RU-Bot.
- 	* Speicher.
- 	* Sucht den Eintrag ""checkLinks": true" und setzt ihn auf false
+   Dieses Problem entsteht wenn ihr im Tampermonkey Popup nicht die Domain zugelassen habt oder diese sogar Aktiv gesperrt habt.<br>
+   <ul>
+   <li>Solltet ihr versehendlich die Domain gesperrt haben:
+   <ol>
+    	<li> Clickt auf das Tampermonkey Icon in eurem Browser.
+	<li> Rechtsklick auf "RU-Bot.
+ 	<li> Einstellungen.
+ 	<li> Entfernt "rapupdate.de" aus der "Domain Negativliste" im Unterpunkt "XHR-Sicherheit".
+ 	<li> Fügt "rapupdate.de" zu "Benutzer-definierte Domain-Positivlist" im Unterpunkt "XHR-Sicherheit" hinzu.
+ 	<li> Ladet die Rapupdate Seite neu
+	</ol>
+   <li> Solltet ihr absichtlich die Domain gesperrt haben:
+   <ol>
+   	<li> Clickt auf das Tampermonkey Icon in eurem Browser.
+ 	<li> Rechtsklick auf "RU-Bot.
+ 	<li> Speicher.
+ 	<li> Sucht den Eintrag ""checkLinks": true" und setzt ihn auf false
+	</ol>
+	</ul>
 	</blockquote>
   </details> 
   
