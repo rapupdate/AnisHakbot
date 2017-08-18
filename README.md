@@ -30,6 +30,11 @@ Bot der Ru ein wenig aufmöbelt
 * ~~Blacklist Interface Benutzerfreundlicher machen~~
 * ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
 
+## Installation
+<a href="https://www.youtube.com/embed/H6CuLzc17xY">Installationsanleitung - Youtube Video</a>
+
+Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/master/Hakbot.user.js">Hakbot.user.js</a> aus diesem Repository
+
 ## FAQ
 <details> 
   <summary>Was hast du davon?</summary>
@@ -86,12 +91,6 @@ Bot der Ru ein wenig aufmöbelt
 	</ul>
 	</blockquote>
   </details> 
-  
-## Installation
-<a href="https://www.youtube.com/embed/H6CuLzc17xY">Installationsanleitung - Youtube Video</a>
-
-Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/master/Hakbot.user.js">Hakbot.user.js</a> aus diesem Repository
-
 
 ## Screenshots
 <details> 
