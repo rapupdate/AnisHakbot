@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.3
+//@version      1.4
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -13,6 +13,8 @@
 //@grant        GM_listValues
 //@grant        GM_deleteValue
 //@grant        GM_addStyle
+//@grant        GM_openInTab
+//@grant        GM_xmlhttpRequest
 //==/UserScript==
 
 //=======================================================      
@@ -31,9 +33,14 @@
     GM_addStyle('.downImageMakroFirst{cursor:pointer;height:17px;margin-right:37px}');
 	GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 	GM_addStyle('.clickableText{cursor:pointer;}');
-    	GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
+    GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
+	GM_deleteValue("error");
+	var FakeLinkChecker = GM_getValue("checkLinks");
+	if (typeof FakeLinkChecker=='undefined'){
+		GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+	}
 	var botRunning =  GM_getValue("running");
-    var botSites = getGMArray("botSites");	
+    var botSites = getGMArray("botSites");		
     //setGMArray("makros",[]);
     //=======================================================
     //Setting the Interface
@@ -62,8 +69,7 @@
             commentBot();    
             statusBot(botRunning,botSites);
             repostBot();			
-            clearInterval(checkDisqus);	
-			
+            clearInterval(checkDisqus);				
         }
     },100);
 })();
@@ -1138,6 +1144,7 @@ function reloadBot(){
 //=======================================================
 function commentBot(){
     setInterval(function(){
+		var FakeLinkChecker = GM_getValue("checkLinks");
         var comments = document.getElementsByClassName("post-message");
         for (var i = 0;i<comments.length;i++){
             //console.log(comments[i].classList.contains("embed"));
@@ -1198,17 +1205,22 @@ function commentBot(){
                 if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1){                        
                     //console.log("Der Link zum bild lautet: "+linkNormal);
                     var img=true;
-                }                                
-                linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
-                if(commentHtml.indexOf('href="'+linkNormal)==-1){                    
-                    commentHtml=commentHtml.replace(link,linkClickable);
-                }
-                //console.log(commentHtml);
-                comments[i].innerHTML=commentHtml;
-                if(img){                        
-                    comments[i].innerHTML=comments[i].innerHTML + "<br><br>";
-                    comments[i].innerHTML=comments[i].innerHTML + "<img src='"+linkNormal+"' style='width:90%'></img>";
-                }
+                }       
+				console.log("Linknormal:" + linkNormal);
+				if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
+					fakeLink(comments[i],linkNormal,commentHtml);                          
+				}else{
+					linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
+					if(commentHtml.indexOf('href="'+linkNormal)==-1){                    
+						commentHtml=commentHtml.replace(link,linkClickable);
+					}
+					//console.log(commentHtml);
+					comments[i].innerHTML=commentHtml;
+					if(img){                        
+						comments[i].innerHTML=comments[i].innerHTML + "<br><br>";
+						comments[i].innerHTML=comments[i].innerHTML + "<img src='"+linkNormal+"' style='width:90%'></img>";
+					}
+				}                
                 comments[i].classList.add("linked");
             }else if(comments[i].innerText.toLowerCase().indexOf("https://") > -1 && !comments[i].classList.contains("linked")){
                 if(comments[i].classList.contains("embed")){                    
@@ -1246,20 +1258,26 @@ function commentBot(){
                     if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1){                        
                         //console.log("Der Link zum bild lautet: "+linkNormal);
                         var img=true;
-                    }                    
-                    linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
-                    if(commentHtml.indexOf('href="'+linkNormal)<0){
-                        commentHtml=commentHtml.replace(link,linkClickable);
-                    }
-                    var indexEmbed=commentHtml.indexOf("<iframe");
-                    var commentHtmlEmbed=commentHtml.slice(indexEmbed);
-                    commentHtmlEmbed=commentHtmlEmbed.replace(linkClickable,link);
-                    commentHtml=commentHtml.substr(0,indexEmbed) + commentHtmlEmbed;
-                    comments[i].innerHTML=commentHtml;
-                    if(img){
-                        comments[i].innerHTML=comments[i].innerHTML + "<br><br>";
-                        comments[i].innerHTML=comments[i].innerHTML + "<img src='"+linkNormal+"' style='width:90%;'></img>";
-                    }
+                    }                  
+					console.log("Linknormal:" + linkNormal);
+					if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
+						fakeLink(comments[i],linkNormal,commentHtml);                        
+					}else{
+						linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
+						if(commentHtml.indexOf('href="'+linkNormal)<0){
+							commentHtml=commentHtml.replace(link,linkClickable);
+							var indexEmbed=commentHtml.indexOf("<iframe");
+							var commentHtmlEmbed=commentHtml.slice(indexEmbed);
+							commentHtmlEmbed=commentHtmlEmbed.replace(linkClickable,link);
+							commentHtml=commentHtml.substr(0,indexEmbed) + commentHtmlEmbed;
+							comments[i].innerHTML=commentHtml;
+							if(img){
+								comments[i].innerHTML=comments[i].innerHTML + "<br><br>";
+								comments[i].innerHTML=comments[i].innerHTML + "<img src='"+linkNormal+"' style='width:90%;'></img>";
+							}
+						}
+					}
+                                        
                     comments[i].classList.add("linked");
                 }else{
                     var comment=comments[i].innerText.toLowerCase();
@@ -1296,20 +1314,62 @@ function commentBot(){
                     if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1){                                                
                         var img=true;
                     }                    
+					console.log("Linknormal (Else):" + linkNormal);
                     if(commentHtml.indexOf('href="'+linkNormal)==-1){                    
-                        linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
-                    }
-                    commentHtml=commentHtml.replace(link,linkClickable);                    
-                    comments[i].innerHTML=commentHtml;
-                    if(img){
-                        comments[i].innerHTML=comments[i].innerHTML + "<br><br>";
-                        comments[i].innerHTML=comments[i].innerHTML + "<img src='"+linkNormal+"' style='width:90%'></img>";
-                    }
+						if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
+							fakeLink(comments[i],linkNormal,commentHtml);                 
+						}else{
+							linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
+							commentHtml=commentHtml.replace(link,linkClickable);                    
+							comments[i].innerHTML=commentHtml;
+							if(img){
+								comments[i].innerHTML=comments[i].innerHTML + "<br><br>";
+								comments[i].innerHTML=comments[i].innerHTML + "<img src='"+linkNormal+"' style='width:90%'></img>";
+							}
+						}
+					}
+                    
                     comments[i].classList.add("linked");
                 }
             }
         }
     },5000);    
+}
+
+function fakeLink(comment,linkNormal,commentHtml){	
+	//console.log(comment);
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: linkNormal,
+		onload: function(response) {
+			var linkClickable;
+			console.log(comment);
+			if(response.responseText.substr(response.responseText.indexOf("<title>"),response.responseText.indexOf("</title>")-response.responseText.indexOf("<title>")).indexOf("Seite nicht gefunden")>-1){				
+				linkClickable = '<a href="'+linkNormal+'">'+linkNormal+' (FAKE!)</a>';
+			}else{
+				linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
+			}
+			console.log(linkNormal);
+			console.log(linkClickable);			
+			console.log(commentHtml);			
+			commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     
+			console.log(commentHtml);			
+			comment.innerHTML=commentHtml;			
+			console.log(comment.innerHTML);			
+		},
+		onerror: function(response){
+			var fakeLinkError = GM_getValue("error");
+			linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
+			commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
+			comment.innerHTML=commentHtml;						
+			if(typeof fakeLinkError=='undefined'){
+				if (confirm("Die Domain wurde nicht zum Zugriff zugelassen. Eine Anleitung wie dies zu ändern ist findest du in den FAQ auf:\n'https://github.com/rapupdate/AnisHakbot/blob/master/README.md\nWillst du die Readme in neuem Tab öffnen?")){
+					GM_openInTab("https://github.com/rapupdate/AnisHakbot/blob/master/README.md#faq",{active:true});
+				}
+				GM_setValue("error",true);
+			}						
+		}
+	});	   
 }
 
 //=======================================================      
@@ -1380,7 +1440,7 @@ function findClass(element, className) {
 
 //=======================================================      
 //=======================================================      
-//Gets Around Repost Alert, does not work in Responses so far.
+//Gets Around Repost Alert
 //=======================================================
 function repostBot(){
     var checkExist3 = setInterval(function() {
@@ -1474,5 +1534,5 @@ function quaffleBot(){
 //=======================================================      
 //Should Load Disqus Username, but it doesn't because i dont have an api Key
 //=======================================================
-function loadDisqusName(id) {
+function loadDisqusName() {
 }
