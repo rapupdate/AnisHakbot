@@ -17,7 +17,7 @@ Bot der Ru ein wenig aufmöbelt
 * Makros - User können sich Texte als Makro speichern und diese per Mausklick posten/als Antwort schicken
 * Fakelinkchecker - Überprüft ob Rapupdate Links zu Artikeln führen oder nicht, Fakes werden durch "(Fake!)" hervorgehoben
 
-## TODO
+## TODO - Weitere Todos finden sich in der Issues Liste
 
 * ~~Erweiterte Tags im Advanced Editor~~
 * ~~Makros können verschoben werden~~
