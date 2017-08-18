@@ -56,16 +56,8 @@ Bot der Ru ein wenig aufmöbelt
 <details> 
   <summary>Ich habe den Fakelinkchecker aktiviert/deaktiviert und will das andere!</summary>
   <blockquote>
-  <ol>
-   	<li> Clickt auf das Tampermonkey Icon in eurem Browser.
- 	<li> Rechtsklick auf "RU-Bot.
- 	<li> Speicher.
- 	<li> Sucht den Eintrag ""checkLinks""
-	<li> Steht dort true ist er aktiviert, zum deaktivieren false eintragen
-	<li> Steht dort false ist er aktiviert, zum deaktivieren true eintragen
-	<li> Ladet die Rapupdate Seite neu
-  </ol>
-  <br> In zukunft wird es eine Checkbos dafür geben, ich weiß nur noch nicht wo ich diese hinpacke.
+	Kein Problem:
+	Öffne einfach die Einstellungen und entferne/setze das häkchen bei Fakelinkchecker.
   </blockquote>
 </details>
 <details> 
