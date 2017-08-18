@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.2.1
+//@version      1.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -24,7 +24,7 @@
 	GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
 	GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
     GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
-	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
+	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
     GM_addStyle('.upImageMakro{cursor:pointer;height:17px;padding-right:20px;}');
     GM_addStyle('.upImageMakroLast{cursor:pointer;height:17px;margin-right:37px}');
     GM_addStyle('.downImageMakro{cursor:pointer;height:17px;}');
@@ -126,7 +126,23 @@ function setAdvancedEditor(){
 			$(".editscribble").click(function(e) {
 				makeScribble();8
 			});			
-						
+			var quoteButton = document.createElement ('div');				
+			quoteButton.innerHTML='<a style="color:white;"><blockquote>„"</blockquote></a>';						
+			quoteButton.setAttribute ('class', 'editBtn editquote btn post-action__button');	
+			// 			
+			document.getElementsByClassName("temp-post")[0].appendChild(quoteButton);			
+			$(".editquote").click(function(e) {
+				makeQuote();
+			});				
+			var spoilerButton = document.createElement ('div');				
+			spoilerButton.innerHTML='<a style="color:white;"><spoiler>Spoiler</spoiler></a>';						
+			spoilerButton.setAttribute ('class', 'editBtnBig editspoiler btn post-action__button');	
+			// 			
+			document.getElementsByClassName("temp-post")[0].appendChild(spoilerButton);			
+			$(".editspoiler").click(function(e) {
+				makeSpoiler();
+			});					
+			
 			
 			var makroButton = document.createElement ('div');				
 			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
@@ -161,14 +177,14 @@ function createMakroDiv(hidden,caller,sibling){
 		text=text.replace(new RegExp("<br />", 'g'),"");
 		text=text.substr(0,40);
 		console.log(text);
-        makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
-        //if (i==0){
-        //    makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
-        //}else if (i==makros.length-1){
-        //    makroDiv.innerHTML+= "<span id='"+i+"'><img src='http://cdn.onlinewebfonts.com/svg/img_109156.svg' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
-        //}else{
-        //    makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='http://cdn.onlinewebfonts.com/svg/img_109156.svg' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
-        //}		
+        //makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
+        if (i==0){
+            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+        }else if (i==makros.length-1){
+            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+        }else{
+            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
+        }		
 	}                
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
 	// 			
@@ -208,6 +224,7 @@ function createMakroDiv(hidden,caller,sibling){
 }
 function moveUpMakro (parent,caller,sibling){
     var makros = getGMArray("makros");
+	//move(makros,)
     makros.move(parent.id,parent.id-1);
     console.log(makros);
     setGMArray("makros",makros);
@@ -216,7 +233,7 @@ function moveUpMakro (parent,caller,sibling){
 }
 function moveDownMakro (parent,caller,sibling){
     var makros = getGMArray("makros");
-    makros.move(parent.id,parent.id+1);
+    makros.move(parent.id,Number(parent.id)+1);
     console.log(makros);
     setGMArray("makros",makros);
     removeMakroDiv();
@@ -323,6 +340,47 @@ function deleteMakro(parent,caller,sibling){
 	removeMakroDiv();
 	createMakroDiv(false,caller,sibling);
 }
+
+function makeQuote(){
+	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
+	textArea.focus();	
+	var selectedText = getSelectedText();
+	console.log();
+	if (selectedText.anchorOffset<selectedText.focusOffset){
+		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
+		console.log(selected);
+		var text = textArea.innerText;
+		var cacheText = text.slice(selectedText.anchorOffset);
+		text = text.slice(0,selectedText.anchorOffset);		
+		cacheText = cacheText.replace(selected,"<blockquote>"+selected+"</blockquote>");
+		text=text+cacheText;
+		textArea.innerText=text;
+	}else{
+		textArea.focus();	
+		textArea.innerText=textArea.innerText+"<blockquote></blockquote>";
+	}	
+}
+
+function makeSpoiler(){
+	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
+	textArea.focus();	
+	var selectedText = getSelectedText();
+	console.log();
+	if (selectedText.anchorOffset<selectedText.focusOffset){
+		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
+		console.log(selected);
+		var text = textArea.innerText;
+		var cacheText = text.slice(selectedText.anchorOffset);
+		text = text.slice(0,selectedText.anchorOffset);		
+		cacheText = cacheText.replace(selected,"<spoiler>"+selected+"</spoiler>");
+		text=text+cacheText;
+		textArea.innerText=text;
+	}else{
+		textArea.focus();	
+		textArea.innerText=textArea.innerText+"<spoiler></spoiler>";
+	}	
+}
+
 function makeBold(){
 	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
 	textArea.focus();	
@@ -1340,14 +1398,10 @@ function repostBot(){
     }, 1500);     
 }
 
-Array.prototype.move = function (old_index, new_index) {
-    if (new_index >= this.length) {
-        var k = new_index - this.length;
-        while ((k--) + 1) {
-            this.push(undefined);
-        }
-    }
-    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+Array.prototype.move = function (old_index, new_index) {    
+    var helper = this[new_index];
+	this[new_index]=this[old_index];
+	this[old_index]=helper;
     return this; // for testing purposes
 };
 
