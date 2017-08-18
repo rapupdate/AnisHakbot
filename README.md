@@ -52,7 +52,7 @@ Bot der Ru ein wenig aufmöbelt
   Existiert der Link nicht, so wird dieser durch "(FAKE!)" gekennzeichnet.<br><br>
   Die Fakelink Funktion benötigt XMLHTTPRequests. Diese können auch missbraucht werden. Der Hakbot wird nur Requests in Richtung rapupdate.de absetzen, auf diese Weise garantiere ich euch, dass ich eure Daten nicht abfangen kann. Sollte es eine Änderung mit den XMLHTTPrequests geben, werde ich diese per Popup mitteilen und euch die möglichkeit geben diese, wie auch den Fakelinkchecker zu deaktivieren!
   </blockquote>
-</deatils>
+</details>
 <details> 
   <summary>Ich habe den Fakelinkchecker aktiviert/deaktiviert und will das andere!</summary>
   <blockquote>
