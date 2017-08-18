@@ -87,6 +87,12 @@ Bot der Ru ein wenig aufmöbelt
 	</blockquote>
   </details> 
   
+## Installation
+<iframe width="560" height="315" src="https://www.youtube.com/embed/H6CuLzc17xY" frameborder="0" allowfullscreen></iframe>
+
+Als Skript verwendet den AnisHakbot.user.js aus diesem Repository
+
+
 ## Screenshots
 <details> 
   <summary>Übersicht </summary>
