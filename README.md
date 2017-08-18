@@ -67,7 +67,7 @@ Bot der Ru ein wenig aufmöbelt
   </ol>
   <br> In zukunft wird es eine Checkbos dafür geben, ich weiß nur noch nicht wo ich diese hinpacke.
   </blockquote>
-</deatils>
+</details>
 <details> 
   <summary>Fakelinkchecker Domain nicht zugelassen, was nun?</summary>
   <blockquote>
