@@ -18,6 +18,8 @@ Bot der Ru ein wenig aufmöbelt
 
 ## TODO
 
+* ~~Erweiterte Tags im Advanced Editor~~
+* ~~Makros können verschoben werden~~
 * ~~Makros Bearbeiten hinzufügen~~
 * ~~Advanced Editor lädt nicht immer~~
 * ~~Bugfixing hinsichtlich Antwortmakros~~
