@@ -15,6 +15,7 @@ Bot der Ru ein wenig aufmöbelt
 * Statusanzeige im Communitynamen (Rot=Bot aus, Grün=Bot an) 
 * Bot differenziert zwischen den Seiten, er startet nur, wenn die Seite ihm bekannt ist.
 * Makros - User können sich Texte als Makro speichern und diese per Mausklick posten/als Antwort schicken
+* Fakelinkchecker - Überprüft ob Rapupdate Links zu Artikeln führen oder nicht, Fakes werden durch "(Fake!)" hervorgehoben
 
 ## TODO
 
