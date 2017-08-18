@@ -675,13 +675,13 @@ function setInterface(botRunning){
             //=======================================================
             var blacklistDiv = document.createElement ('div');
             blacklistDiv.setAttribute ('id', 'BlacklistContainer');
-            blacklistDiv.innerHTML = '<h3>Blacklist Einstellungen</h3><h3 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h3><hr>';
+            blacklistDiv.innerHTML = '<h3>Blacklist Einstellungen</h3><h4 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h4><hr>';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<ol>';
             for (var i = 0; i<blacklist.length; i++){
                 blacklistDiv.innerHTML = blacklistDiv.innerHTML + "<li><a data-dsq-mention=\""+blacklist[i]+":disqus\" href=\"https://disqus.com/by/"+blacklist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+blacklist[i]+"\">@" + blacklist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";				
             }						
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</ol>';
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<br><h3 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Blacklisted Clans/Names: </h3><hr>';
+            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<br><h4 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Blacklisted Clans/Names: </h4><hr>';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<div id="blacklistClanList">';
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</div><br>';                        			                           
             setTimeout(function(){                                
@@ -694,7 +694,13 @@ function setInterface(botRunning){
 				}else{
 					var boxStatus = "";
 				}
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle" style="cursor: pointer;" title="AutoHak Ein/Aus"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br><br>';						
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle" style="cursor: pointer;" title="FakeLinks hervoheben Ein/Aus"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';						
+				
+				blacklistDiv.innerHTML += '<hr><h3>Über den Hakbot</h3>';						
+				blacklistDiv.innerHTML += '<i>Version: '+GM_info["script"]["version"]+'</i><br>';
+				blacklistDiv.innerHTML += '<i>Autor: <a href="https://disqus.com/by/anis_fencheltee/">Anis Fencheltee</a></i><br>';
+				blacklistDiv.innerHTML += '<i>Readme: <a href="https://github.com/rapupdate/AnisHakbot/blob/master/README.md">Klick hier</i><br>';
+				blacklistDiv.innerHTML += '<i>Probleme oder Wünsche? <a href="https://github.com/rapupdate/AnisHakbot/issues">Klick hier</i><br><br>';
                 //blacklistDiv.setAttribute ('style', 'display:none');                        
                 document.getElementsByClassName("nav nav-secondary")[0].after(blacklistDiv);                                       
                 var addClanBlacklist = document.getElementById("addToClanBlacklist");
