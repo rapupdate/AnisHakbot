@@ -90,7 +90,7 @@ Bot der Ru ein wenig aufmöbelt
 ## Installation
 <a href="https://www.youtube.com/embed/H6CuLzc17xY">Installationsanleitung - Youtube Video</a>
 
-Als Skript verwendet den AnisHakbot.user.js aus diesem Repository
+Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/master/Hakbot.user.js">Hakbot.user.js</a> aus diesem Repository
 
 
 ## Screenshots
