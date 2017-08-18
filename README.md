@@ -46,7 +46,30 @@ Bot der Ru ein wenig aufmöbelt
    </blockquote>
 </details> 
 <details> 
-  <summary>Fakelinkchecker Domain nicht zugelassen</summary>
+  <summary>Was ist dieses Fakelinkchecker?</summary>
+  <blockquote>
+  Diese Funktion überprüft ob die von Usern geposteten Links auf "Rapupdate Artikel" wirklich existieren.<br>
+  Existiert der Link nicht, so wird dieser durch "(FAKE!)" gekennzeichnet.<br><br>
+  Die Fakelink Funktion benötigt XMLHTTPRequests. Diese können auch missbraucht werden. Der Hakbot wird nur Requests in Richtung rapupdate.de absetzen, auf diese Weise garantiere ich euch, dass ich eure Daten nicht abfangen kann. Sollte es eine Änderung mit den XMLHTTPrequests geben, werde ich diese per Popup mitteilen und euch die möglichkeit geben diese, wie auch den Fakelinkchecker zu deaktivieren!
+  </blockquote>
+</deatils>
+<details> 
+  <summary>Ich habe den Fakelinkchecker aktiviert/deaktiviert und will das andere!</summary>
+  <blockquote>
+  <ol>
+   	<li> Clickt auf das Tampermonkey Icon in eurem Browser.
+ 	<li> Rechtsklick auf "RU-Bot.
+ 	<li> Speicher.
+ 	<li> Sucht den Eintrag ""checkLinks""
+	<li> Steht dort true ist er aktiviert, zum deaktivieren false eintragen
+	<li> Steht dort false ist er aktiviert, zum deaktivieren true eintragen
+	<li> Ladet die Rapupdate Seite neu
+  </ol>
+  <br> In zukunft wird es eine Checkbos dafür geben, ich weiß nur noch nicht wo ich diese hinpacke.
+  </blockquote>
+</deatils>
+<details> 
+  <summary>Fakelinkchecker Domain nicht zugelassen, was nun?</summary>
   <blockquote>
    Dieses Problem entsteht wenn ihr im Tampermonkey Popup nicht die Domain zugelassen habt oder diese sogar Aktiv gesperrt habt.<br>
    <ul>
@@ -59,12 +82,13 @@ Bot der Ru ein wenig aufmöbelt
  	<li> Fügt "rapupdate.de" zu "Benutzer-definierte Domain-Positivlist" im Unterpunkt "XHR-Sicherheit" hinzu.
  	<li> Ladet die Rapupdate Seite neu
 	</ol>
-   <li> Solltet ihr absichtlich die Domain gesperrt haben:
+   <li> Solltet ihr absichtlich die Domain gesperrt haben weil ihr keinen XMLHTTP-Request zu Rapupdate zulassen wollt:
    <ol>
    	<li> Clickt auf das Tampermonkey Icon in eurem Browser.
  	<li> Rechtsklick auf "RU-Bot.
  	<li> Speicher.
  	<li> Sucht den Eintrag ""checkLinks": true" und setzt ihn auf false
+	<li> Ladet die Rapupdate Seite neu
 	</ol>
 	</ul>
 	</blockquote>
