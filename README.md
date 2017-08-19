@@ -16,6 +16,7 @@ Bot der Ru ein wenig aufmöbelt
 * Bot differenziert zwischen den Seiten, er startet nur, wenn die Seite ihm bekannt ist.
 * Makros - User können sich Texte als Makro speichern und diese per Mausklick posten/als Antwort schicken
 * Fakelinkchecker - Überprüft ob Rapupdate Links zu Artikeln führen oder nicht, Fakes werden durch "(Fake!)" hervorgehoben
+* Links werden Postbar gemacht - Wenn ein link eingegeben wird, wird dieser in Postbare Form gebracht
 
 ## TODO - Weitere Todos finden sich in der Issues Liste
 
@@ -91,6 +92,11 @@ Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/m
 	</ul>
 	</blockquote>
   </details> 
+  <details> 
+  <summary>Ich will aber keine automatischen Updates</summary>
+  <blockquote>Das kann abgestellt werden indem die Zeilen "UpdateURL" und DownloadURL aus den Kopfdaten gelöscht werden
+  </blockquote>
+</details> 
 
 ## Screenshots
 <details> 
