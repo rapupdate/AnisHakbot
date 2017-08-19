@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.4.3
+//@version      1.5
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -26,6 +26,7 @@
 	GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
 	GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
     GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
+    GM_addStyle('.insertImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
     GM_addStyle('.upImageMakro{cursor:pointer;height:17px;padding-right:20px;}');
     GM_addStyle('.upImageMakroLast{cursor:pointer;height:17px;margin-right:37px}');
@@ -34,10 +35,38 @@
 	GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 	GM_addStyle('.clickableText{cursor:pointer;}');
     GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
+    GM_addStyle('.helper{cursor:help;}');    
 	GM_deleteValue("error");
 	var FakeLinkChecker = GM_getValue("checkLinks");
 	if (typeof FakeLinkChecker=='undefined'){
 		GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+	}
+    
+    var clearUrl = GM_getValue("clearUrl");
+	if (typeof clearUrl=='undefined'){
+		GM_setValue("clearUrl",true);
+	}
+    
+    var loadComments = GM_getValue("loadComments");
+	if (typeof loadComments=='undefined'){
+		GM_setValue("loadComments",true);
+	}   
+    
+    var reloadTime = GM_getValue("reloadTime");
+	if (typeof reloadTime=='undefined'){
+		GM_setValue("reloadTime",300000);
+	}
+    var natural = GM_getValue("natural");
+	if (typeof natural=='undefined'){
+		GM_setValue("natural",true);
+	}
+    var reload = GM_getValue("reload");
+	if (typeof reload=='undefined'){
+		GM_setValue("reload",true);
+	}
+    var loadSubComments = GM_getValue("loadSubcomments");
+	if (typeof loadSubComments=='undefined'){
+		GM_setValue("loadSubcomments",true);
 	}
 	var botRunning =  GM_getValue("running");
     var botSites = getGMArray("botSites");		
@@ -50,26 +79,32 @@
 	setReplyOnclick();
     //=======================================================      
     //Wenn Bots angeschaltet startet er die folgenden Funktionen
-    //hakBot - Gibt Hak und lädt die Kommentare nach
+    //Hakbot - Gibt Hak und lädt die Kommentare nach
     //hideBot - Versteckt upvote Fenster
     //reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
     //=======================================================      
     var checkDisqus = setInterval(function(){
-        if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0){
+        if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){
             if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
-                hakBot();    
+                hakBot();                    
                 hideBot();
-                reloadBot();
+                console.log(reload);
+                if(reload)reloadBot(reloadTime);
             }
             //=======================================================      
             //Folgende Bots sind immer an:
             //commentBot - Macht Links anklickbar, bindet Youtube und Bilder ein
             //statusBot - Ändert die Farbe des Namens, abhängig ob Bots an sind oder nicht.
+            //newCommentBot - Lädt automatisch die neuen Kommentare nach
+            //newSubcommentBot - Lädt automatisch die neuen Kommentarantworten nach
             //=======================================================      
+            if(loadComments)newCommentBot(natural);
+            if(loadSubComments)newSubcommentBot(natural);            
             commentBot();    
             statusBot(botRunning,botSites);
             repostBot();			
-            clearInterval(checkDisqus);				
+            clearInterval(checkDisqus);			
+            if(clearUrl)urlBot();
         }
     },100);
 })();
@@ -78,6 +113,29 @@
 //=======================================================      
 //Functions
 //=======================================================      
+function urlBot(){
+    $(".textarea").keyup(function(e){
+        clearUrl(this);
+    });
+}
+
+function clearUrl(textArea){
+    var expression = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+    var regex = new RegExp(expression);
+    if(textArea.innerHTML.match(regex)){
+        var selectedText = getSelectedText();
+        var savedSelection = saveSelection(textArea,0);        
+        textArea.innerHTML=textArea.innerHTML.replace(".net",".Net");
+        textArea.innerHTML=textArea.innerHTML.replace(".com",".Com");
+        textArea.innerHTML=textArea.innerHTML.replace(".de",".De");
+        textArea.innerHTML=textArea.innerHTML.replace(".ru",".Ru");
+        textArea.innerHTML=textArea.innerHTML.replace(".org",".Org");
+        textArea.innerHTML=textArea.innerHTML.replace(".fr",".Fr");
+        textArea.innerHTML=textArea.innerHTML.replace(".to",".To");
+        restoreSelection(textArea, savedSelection);
+        console.log("Link!");
+    }    
+}
 function setReplyOnclick(){
 	var checkExistDisqus = setInterval(function() {
 		var replies = document.getElementsByClassName("reply");
@@ -97,16 +155,17 @@ function addAdvancedEditor(){
 function setAdvancedEditor(){
 	var checkExistDisqus = setInterval(function() {
 		console.log(document.getElementsByClassName("btn post-action__button"));
-        if (document.getElementsByClassName("btn post-action__button").length > 0 && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced")) {
+        if (document.getElementsByClassName("btn post-action__button").length > 0 && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced") && document.getElementsByClassName("username").length>0) {
             console.log(document.getElementsByClassName("btn post-action__button"));
 			var sndButton = document.getElementsByClassName("btn post-action__button")[0];			
 			var boldButton = document.createElement ('div');				
 			boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';							
 			boldButton.setAttribute ('class', 'editBtn editBold btn post-action__button');	
 			// 			
+            var textArea=document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
 			document.getElementsByClassName("temp-post")[0].appendChild(boldButton);			
 			$(".editBold").click(function(e) {
-				makeBold();
+				createTag(textArea,"<b>","</b>");
 			});			
 			var italicButton = document.createElement ('div');				
 			italicButton.innerHTML='<a style="color:white;"><i>i</i></a>';									
@@ -114,7 +173,7 @@ function setAdvancedEditor(){
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(italicButton);			
 			$(".edititalic").click(function(e) {
-				makeItalic();
+				createTag(textArea,"<i>","</i>");
 			});			
 			var underButton = document.createElement ('div');				
 			underButton.innerHTML='<a style="color:white;"><u>u</u></a>';						
@@ -122,7 +181,7 @@ function setAdvancedEditor(){
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(underButton);			
 			$(".editunder").click(function(e) {
-				makeUnder();
+				createTag(textArea,"<u>","</u>");
 			});			
 			var scribbleButton = document.createElement ('div');				
 			scribbleButton.innerHTML='<a style="color:white;"><s>s</s></a>';						
@@ -130,7 +189,7 @@ function setAdvancedEditor(){
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(scribbleButton);			
 			$(".editscribble").click(function(e) {
-				makeScribble();8
+				createTag(textArea,"<s>","</s>");
 			});			
 			var quoteButton = document.createElement ('div');				
 			quoteButton.innerHTML='<a style="color:white;"><blockquote>„"</blockquote></a>';						
@@ -138,7 +197,7 @@ function setAdvancedEditor(){
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(quoteButton);			
 			$(".editquote").click(function(e) {
-				makeQuote();
+				createTag(textArea,"<blockquote>","</blockquote>");
 			});				
 			var spoilerButton = document.createElement ('div');				
 			spoilerButton.innerHTML='<a style="color:white;"><spoiler>Spoiler</spoiler></a>';						
@@ -146,7 +205,7 @@ function setAdvancedEditor(){
 			// 			
 			document.getElementsByClassName("temp-post")[0].appendChild(spoilerButton);			
 			$(".editspoiler").click(function(e) {
-				makeSpoiler();
+				createTag(textArea,"<spoiler>","</spoiler>");
 			});					
 			
 			
@@ -182,14 +241,14 @@ function createMakroDiv(hidden,caller,sibling){
 		text=text.replace(new RegExp("<br>", 'g'),"");
 		text=text.replace(new RegExp("<br />", 'g'),"");
 		text=text.substr(0,40);
-		console.log(text);
+		console.log(text);                
         //makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
         if (i==0){
-            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
         }else if (i==makros.length-1){
-            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
         }else{
-            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
+            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
         }		
 	}                
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
@@ -226,6 +285,9 @@ function createMakroDiv(hidden,caller,sibling){
 	});			
     $(".editImageMakro").click(function(e) {
 		editMakro(this.parentNode,caller,sibling);
+	});		
+    $(".insertImageMakro").click(function(e) {
+		insertMakro(this.parentNode,caller,sibling);
 	});		
 }
 function moveUpMakro (parent,caller,sibling){
@@ -316,6 +378,16 @@ function useMakro(parent,caller){
 	$(caller).parent().parent().parent().parent().parent().find(".btn.post-action__button").get(0).click();   	    
 	removeMakroDiv();
 }
+
+function insertMakro(parent,caller){
+	var makros = getGMArray("makros");
+	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);		
+	textarea.innerHTML=makros[parent.id];
+	console.log("Textarea:" + textarea.innerHTML);
+    textarea.focus();
+	removeMakroDiv();
+}
+
 function saveMakro(caller,sibling){
 	var makros = getGMArray("makros");
 	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);		
@@ -347,125 +419,34 @@ function deleteMakro(parent,caller,sibling){
 	createMakroDiv(false,caller,sibling);
 }
 
-function makeQuote(){
-	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
+function createTag(element,tag,endTag){
+    var textArea = element;
 	textArea.focus();	
 	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
+	console.log(selectedText.anchorOffset+11);
+    var aOffset=selectedText.anchorOffset;
+    var fOffset=selectedText.focusOffset;    
+	if (selectedText.anchorOffset<selectedText.focusOffset || textArea.innerText.length>0){
+        var savedSelection = saveSelection(textArea,tag.length);
 		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
 		console.log(selected);
-		var text = textArea.innerText;
+		var text = textArea.innerText;        
 		var cacheText = text.slice(selectedText.anchorOffset);
 		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<blockquote>"+selected+"</blockquote>");
+		cacheText = cacheText.replace(selected,tag+selected+endTag);
 		text=text+cacheText;
-		textArea.innerText=text;
+		textArea.innerText=text;        
+        restoreSelection(textArea, savedSelection);
+        console.log(aOffset);
 	}else{
+        var selectedText = getSelectedText();
+        var savedSelection = saveSelection(textArea,tag.length);
 		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<blockquote></blockquote>";
+		textArea.innerText=tag+endTag;
+        restoreSelection(textArea, savedSelection);
 	}	
 }
 
-function makeSpoiler(){
-	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<spoiler>"+selected+"</spoiler>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<spoiler></spoiler>";
-	}	
-}
-
-function makeBold(){
-	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<b>"+selected+"</b>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<b></b>";
-	}	
-}
-
-function makeItalic(){
-	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<i>"+selected+"</i>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<i></i>";
-	}	
-}
-
-function makeUnder(){
-	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<u>"+selected+"</u>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<u></u>";
-	}	
-}
-
-function makeScribble(){
-	var textArea = document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<s>"+selected+"</s>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<s></s>";
-	}	
-}
 
 
 function setAdvancedEditorReply(link){	
@@ -512,22 +493,22 @@ function setAdvancedEditorReply(link){
 			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
 			makroButton.setAttribute ('class', 'editBtnBig editMakroReply btn post-action__button');	
 			// 			
-									
+						            
 			$(".editBoldReply").click(function(e) {				
-				makeBoldReply(this);
+				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<b>","</b>");
 			});			
 			console.log("Italic " + div);
 			div.appendChild(italicButton);			
 			$(".edititalicReply").click(function(e) {
-				makeItalicReply(this);
+				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<i>","</i>");
 			});			
 			div.appendChild(underButton);			
 			$(".editunderReply").click(function(e) {
-				makeUnderReply(this);
+				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<u>","</u>");
 			});			
 			div.appendChild(scribbleButton);			
 			$(".editscribbleReply").click(function(e) {
-				makeScribbleReply(this);
+				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<s>","</s>");
 			});						
 			div.appendChild(makroButton);
 			$(".editMakroReply").click(function(e) {
@@ -539,89 +520,6 @@ function setAdvancedEditorReply(link){
 		//}, 100);
 	},10);
 }
-
-
-function makeBoldReply(button){
-	var textArea = button.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<b>"+selected+"</b>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<b></b>";
-	}	
-}
-
-function makeItalicReply(button){
-	var textArea = button.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<i>"+selected+"</i>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<i></i>";
-	}	
-}
-
-function makeUnderReply(button){
-	var textArea = button.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<u>"+selected+"</u>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<u></u>";
-	}	
-}
-
-function makeScribbleReply(button){
-	var textArea = button.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-	textArea.focus();	
-	var selectedText = getSelectedText();
-	console.log();
-	if (selectedText.anchorOffset<selectedText.focusOffset){
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
-		text = text.slice(0,selectedText.anchorOffset);		
-		cacheText = cacheText.replace(selected,"<s>"+selected+"</s>");
-		text=text+cacheText;
-		textArea.innerText=text;
-	}else{
-		textArea.focus();	
-		textArea.innerText=textArea.innerText+"<s></s>";
-	}	
-}
-
-
 
 function getSelectedText() {
   var txt = '';
@@ -686,16 +584,54 @@ function setInterface(botRunning){
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</div><br>';                        			                           
             setTimeout(function(){                                
 				var fakeLinks = GM_getValue("checkLinks");
+                var loadComments = GM_getValue("loadComments");
+                var loadSubcomments = GM_getValue("loadSubcomments");                
+                var natural = GM_getValue("natural");
+                var reload = GM_getValue("reload");
+                var clearUrl = GM_getValue("clearUrl");
+                var reloadTime = GM_getValue("reloadTime");
+                reloadTime=reloadTime/60/1000;
+
 				console.log(fakeLinks);
                 blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input><hr><br>';                            				
 				blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<h3>Bot Einstellungen</h3>';
+                if(loadComments){
+					var boxStatusComments = "checked";
+				}else{
+					var boxStatusComments = "";
+				}                
+                if(clearUrl){
+					var boxStatusUrl = "checked";
+				}else{
+					var boxStatusUrl = "";
+				}
+                if(loadSubcomments){
+					var boxStatusSubComments = "checked";
+				}else{
+					var boxStatusSubComments = "";
+				}
+                if(natural){
+					var boxStatusNatural = "checked";
+				}else{
+					var boxStatusNatural = "";
+				}
+                if(reload){
+					var boxStatusReload = "checked";
+				}else{
+					var boxStatusReload = "";
+				}
 				if(fakeLinks){
 					var boxStatus = "checked";
 				}else{
 					var boxStatus = "";
-				}
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle" style="cursor: pointer;" title="FakeLinks hervoheben Ein/Aus"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';						
-				
+				}                                                
+                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Speed - Kommentare nachladen"><input type="checkbox" id="loadComments" '+boxStatusComments+'><span class="label helper">Kommentare automatisch laden</span></a><br>';						
+                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
+                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
+                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Verlinkungen endlich wieder einfach nur eintippen... Puh wie geil ist das denn?"><input type="checkbox" id="clearUrl" '+boxStatusUrl+'><span class="label helper">URLs in Postfähige Form verwandeln</span></a><br>';										
+                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Es nervt manchmal, aber glaubt mir es ist zu eurem Besten"><input type="checkbox" id="reloadBot" '+boxStatusReload+'><span class="label helper">Reload Bot - Lädt Disqus automatisch neu (Empfohlen!)</span></a><br>';										
+                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">Reload Interval (In Minuten): </span><input type="Number" id="reloadTime" value="'+reloadTime+'" min="1" max="60"></input><input id="setReloadTime" type="button" value="Speichern" style="margin:20px"></input></a><br>';										
 				blacklistDiv.innerHTML += '<hr><h3>Über den Hakbot</h3>';						
 				blacklistDiv.innerHTML += '<i>Version: '+GM_info["script"]["version"]+'</i><br>';
 				blacklistDiv.innerHTML += '<i>Autor: <a href="https://disqus.com/by/anis_fencheltee/">Anis Fencheltee</a></i><br>';
@@ -720,7 +656,25 @@ function setInterface(botRunning){
                     });
                 }
 				$("#fakeBot").click(function(e){
-					toggleFakeBot(this);
+					toggleSetting(this,"checkLinks");
+				});     
+                $("#reloadBot").click(function(e){
+					toggleReloadBot(this);
+				});     
+                $("#clearUrl").click(function(e){
+					toggleSetting(this,"clearUrl");
+				});     
+                $("#setReloadTime").click(function(e){
+					setReloadTime(document.getElementById("reloadTime").value);
+				});     
+                $("#loadComments").click(function(e){
+					toggleSetting(this,"loadComments");
+				});     
+                $("#loadSubcomments").click(function(e){
+					toggleSetting(this,"loadSubcomments");
+				});     
+                $("#natural").click(function(e){
+					toggleSetting(this,"natural");
 				});     
 				$(".deleteImage.disqusId").click(function(e){
 					removeBlacklist(this);
@@ -773,10 +727,35 @@ function setInterface(botRunning){
         }    
     }, 100);
 }
-function toggleFakeBot(box){
-	GM_setValue('checkLinks',box.checked);
+
+function setReloadTime(time){
+    if (time > 60){
+        alert("Die Maximalzeit ist 60 Minuten, der Wert wird angepasst");
+        time = 60;
+    }
+    time=time*1000*60;
+	GM_setValue('reloadTime',time);
 	location.reload();
 }
+
+function toggleSetting(box,setting){
+	GM_setValue(setting,box.checked);
+	location.reload();
+}
+
+function toggleReloadBot(box){
+    var reload = GM_getValue("reload");
+    if(reload){
+        if(confirm("Sind Sie sicher das der Bot ausgeschaltet werden soll, dies wird nicht empfohlen!")){
+            GM_setValue('reload',box.checked);
+            location.reload();
+        }
+    }else{
+        GM_setValue('reload',box.checked);
+        location.reload();
+    }
+}
+
 function removeBlacklist(image){
 	var container=image.parentNode;
 	console.log(container.firstChild.href);
@@ -965,10 +944,8 @@ function toggleBot(){
 //======================================================
 function hakBot(){        
     console.log("Injected");        
-    initialHak();
-    //quaffleBot();
-    newCommentHak();
-    newSubcommentHak();
+    initialHak();      
+    giveHak();
 }
 
 //=======================================================      
@@ -993,12 +970,15 @@ function statusBot(running,botSites) {
 //=======================================================      
 //Loop Function I copied, to make the Linkclicking better
 //=======================================================      
-function myLoop (upvoteLinks,i) {           //  create a loop function
+function myLoop (upvoteLinks,i) {
+    //  create a loop function
+    var natural = GM_getValue("natural");
     var duration = Math.random();
     duration = duration * 1500;
     if (duration < 950){
         duration = duration + 1000;
-    }    
+    }  
+    if(!natural)duration = 1500;
     setTimeout(function () {    //  call a 3s setTimeout when the loop is called
         if (upvoteLinks[i].classList.contains('upvoted') || (upvoteLinks[i].classList.contains('vote-up') && blacklistedUser(upvoteLinks[i]))) {
             //console.log("Bereits geliked:" + upvoteLinks[i] + "");            
@@ -1043,6 +1023,10 @@ function blacklistedUser(upvoteLink){
 //Clicks the Link
 //=======================================================
 function clickLink(upvoteLink,number){    
+    var natural = GM_getValue("natural");
+    var duration = Math.random();
+    duration = duration * 1000;
+    if(!natural)duration = 100;
     var link=upvoteLink;
     setTimeout(function(){ 
         //console.log(link);
@@ -1053,7 +1037,7 @@ function clickLink(upvoteLink,number){
         }else{
             link.click();
         }
-    }, 100);              
+    }, duration);              
 }
 
 //=======================================================      
@@ -1073,24 +1057,35 @@ function initialHak(){
                 myLoop(upvoteLinks,i);                      //  start the loop                            
             }, 3000);          
             clearInterval(checkExist);
+            checkExist = false;
         }
         //console.log(document.getElementsByClassName("textarea").length);
     }, 100); // check every 100ms
 }
 
+function giveHak(){
+    var hakGiver = setInterval(function() {        
+        var upvoteLinks = document.getElementsByClassName("vote-up");
+        //console.log(upvoteLinks.length);
+        var i = 0;                     //  set your counter to 1                
+        myLoop(upvoteLinks,i);                      //  start the loop                                                                
+        //console.log(document.getElementsByClassName("textarea").length);
+    }, 100); // check every 100ms
+}
 //=======================================================      
 //=======================================================      
 //checks if there is a new Comment and is giving Hak
 //=======================================================
-function newCommentHak(){
-    var checkExist2 = setInterval(function() {
+function newCommentBot(giveHak,natural){
+    var checkExist2 = setInterval(function() {        
         if (document.getElementsByClassName("alert--realtime").length && document.getElementsByClassName("alert--realtime").length>0 && document.getElementsByClassName("alert--realtime")[0].style.display != "none") {            
-            //console.log(document.getElementsByClassName("alert--realtime").length);            
-            document.getElementsByClassName("alert--realtime")[0].click();
-            var upvoteLinks = document.getElementsByClassName("vote-up");
-            //console.log(upvoteLinks.length);
-            var i = 0;                     //  set your counter to 1                
-            myLoop(upvoteLinks,i);                      //  start the loop                                                
+            //console.log(document.getElementsByClassName("alert--realtime").length);        
+            var duration = Math.random();
+            duration = duration * 1000;
+            if(!natural)duration = 100;
+            setTimeout(function(){ 
+                document.getElementsByClassName("alert--realtime")[0].click();
+            },duration);
         }
         addBlacklistButton();
         //console.log(document.getElementsByClassName("textarea").length);
@@ -1101,14 +1096,14 @@ function newCommentHak(){
 //=======================================================      
 //checks if there is a new Subcomment and is giving Hak
 //=======================================================
-function newSubcommentHak(){
+function newSubcommentBot(giveHak){
     var checkExist3 = setInterval(function() {
         if (document.getElementsByClassName("realtime-button reveal").length && document.getElementsByClassName("realtime-button reveal").length>0) {            
             var neueKommentare = document.getElementsByClassName("realtime-button reveal");            
             //console.log(upvoteLinks.length);
             var i = 0;                     //  set your counter to 1                
             myLoop(neueKommentare,i);     //  start the loop                                                
-            newCommentHak();
+            
         }
         addBlacklistButton();
         //console.log(document.getElementsByClassName("textarea").length);
@@ -1121,11 +1116,13 @@ function newSubcommentHak(){
 //Hides UpvoteList
 //=======================================================
 function hideBot(){
+    var natural = GM_getValue("natural");
     var duration = Math.random();
     duration = duration *150;
     if (duration < 20){
         duration = 20;
     }
+    if(!natural)duration=10;
     var checkExist4 = setInterval(function() {
         if (document.getElementsByClassName("tooltip upvoters").length) {
             var annoyingShit = document.getElementsByClassName("tooltip-outer upvoters-outer");
@@ -1144,13 +1141,16 @@ function hideBot(){
 //=======================================================      
 //Reloads Disqus randomly
 //=======================================================
-function reloadBot(){
+function reloadBot(time){
+    var natural = GM_getValue("natural");
     var duration = Math.random();
     duration = duration * 120000;
     if (duration < 30000){
         duration = 30000;
     }
-    duration= 300000 + duration;
+    duration= time + duration;
+    if(!natural)duration=time;
+    console.log(duration);
     setTimeout(function(){
         location.reload();  
     },duration);
@@ -1484,6 +1484,82 @@ Array.prototype.move = function (old_index, new_index) {
 	this[old_index]=helper;
     return this; // for testing purposes
 };
+
+
+
+
+if (window.getSelection && document.createRange) {
+    saveSelection = function(containerEl,offset) {
+        var range = window.getSelection().getRangeAt(0);
+        var preSelectionRange = range.cloneRange();
+        range.startOffset=11;
+        preSelectionRange.selectNodeContents(containerEl);
+        preSelectionRange.setEnd(range.startContainer, range.startOffset);
+        console.log("preSelcection: "+preSelectionRange.toString().length);
+        var start = preSelectionRange.toString().length+offset;
+
+        return {
+            start: start,
+            end: start + range.toString().length
+        }
+    };
+
+    restoreSelection = function(containerEl, savedSel) {
+        var charIndex = 0, range = document.createRange();
+        range.setStart(containerEl, 0);
+        range.collapse(true);
+        var nodeStack = [containerEl], node, foundStart = false, stop = false;
+        
+        while (!stop && (node = nodeStack.pop())) {
+            if (node.nodeType == 3) {
+                var nextCharIndex = charIndex + node.length;
+                if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+                    range.setStart(node, savedSel.start - charIndex);
+                    foundStart = true;
+                }
+                if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+                    range.setEnd(node, savedSel.end - charIndex);
+                    stop = true;
+                }
+                charIndex = nextCharIndex;
+            } else {
+                var i = node.childNodes.length;
+                while (i--) {
+                    nodeStack.push(node.childNodes[i]);
+                }
+            }
+        }
+
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+} else if (document.selection && document.body.createTextRange) {
+    saveSelection = function(containerEl) {
+        var selectedTextRange = document.selection.createRange();
+        var preSelectionTextRange = document.body.createTextRange();
+        preSelectionTextRange.moveToElementText(containerEl);
+        preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
+        var start = preSelectionTextRange.text.length;
+
+        return {
+            start: start,
+            end: start + selectedTextRange.text.length
+        }
+    };
+
+    restoreSelection = function(containerEl, savedSel) {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(containerEl);
+        textRange.collapse(true);
+        textRange.moveEnd("character", savedSel.end);
+        textRange.moveStart("character", savedSel.start);
+        textRange.select();
+    };
+}
+
+
+
 
 //=======================================================      
 //=======================================================      
