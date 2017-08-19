@@ -115,8 +115,9 @@
 //=======================================================      
 function urlBot(){
     var checkExistTextArea = setInterval(function() {
-		$(".textarea").keyup(function(e){
+		$(".textarea").not(".cleared").keyup(function(e){
             clearUrl(this);
+            $(".textarea").addClass("cleared");
         });
 	}, 100);    
 }
@@ -134,6 +135,7 @@ function clearUrl(textArea){
         textArea.innerHTML=textArea.innerHTML.replace(".org",".Org");
         textArea.innerHTML=textArea.innerHTML.replace(".fr",".Fr");
         textArea.innerHTML=textArea.innerHTML.replace(".to",".To");
+        textArea.innerHTML=textArea.innerHTML.replace(".js",".Js");
         restoreSelection(textArea, savedSelection);
         console.log("Link!");
     }    
