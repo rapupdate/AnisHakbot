@@ -1,13 +1,14 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.5.1
+//@version      1.5.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@author       You
 //@match        https://disqus.com/embed/comments/*
 //@require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
+//@run-at        body
 //@grant        GM_getValue
 //@grant        GM_setValue
 //@grant        GM_listValues
@@ -119,7 +120,7 @@ function urlBot(){
             clearUrl(this);
             $(".textarea").addClass("cleared");
         });
-	}, 100);    
+	}, 1000);    
 }
 
 function clearUrl(textArea){
@@ -1033,8 +1034,12 @@ function clickLink(upvoteLink,number){
     if(!natural)duration = 100;
     var link=upvoteLink;
     setTimeout(function(){ 
+        //console.log(typeof $(upvoteLink).closest("li").closest(".post").attr('id'));
+        //console.log($(upvoteLink).closest("li").closest(".post").attr('id'));
+        //.parent("li.post").id
         //console.log(link);
-        if(document.getElementsByClassName("open").length){        
+        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined"){        
+            console.log(upvoteLink);
             setTimeout(function(){ 
                 clickLink(upvoteLink,number);
             }, 1000);
@@ -1069,12 +1074,12 @@ function initialHak(){
 
 function giveHak(){
     var hakGiver = setInterval(function() {        
-        var upvoteLinks = document.getElementsByClassName("vote-up");
+        var upvoteLinks = $(".vote-up").not(".upvoted").get();
         //console.log(upvoteLinks.length);
         var i = 0;                     //  set your counter to 1                
         myLoop(upvoteLinks,i);                      //  start the loop                                                                
         //console.log(document.getElementsByClassName("textarea").length);
-    }, 100); // check every 100ms
+    }, 1000); // check every 100ms
 }
 //=======================================================      
 //=======================================================      
