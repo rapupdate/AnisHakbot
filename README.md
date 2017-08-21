@@ -17,6 +17,7 @@ Bot der Ru ein wenig aufmöbelt
 * Makros - User können sich Texte als Makro speichern und diese per Mausklick posten/als Antwort schicken
 * Fakelinkchecker - Überprüft ob Rapupdate Links zu Artikeln führen oder nicht, Fakes werden durch "(Fake!)" hervorgehoben
 * Links werden Postbar gemacht - Wenn ein link eingegeben wird, wird dieser in Postbare Form gebracht
+* Kommentare können vorgelesen werden
 
 ## TODO - Weitere Todos finden sich in der Issues Liste
 
