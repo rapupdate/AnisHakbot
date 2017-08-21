@@ -53,6 +53,14 @@ Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/m
    </blockquote>
 </details> 
 <details> 
+  <summary>Ahhhhhhh ich will nicht gebannt werden...</summary>
+  <blockquote>
+  Das wollen wir alle nicht.<br>
+  Bisher ist noch niemand der meinen Bot benutzt hat gebannt worden. Ich benutze den Bot inzwischen seit 3 Monaten ohne Ban.<br>
+  Wenn euch der Hakbot zu unsicher ist, könnt ihr ihn aber auch ausschalten und die anderen tollen Funktionen der Toolbox verwenden.
+  </blockquote>
+</details>
+<details> 
   <summary>Was ist dieses Fakelinkchecker?</summary>
   <blockquote>
   Diese Funktion überprüft ob die von Usern geposteten Links auf "Rapupdate Artikel" wirklich existieren.<br>
