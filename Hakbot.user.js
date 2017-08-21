@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.5.3
+//@version      1.6
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -155,6 +155,11 @@ function setReplyOnclick(){
 
 function addAdvancedEditor(){
 	setAdvancedEditorReply(this);		
+}
+
+function readComment(comment){
+	var msg = new SpeechSynthesisUtterance(comment);
+	window.speechSynthesis.speak(msg);
 }
 
 function setAdvancedEditor(){
@@ -691,7 +696,8 @@ function setInterface(botRunning){
             //Sets Blacklist Button
             //=======================================================
             setTimeout(function(){
-                addBlacklistButton();                
+                addBlacklistButton();    
+				addTTSButton();
             },2000);
             clearInterval(checkExistDisqus); 
             //=======================================================
@@ -879,12 +885,97 @@ function addBlacklistButton(){
             }
             blacklistUser.addEventListener('click', toggleBlacklist);        
             dropdowns[i].append(blacklistUser);
+			addTTSButton(dropdowns[i]);
             dropdowns[i].classList.add("done");                           
             //console.log("Erledigt");
 
         }
     }
 }
+
+function addTTSButton(container){
+	var ttsButton = document.createElement ('li');				
+	//console.log(link);             
+	ttsButton.innerHTML = '<a style="cursor: pointer;">Kommentar vorlesen</a>';                                                                       
+	ttsButton.addEventListener('click', startTTS);        
+	container.append(ttsButton);
+	//dropdowns[i].classList.add("ttsAdded");                           
+	//console.log("Erledigt");
+
+	
+
+}
+
+function startTTS(){
+	var comment = $(this).parents(".post-content").find(".post-message").text();	
+	window.speechSynthesis.cancel()
+	console.log(comment);
+	var voice = new SpeechSynthesisUtterance(comment);
+	speechUtteranceChunker(voice, {
+    chunkLength: 120
+	}, function () {
+		//some code to execute when done
+		console.log('done');
+	});
+}
+
+//Helper Function TTS
+var speechUtteranceChunker = function (utt, settings, callback) {
+    settings = settings || {};
+    var newUtt;
+    var txt = (settings && settings.offset !== undefined ? utt.text.substring(settings.offset) : utt.text);
+    if (utt.voice && utt.voice.voiceURI === 'native') { // Not part of the spec
+        newUtt = utt;
+        newUtt.text = txt;
+        newUtt.addEventListener('end', function () {
+            if (speechUtteranceChunker.cancel) {
+                speechUtteranceChunker.cancel = false;
+            }
+            if (callback !== undefined) {
+                callback();
+            }
+        });
+    }
+    else {
+        var chunkLength = (settings && settings.chunkLength) || 160;
+        var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
+        var chunkArr = txt.match(pattRegex);
+
+        if (chunkArr[0] === undefined || chunkArr[0].length <= 2) {
+            //call once all text has been spoken...
+            if (callback !== undefined) {
+                callback();
+            }
+            return;
+        }
+        var chunk = chunkArr[0];
+        newUtt = new SpeechSynthesisUtterance(chunk);
+        var x;
+        for (x in utt) {
+            if (utt.hasOwnProperty(x) && x !== 'text') {
+                newUtt[x] = utt[x];
+            }
+        }
+        newUtt.addEventListener('end', function () {
+            if (speechUtteranceChunker.cancel) {
+                speechUtteranceChunker.cancel = false;
+                return;
+            }
+            settings.offset = settings.offset || 0;
+            settings.offset += chunk.length - 1;
+            speechUtteranceChunker(utt, settings, callback);
+        });
+    }
+
+    if (settings.modifier) {
+        settings.modifier(newUtt);
+    }
+    console.log(newUtt); //IMPORTANT!! Do not remove: Logging the object out fixes some onend firing issues.
+    //placing the speak invocation inside a callback fixes ordering and onend issues.
+    setTimeout(function () {
+        speechSynthesis.speak(newUtt);
+    }, 0);
+};
 
 //=======================================================      
 //=======================================================      
@@ -979,21 +1070,23 @@ function myLoop (upvoteLinks,i) {
     //  create a loop function
     var natural = GM_getValue("natural");
     var duration = Math.random();
-    duration = duration * 1500;
+    duration = duration * 2000;
     if (duration < 950){
         duration = duration + 1000;
     }  
     if(!natural)duration = 1500;
     setTimeout(function () {    //  call a 3s setTimeout when the loop is called
-        if (upvoteLinks[i].classList.contains('upvoted') || (upvoteLinks[i].classList.contains('vote-up') && blacklistedUser(upvoteLinks[i]))) {
-            //console.log("Bereits geliked:" + upvoteLinks[i] + "");            
-        }else{
-            clickLink(upvoteLinks[i],i);
-        }
-        i++;                     //  increment the counter
-        if (i < upvoteLinks.length) {            //  if the counter < 10, call the loop function
-            myLoop(upvoteLinks,i);             //  ..  again which will trigger another 
-        }                        //  ..  setTimeout()
+		if(upvoteLinks.length > 0){
+			if (upvoteLinks[i].classList.contains('upvoted') || (upvoteLinks[i].classList.contains('vote-up') && blacklistedUser(upvoteLinks[i]))) {
+				//console.log("Bereits geliked:" + upvoteLinks[i] + "");            
+			}else{
+				clickLink(upvoteLinks[i],i);
+			}
+			i++;                     //  increment the counter
+			if (i < upvoteLinks.length) {            //  if the counter < 10, call the loop function
+				myLoop(upvoteLinks,i);             //  ..  again which will trigger another 
+			}                        //  ..  setTimeout()
+		}
     }, duration);
 }
 
