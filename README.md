@@ -37,6 +37,11 @@ Bot der Ru ein wenig aufmöbelt
 
 Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/master/Hakbot.user.js">Hakbot.user.js</a> aus diesem Repository
 
+## Known Bugs:
+* Hin und wieder Abmeldung von Disqus. 
+	* Anmeldung nicht immer direkt wieder möglich, dauert manchmal moment oder Browser muss neu geladen
+* Wird manchmal nicht richtig injeziert
+
 ## FAQ
 <details> 
   <summary>Was hast du davon?</summary>
