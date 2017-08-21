@@ -113,6 +113,6 @@ Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/m
 	</details> 
   <details> 
    <summary>Makro Seite </summary>
-<img src="https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG">
+<img src="https://github.com/rapupdate/AnisHakbot/blob/master/HakBot%20Makros.PNG"> 
 
 </details>
