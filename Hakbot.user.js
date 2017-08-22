@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.7.2
+//@version      1.7.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -133,13 +133,14 @@ function newArticleBot(){
 	var articleNotification = GM_getValue("articleNotification");		
 	GM_xmlhttpRequest({
 			method: "GET",
-			url: "http://www.rapupdate.de/api/",
+			url: "http://www.rapupdate.de/",
 			onload: function(response) {							
 				var ruApi = response.responseText;
 				var tempDiv = document.createElement('div');
 				tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
 				var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
 				var link = $(li).find("a").attr("href");
+				console.log(link);
 				var url = encodeURI(link);		
 				var para = getParameterByName("t_u", location.href)
 				console.log(document.getElementsByClassName("articleWarning").length);
@@ -176,7 +177,7 @@ function newArticleBot(){
 	setInterval(function(){		
 		GM_xmlhttpRequest({
 			method: "GET",
-			url: "http://www.rapupdate.de/api/",
+			url: "http://www.rapupdate.de/",
 			onload: function(response) {						
 				var ruApi = response.responseText;
 				var tempDiv = document.createElement('div');
