@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.7.3
+//@version      1.7.4
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -117,7 +117,7 @@
             commentBot();    
             statusBot(botRunning,botSites);
             repostBot();			
-			if(checkArticle)newArticleBot();
+			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot();
             clearInterval(checkDisqus);			
             if(clearUrl)urlBot();
         }
