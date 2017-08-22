@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.6
+//@version      1.7
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -37,6 +37,7 @@
 	GM_addStyle('.clickableText{cursor:pointer;}');
     GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
     GM_addStyle('.helper{cursor:help;}');    
+	GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
 	GM_deleteValue("error");
 	var FakeLinkChecker = GM_getValue("checkLinks");
 	if (typeof FakeLinkChecker=='undefined'){
@@ -104,6 +105,7 @@
             commentBot();    
             statusBot(botRunning,botSites);
             repostBot();			
+			newArticleBot();
             clearInterval(checkDisqus);			
             if(clearUrl)urlBot();
         }
@@ -114,6 +116,96 @@
 //=======================================================      
 //Functions
 //=======================================================      
+function newArticleBot(){
+	console.log("New Article Bot startet");
+	GM_xmlhttpRequest({
+			method: "GET",
+			url: "http://www.rapupdate.de/api/",
+			onload: function(response) {						
+				var ruApi = response.responseText;
+				var tempDiv = document.createElement('div');
+				tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
+				var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
+				var link = $(li).find("a").attr("href");
+				var url = encodeURI(link);		
+				var para = getParameterByName("t_u", location.href)
+				console.log(document.getElementsByClassName("articleWarning").length);
+				if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
+					var newArticle = document.createElement ('div');
+					newArticle.setAttribute("class","articleWarning");
+					newArticle.setAttribute("id","articleWarning");
+					newArticle.innerHTML = "Neuer Artikel";
+					$("#posts").before(newArticle);
+					$("#articleWarning").click(function(e){
+						GM_openInTab(link,false);
+						console.log("Click");
+					});				
+				}
+
+			},
+			onerror: function(response){
+				//var fakeLinkError = GM_getValue("error");
+				linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
+				commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
+				comment.innerHTML=commentHtml;						
+				if(typeof fakeLinkError=='undefined'){
+					if (confirm("Die Domain wurde nicht zum Zugriff zugelassen. Eine Anleitung wie dies zu ändern ist findest du in den FAQ auf:\n'https://github.com/rapupdate/AnisHakbot/blob/master/README.md\nWillst du die Readme in neuem Tab öffnen?")){
+						GM_openInTab("https://github.com/rapupdate/AnisHakbot/blob/master/README.md#faq",{active:true});
+					}
+					//	GM_setValue("error",true);
+				}						
+			}
+		});	   
+	setInterval(function(){	
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: "http://www.rapupdate.de/api/",
+			onload: function(response) {						
+				var ruApi = response.responseText;
+				var tempDiv = document.createElement('div');
+				tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
+				var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
+				var link = $(li).find("a").attr("href");
+				var url = encodeURI(link);		
+				var para = getParameterByName("t_u", location.href)
+				//console.log(document.getElementsByClassName("articleWarning").length);
+				if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
+					var newArticle = document.createElement ('div');
+					newArticle.setAttribute("class","articleWarning");
+					newArticle.setAttribute("id","articleWarning");
+					newArticle.innerHTML = "Neuer Artikel";
+					$("#posts").before(newArticle);
+					$("#articleWarning").click(function(e){
+						GM_openInTab(link,false);
+						//console.log("Click");
+					});				
+				}
+
+			},
+			onerror: function(response){
+				//var fakeLinkError = GM_getValue("error");
+				linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
+				commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
+				comment.innerHTML=commentHtml;						
+				if(typeof fakeLinkError=='undefined'){
+					if (confirm("Die Domain wurde nicht zum Zugriff zugelassen. Eine Anleitung wie dies zu ändern ist findest du in den FAQ auf:\n'https://github.com/rapupdate/AnisHakbot/blob/master/README.md\nWillst du die Readme in neuem Tab öffnen?")){
+						GM_openInTab("https://github.com/rapupdate/AnisHakbot/blob/master/README.md#faq",{active:true});
+					}
+					//	GM_setValue("error",true);
+				}						
+			}
+		});	   
+	},1000);
+}
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 function urlBot(){
     var checkExistTextArea = setInterval(function() {
 		$(".textarea").not(".cleared").keyup(function(e){
