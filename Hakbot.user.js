@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.7
+//@version      1.7.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -44,6 +44,11 @@
 		GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
 	}
     
+	var checkArticle = GM_getValue("checkArticle");
+	if (typeof checkArticle=='undefined'){
+		GM_setValue("checkArticle",confirm("Soll nach neuen Artikeln gesucht werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\nWenn ihr den Fakelinkchecker aktiviert habt und dieser funktioniert, dann sollte kein Popup kommen.\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+	}
+	
     var clearUrl = GM_getValue("clearUrl");
 	if (typeof clearUrl=='undefined'){
 		GM_setValue("clearUrl",true);
@@ -105,7 +110,7 @@
             commentBot();    
             statusBot(botRunning,botSites);
             repostBot();			
-			newArticleBot();
+			if(checkArticle)newArticleBot();
             clearInterval(checkDisqus);			
             if(clearUrl)urlBot();
         }
@@ -692,6 +697,7 @@ function setInterface(botRunning){
                 var reload = GM_getValue("reload");
                 var clearUrl = GM_getValue("clearUrl");
                 var reloadTime = GM_getValue("reloadTime");
+				var checkArticle = GM_getValue("checkArticle");
                 reloadTime=reloadTime/60/1000;
 
 				console.log(fakeLinks);
@@ -702,6 +708,11 @@ function setInterface(botRunning){
 				}else{
 					var boxStatusComments = "";
 				}                
+				if(checkArticle){
+					var boxStatusArticle = "checked";
+				}else{
+					var boxStatusArticle = "";
+				}    
                 if(clearUrl){
 					var boxStatusUrl = "checked";
 				}else{
@@ -731,6 +742,7 @@ function setInterface(botRunning){
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Verlinkungen endlich wieder einfach nur eintippen... Puh wie geil ist das denn?"><input type="checkbox" id="clearUrl" '+boxStatusUrl+'><span class="label helper">URLs in Postfähige Form verwandeln</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Es nervt manchmal, aber glaubt mir es ist zu eurem Besten"><input type="checkbox" id="reloadBot" '+boxStatusReload+'><span class="label helper">Reload Bot - Lädt Disqus automatisch neu (Empfohlen!)</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">Reload Interval (In Minuten): </span><input type="Number" id="reloadTime" value="'+reloadTime+'" min="1" max="60"></input><input id="setReloadTime" type="button" value="Speichern" style="margin:20px"></input></a><br>';										
@@ -765,6 +777,9 @@ function setInterface(botRunning){
 				});     
                 $("#clearUrl").click(function(e){
 					toggleSetting(this,"clearUrl");
+				});     
+				$("#checkArticle").click(function(e){
+					toggleSetting(this,"checkArticle");
 				});     
                 $("#setReloadTime").click(function(e){
 					setReloadTime(document.getElementById("reloadTime").value);
