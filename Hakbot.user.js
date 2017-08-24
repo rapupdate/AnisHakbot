@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.7.4
+//@version      1.7.5
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -23,82 +23,84 @@
 //Mainprogramm
 //=======================================================      
 (function() {
-    'use strict';
-   	GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
-	GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
-	GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
-    GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
-    GM_addStyle('.insertImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
-	GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
-    GM_addStyle('.upImageMakro{cursor:pointer;height:17px;padding-right:20px;}');
-    GM_addStyle('.upImageMakroLast{cursor:pointer;height:17px;margin-right:37px}');
-    GM_addStyle('.downImageMakro{cursor:pointer;height:17px;}');
-    GM_addStyle('.downImageMakroFirst{cursor:pointer;height:17px;margin-right:37px}');
-	GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
-	GM_addStyle('.clickableText{cursor:pointer;}');
-    GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
-    GM_addStyle('.helper{cursor:help;}');    
-	GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
-	GM_deleteValue("error");
-	GM_setValue("onceNotified",false);
-	var FakeLinkChecker = GM_getValue("checkLinks");
-	if (typeof FakeLinkChecker=='undefined'){
-		GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
-	}
-    
-	var checkArticle = GM_getValue("checkArticle");
-	if (typeof checkArticle=='undefined'){
-		GM_setValue("checkArticle",confirm("Soll nach neuen Artikeln gesucht werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\nWenn ihr den Fakelinkchecker aktiviert habt und dieser funktioniert, dann sollte kein Popup kommen.\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
-	}
-	
-	var articleNotification = GM_getValue("articleNotification");
-	if (typeof articleNotification=='undefined'){
-		GM_setValue("articleNotification",true);
-	}
-	
-    var clearUrl = GM_getValue("clearUrl");
-	if (typeof clearUrl=='undefined'){
-		GM_setValue("clearUrl",true);
-	}
-    
-    var loadComments = GM_getValue("loadComments");
-	if (typeof loadComments=='undefined'){
-		GM_setValue("loadComments",true);
-	}   
-    
-    var reloadTime = GM_getValue("reloadTime");
-	if (typeof reloadTime=='undefined'){
-		GM_setValue("reloadTime",300000);
-	}
-    var natural = GM_getValue("natural");
-	if (typeof natural=='undefined'){
-		GM_setValue("natural",true);
-	}
-    var reload = GM_getValue("reload");
-	if (typeof reload=='undefined'){
-		GM_setValue("reload",true);
-	}
-    var loadSubComments = GM_getValue("loadSubcomments");
-	if (typeof loadSubComments=='undefined'){
-		GM_setValue("loadSubcomments",true);
-	}
-	var botRunning =  GM_getValue("running");
-    var botSites = getGMArray("botSites");		
-    //setGMArray("makros",[]);
-    //=======================================================
-    //Setting the Interface
-    //=======================================================	
-    setInterface(botRunning);
-	setAdvancedEditor();
-	setReplyOnclick();
-    //=======================================================      
-    //Wenn Bots angeschaltet startet er die folgenden Funktionen
-    //Hakbot - Gibt Hak und lädt die Kommentare nach
-    //hideBot - Versteckt upvote Fenster
-    //reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
-    //=======================================================      
-    var checkDisqus = setInterval(function(){
-        if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){
+	'use strict';   	
+	//=======================================================      
+	//Wenn Bots angeschaltet startet er die folgenden Funktionen
+	//Hakbot - Gibt Hak und lädt die Kommentare nach
+	//hideBot - Versteckt upvote Fenster
+	//reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
+	//=======================================================      
+	var checkDisqus = setInterval(function(){		
+		if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){
+			GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
+			GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
+			GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
+			GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
+			GM_addStyle('.insertImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
+			GM_addStyle('.deleteImageMakro{cursor:pointer;height:17px;float:right;}');
+			GM_addStyle('.upImageMakro{cursor:pointer;height:17px;padding-right:20px;}');
+			GM_addStyle('.upImageMakroLast{cursor:pointer;height:17px;margin-right:37px}');
+			GM_addStyle('.downImageMakro{cursor:pointer;height:17px;}');
+			GM_addStyle('.downImageMakroFirst{cursor:pointer;height:17px;margin-right:37px}');
+			GM_addStyle('.confirmImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
+			GM_addStyle('.clickableText{cursor:pointer;}');
+			GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
+			GM_addStyle('.editBtn:active{background-color:#2e9fff}');
+			GM_addStyle('.helper{cursor:help;}');    
+			
+			GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
+			GM_deleteValue("error");
+			GM_setValue("onceNotified",false);
+			var FakeLinkChecker = GM_getValue("checkLinks");
+			if (typeof FakeLinkChecker=='undefined'){
+				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+			}
+
+			var checkArticle = GM_getValue("checkArticle");
+			if (typeof checkArticle=='undefined'){
+				GM_setValue("checkArticle",confirm("Soll nach neuen Artikeln gesucht werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\nWenn ihr den Fakelinkchecker aktiviert habt und dieser funktioniert, dann sollte kein Popup kommen.\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+			}
+
+			var articleNotification = GM_getValue("articleNotification");
+			if (typeof articleNotification=='undefined'){
+				GM_setValue("articleNotification",true);
+			}
+
+			var clearUrl = GM_getValue("clearUrl");
+			if (typeof clearUrl=='undefined'){
+				GM_setValue("clearUrl",true);
+			}
+
+			var loadComments = GM_getValue("loadComments");
+			if (typeof loadComments=='undefined'){
+				GM_setValue("loadComments",true);
+			}   
+
+			var reloadTime = GM_getValue("reloadTime");
+			if (typeof reloadTime=='undefined'){
+				GM_setValue("reloadTime",300000);
+			}
+			var natural = GM_getValue("natural");
+			if (typeof natural=='undefined'){
+				GM_setValue("natural",true);
+			}
+			var reload = GM_getValue("reload");
+			if (typeof reload=='undefined'){
+				GM_setValue("reload",true);
+			}
+			var loadSubComments = GM_getValue("loadSubcomments");
+			if (typeof loadSubComments=='undefined'){
+				GM_setValue("loadSubcomments",true);
+			}
+			var botRunning =  GM_getValue("running");
+			var botSites = getGMArray("botSites");		
+			//setGMArray("makros",[]);
+			//=======================================================
+			//Setting the Interface
+			//=======================================================	
+			setInterface(botRunning);
+			setAdvancedEditor();
+			setReplyOnclick();
             if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
                 hakBot();                    
                 hideBot();
@@ -119,7 +121,7 @@
             repostBot();			
 			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot();
             clearInterval(checkDisqus);			
-            if(clearUrl)urlBot();
+            if(clearUrl)urlBot();			
         }
     },100);
 })();
@@ -130,7 +132,8 @@
 //=======================================================      
 function newArticleBot(){
 	console.log("New Article Bot startet");
-	var articleNotification = GM_getValue("articleNotification");		
+	var articleNotification = GM_getValue("articleNotification");
+	var noNew;
 	GM_xmlhttpRequest({
 			method: "GET",
 			url: "http://www.rapupdate.de/",
@@ -158,10 +161,54 @@ function newArticleBot(){
 						GM_setValue("onceNotified",true);
 						GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
 					}
+				}else{
+					GM_xmlhttpRequest({
+						method: "GET",
+						url: "http://www.rapupdate.de/api/",
+						onload: function(response) {							
+							var ruApi = response.responseText;
+							var tempDiv = document.createElement('div');
+							tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
+							var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
+							var link = $(li).find("a").attr("href");
+							console.log(link);
+							var url = encodeURI(link);		
+							var para = getParameterByName("t_u", location.href)
+							console.log(document.getElementsByClassName("articleWarning").length);
+							if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
+								var newArticle = document.createElement ('div');
+								newArticle.setAttribute("class","articleWarning");
+								newArticle.setAttribute("id","articleWarning");
+								newArticle.innerHTML = "Neuer Artikel";
+								$("#posts").before(newArticle);
+								$("#articleWarning").click(function(e){
+									GM_openInTab(link,false);
+									console.log("Click");
+								});				
+								if(articleNotification&&!GM_getValue("onceNotified")){
+									GM_setValue("onceNotified",true);
+									GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
+								}
+							}
+
+						},
+						onerror: function(response){
+							//var fakeLinkError = GM_getValue("error");
+							linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
+							commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
+							comment.innerHTML=commentHtml;						
+							if(typeof fakeLinkError=='undefined'){
+								if (confirm("Die Domain wurde nicht zum Zugriff zugelassen. Eine Anleitung wie dies zu ändern ist findest du in den FAQ auf:\n'https://github.com/rapupdate/AnisHakbot/blob/master/README.md\nWillst du die Readme in neuem Tab öffnen?")){
+									GM_openInTab("https://github.com/rapupdate/AnisHakbot/blob/master/README.md#faq",{active:true});
+								}
+								//	GM_setValue("error",true);
+							}						
+						}
+					});	   
 				}
 
 			},
-			onerror: function(response){
+		onerror: function(response){
 				//var fakeLinkError = GM_getValue("error");
 				linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
 				commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
@@ -200,7 +247,51 @@ function newArticleBot(){
 					if(articleNotification&&!GM_getValue("onceNotified")){
 						GM_setValue("onceNotified",true);
 						GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
-					}
+					}else{
+					GM_xmlhttpRequest({
+						method: "GET",
+						url: "http://www.rapupdate.de/api/",
+						onload: function(response) {							
+							var ruApi = response.responseText;
+							var tempDiv = document.createElement('div');
+							tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
+							var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
+							var link = $(li).find("a").attr("href");
+							console.log(link);
+							var url = encodeURI(link);		
+							var para = getParameterByName("t_u", location.href)
+							console.log(document.getElementsByClassName("articleWarning").length);
+							if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
+								var newArticle = document.createElement ('div');
+								newArticle.setAttribute("class","articleWarning");
+								newArticle.setAttribute("id","articleWarning");
+								newArticle.innerHTML = "Neuer Artikel";
+								$("#posts").before(newArticle);
+								$("#articleWarning").click(function(e){
+									GM_openInTab(link,false);
+									console.log("Click");
+								});				
+								if(articleNotification&&!GM_getValue("onceNotified")){
+									GM_setValue("onceNotified",true);
+									GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
+								}
+							}
+
+						},
+						onerror: function(response){
+							//var fakeLinkError = GM_getValue("error");
+							linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
+							commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
+							comment.innerHTML=commentHtml;						
+							if(typeof fakeLinkError=='undefined'){
+								if (confirm("Die Domain wurde nicht zum Zugriff zugelassen. Eine Anleitung wie dies zu ändern ist findest du in den FAQ auf:\n'https://github.com/rapupdate/AnisHakbot/blob/master/README.md\nWillst du die Readme in neuem Tab öffnen?")){
+									GM_openInTab("https://github.com/rapupdate/AnisHakbot/blob/master/README.md#faq",{active:true});
+								}
+								//	GM_setValue("error",true);
+							}						
+						}
+					});	   
+				}
 				}
 
 			},
@@ -1206,11 +1297,11 @@ function myLoop (upvoteLinks,i) {
     //  create a loop function
     var natural = GM_getValue("natural");
     var duration = Math.random();
-    duration = duration * 2000;
-    if (duration < 950){
-        duration = duration + 1000;
+    duration = duration * 1000;
+    if (duration < 650){
+        duration = duration + 600;
     }  
-    if(!natural)duration = 1500;
+    if(!natural)duration = 1000;
     setTimeout(function () {    //  call a 3s setTimeout when the loop is called
 		if(upvoteLinks.length > 0){
 			if (upvoteLinks[i].classList.contains('upvoted') || (upvoteLinks[i].classList.contains('vote-up') && blacklistedUser(upvoteLinks[i]))) {
@@ -1262,20 +1353,17 @@ function clickLink(upvoteLink,number){
     duration = duration * 1000;
     if(!natural)duration = 100;
     var link=upvoteLink;
-    setTimeout(function(){ 
+    //setTimeout(function(){ 
         //console.log(typeof $(upvoteLink).closest("li").closest(".post").attr('id'));
         //console.log($(upvoteLink).closest("li").closest(".post").attr('id'));
         //.parent("li.post").id
         //console.log(link);
-        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined"){        
-            console.log(upvoteLink);
-            setTimeout(function(){ 
-                clickLink(upvoteLink,number);
-            }, 1000);
-        }else{
+        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined"){                    
+			return;
+		}else{
             link.click();
         }
-    }, duration);              
+    //}, duration);              
 }
 
 //=======================================================      
@@ -1302,13 +1390,17 @@ function initialHak(){
 }
 
 function giveHak(){
-    var hakGiver = setInterval(function() {        
-        var upvoteLinks = $(".vote-up").not(".upvoted").get();
-        //console.log(upvoteLinks.length);
-        var i = 0;                     //  set your counter to 1                
-        myLoop(upvoteLinks,i);                      //  start the loop                                                                
-        //console.log(document.getElementsByClassName("textarea").length);
-    }, 1000); // check every 100ms
+    var hakGiver = setInterval(function() {   
+		if(typeof $(".post-list.loading").get(0)=="undefined"){
+			var upvoteLinks = $(".vote-up").not(".upvoted").get();
+			//console.log(upvoteLinks.length);
+			var i = 0;                     //  set your counter to 1                
+			myLoop(upvoteLinks,i);                      //  start the loop                                                                
+			//console.log(document.getElementsByClassName("textarea").length);
+		}else{
+			console.log(typeof $(".post-list.loading").get(0));
+		}
+    }, 100); // check every 100ms
 }
 //=======================================================      
 //=======================================================      
