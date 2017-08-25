@@ -18,6 +18,7 @@ Bot der Ru ein wenig aufmöbelt
 * Fakelinkchecker - Überprüft ob Rapupdate Links zu Artikeln führen oder nicht, Fakes werden durch "(Fake!)" hervorgehoben
 * Links werden Postbar gemacht - Wenn ein link eingegeben wird, wird dieser in Postbare Form gebracht
 * Kommentare können vorgelesen werden
+* Neue Artikel Checker - Bringt Infofeld über Kommentarbereich, Webnotification und automatischen Wechsel auf neuen Kommentar
 
 ## TODO - Weitere Todos finden sich in der Issues Liste
 
