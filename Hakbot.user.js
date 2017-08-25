@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.7.5
+//@version      1.7.6
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -56,6 +56,11 @@
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
 			}
 
+			var switchArticle = GM_getValue("switchArticle");
+			if (typeof switchArticle=='undefined'){
+				GM_setValue("switchArticle",false);
+			}
+			
 			var checkArticle = GM_getValue("checkArticle");
 			if (typeof checkArticle=='undefined'){
 				GM_setValue("checkArticle",confirm("Soll nach neuen Artikeln gesucht werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\nWenn ihr den Fakelinkchecker aktiviert habt und dieser funktioniert, dann sollte kein Popup kommen.\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
@@ -119,7 +124,7 @@
             commentBot();    
             statusBot(botRunning,botSites);
             repostBot();			
-			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot();
+			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);
             clearInterval(checkDisqus);			
             if(clearUrl)urlBot();			
         }
@@ -130,7 +135,7 @@
 //=======================================================      
 //Functions
 //=======================================================      
-function newArticleBot(){
+function newArticleBot(switchArticle){
 	console.log("New Article Bot startet");
 	var articleNotification = GM_getValue("articleNotification");
 	var noNew;
@@ -161,6 +166,7 @@ function newArticleBot(){
 						GM_setValue("onceNotified",true);
 						GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
 					}
+					if(switchArticle)GM_openInTab(link,false);
 				}else{
 					GM_xmlhttpRequest({
 						method: "GET",
@@ -189,6 +195,7 @@ function newArticleBot(){
 									GM_setValue("onceNotified",true);
 									GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
 								}
+								if(switchArticle)GM_openInTab(link,false);
 							}
 
 						},
@@ -206,6 +213,7 @@ function newArticleBot(){
 						}
 					});	   
 				}
+				
 
 			},
 		onerror: function(response){
@@ -244,9 +252,10 @@ function newArticleBot(){
 						GM_openInTab(link,false);
 						//console.log("Click");
 					});				
+					if(switchArticle)GM_openInTab(link,false);
 					if(articleNotification&&!GM_getValue("onceNotified")){
 						GM_setValue("onceNotified",true);
-						GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
+						GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});												
 					}else{
 					GM_xmlhttpRequest({
 						method: "GET",
@@ -271,10 +280,12 @@ function newArticleBot(){
 									GM_openInTab(link,false);
 									console.log("Click");
 								});				
+								if(switchArticle)GM_openInTab(link,true);
 								if(articleNotification&&!GM_getValue("onceNotified")){
 									GM_setValue("onceNotified",true);
 									GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
 								}
+								if(switchArticle)GM_openInTab(link,false);
 							}
 
 						},
@@ -807,11 +818,18 @@ function setInterface(botRunning){
                 var reloadTime = GM_getValue("reloadTime");
 				var checkArticle = GM_getValue("checkArticle");
 				var articleNotification = GM_getValue("articleNotification");				
+				var switchArticle = GM_getValue("switchArticle");				
                 reloadTime=reloadTime/60/1000;
 
 				console.log(fakeLinks);
                 blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input><hr><br>';                            				
 				blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<h3>Bot Einstellungen</h3>';
+				if(switchArticle){
+					var boxStatusSwitch = "checked";
+				}else{
+					var boxStatusSwitch = "";
+				}               
+				
                 if(loadComments){
 					var boxStatusComments = "checked";
 				}else{
@@ -827,6 +845,7 @@ function setInterface(botRunning){
 				}else{
 					var boxStatusArticle = "";
 					boxStatusNotify+=" disabled";
+					boxStatusSwitch+=" disabled";
 				}    
                 if(clearUrl){
 					var boxStatusUrl = "checked";
@@ -858,7 +877,8 @@ function setInterface(botRunning){
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Weg mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Zack und rüber mit mir!"><input type="checkbox" id="switchArticle" '+boxStatusSwitch+'><span class="label helper">Automatisch auf neuen Artikel wechseln (Benötigt Auf neue Artikel checken! Beta!!!)</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Verlinkungen endlich wieder einfach nur eintippen... Puh wie geil ist das denn?"><input type="checkbox" id="clearUrl" '+boxStatusUrl+'><span class="label helper">URLs in Postfähige Form verwandeln</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Es nervt manchmal, aber glaubt mir es ist zu eurem Besten"><input type="checkbox" id="reloadBot" '+boxStatusReload+'><span class="label helper">Reload Bot - Lädt Disqus automatisch neu (Empfohlen!)</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">Reload Interval (In Minuten): </span><input type="Number" id="reloadTime" value="'+reloadTime+'" min="1" max="60"></input><input id="setReloadTime" type="button" value="Speichern" style="margin:20px"></input></a><br>';										
@@ -884,8 +904,10 @@ function setInterface(botRunning){
                         console.log(li);
                         li.addEventListener('click', removeFromClanListOnClick);                                
                     });
-                }
-				
+                }				
+				$("#switchArticle").click(function(e){
+					toggleSetting(this,"switchArticle");
+				});
 				$("#notifyArticle").click(function(e){
 					toggleSetting(this,"articleNotification");
 				});
