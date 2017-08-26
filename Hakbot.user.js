@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.8.5
+//@version      1.8.6
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -145,7 +145,7 @@
 //Functions
 //=======================================================      
 function plugBot(){
-    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"]];
+    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"],["Kiesel-Stein","https://plug.dj/hinterhof"]];
     var plugDropDown = document.createElement("li");    
     plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
     plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-community");
