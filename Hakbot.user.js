@@ -1,14 +1,14 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.7.7
+//@version      1.7.8
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@author       You
 //@match        https://disqus.com/embed/comments/*
 //@require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
-//@run-at       document-idle
+//@run-at       document-start
 //@grant        GM_getValue
 //@grant        GM_setValue
 //@grant        GM_listValues
