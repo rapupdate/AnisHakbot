@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.7.8
+//@version      1.8
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -30,10 +30,11 @@
 	//hideBot - Versteckt upvote Fenster
 	//reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
 	//=======================================================      
+    console.log("RU-Bot injeziert");
 	var checkDisqus = setInterval(function(){		
 		if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){
 			GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
-			GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:80px;height:38px;float:right;}');
+			GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:60px;height:38px;float:right;}');
 			GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
 			GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 			GM_addStyle('.insertImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
@@ -46,16 +47,19 @@
 			GM_addStyle('.clickableText{cursor:pointer;}');
 			GM_addStyle('.editBtn:hover{background-color:#5d6b73}');
 			GM_addStyle('.editBtn:active{background-color:#2e9fff}');
-			GM_addStyle('.helper{cursor:help;}');    
-			
+			GM_addStyle('.helper{cursor:help;}');    			
 			GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
+            GM_addStyle('.smiley{font-size: 150%;padding:10px;display: inline-block;cursor:pointer;}');    	            
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
 			if (typeof FakeLinkChecker=='undefined'){
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
 			}
-
+            
+			if (typeof FakeLinkChecker=='undefined'){
+				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+			}
 			var switchArticle = GM_getValue("switchArticle");
 			if (typeof switchArticle=='undefined'){
 				GM_setValue("switchArticle",false);
@@ -126,7 +130,11 @@
             repostBot();			
 			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);
             clearInterval(checkDisqus);			
-            if(clearUrl)urlBot();			
+            if(clearUrl)urlBot();		
+            
+            //var progress = document.createElement ('div');            
+            //progress.innerHTML = "<progress id='timeToReload'></progress>";
+            //$(".nav.nav-primary").children("ul").get(0).after(progress);
         }
     },100);
 })();
@@ -136,11 +144,11 @@
 //Functions
 //=======================================================      
 
-function makeid() {
+function cacheBreaker() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < 5; i++)
+  for (var i = 0; i < 55; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
@@ -150,7 +158,7 @@ function newArticleBot(switchArticle){
 	console.log("New Article Bot startet");
 	var articleNotification = GM_getValue("articleNotification");
 	var noNew;
-    var rndmUrl="http://www.rapupdate.de/"+makeid()+"/"
+    var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/"
     console.log(rndmUrl);
     GM_xmlhttpRequest({
         method: "GET",
@@ -196,7 +204,7 @@ function newArticleBot(switchArticle){
         }
     });	   
     setInterval(function(){		
-        var rndmUrl="http://www.rapupdate.de/"+makeid()+"/"
+        var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/"
         console.log(rndmUrl);
         GM_xmlhttpRequest({
             method: "GET",
@@ -356,7 +364,15 @@ function setAdvancedEditor(){
 				createTag(textArea,"<spoiler>","</spoiler>");
 			});					
 			
-			
+			var smileyButton = document.createElement ('div');				
+			smileyButton.innerHTML='<a style="color:white;">&#128512;</a>';						
+			smileyButton.setAttribute ('class', 'editBtn editSmiley btn post-action__button');	
+			// 			
+			document.getElementsByClassName("temp-post")[0].appendChild(smileyButton);			
+			$(".editSmiley").click(function(e) {
+				openSmiley(this);
+			});						
+            
 			var makroButton = document.createElement ('div');				
 			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
 			makroButton.setAttribute ('class', 'editMain editBtnBig editMakro btn post-action__button');	
@@ -364,12 +380,87 @@ function setAdvancedEditor(){
 			document.getElementsByClassName("temp-post")[0].appendChild(makroButton);			
 			$(".editMakro").click(function(e) {
 				openMakro(this);
-			});						
+			});
+            
+            
+            
 			document.getElementsByClassName("temp-post")[0].classList.add("advanced");
             clearInterval(checkExistDisqus); 
 		}		
 	}, 1000);
 }
+
+function createSmileyDiv(hidden,caller,sibling){
+    var smileyDiv = document.createElement ('div');
+    smileyDiv.setAttribute ('id', 'smileyContainer'); 
+    for (var i=0; i<=79;i++){
+        var id=i+12;
+        if (i%14==0 && i>0){
+            smileyDiv.innerHTML += "<br>";
+        }
+        smileyDiv.innerHTML += "<span id='1285"+id+"' class='smiley'>&#1285"+id+";<span>";
+    }
+    if(sibling.classList.contains("nav-secondary")){
+		sibling.after(smileyDiv); 
+	}else{
+		sibling.before(smileyDiv);
+	}
+    $(".smiley").click(function(e) {
+		insertSmiley(this.parentNode,caller,this);
+	});	
+}
+
+function removeSmileyDiv(){
+	console.log("SmileyDiv wird gelöscht");
+	var container = document.getElementById("smileyContainer");
+	console.log(container);
+	if (typeof container != "undefined" && container != null){
+		document.getElementById("smileyContainer").remove();
+	}
+}
+
+function insertSmiley(parent,caller,smiley){
+    var textArea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);
+	textArea.focus();	
+	var selectedText = getSelectedText();
+    var aOffset=selectedText.anchorOffset;
+    var fOffset=selectedText.focusOffset;    
+	if (selectedText.anchorOffset<selectedText.focusOffset && textArea.innerText.length>0){
+        console.log("if");
+        var savedSelection = saveSelection(textArea,9);
+		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
+		console.log(selected);
+		var text = textArea.innerText;        
+		var cacheText = text.slice(selectedText.anchorOffset);
+		text = text.slice(0,selectedText.anchorOffset);		
+		cacheText = cacheText.replace(selected,"&#"+smiley.id+";"+selected+"&#"+smiley.id+";");
+		text=text+cacheText;
+		textArea.innerText=text;        
+        restoreSelection(textArea, savedSelection);
+        console.log(aOffset);
+    }else if(textArea.innerText.length>0){
+        console.log("if");
+        var savedSelection = saveSelection(textArea,9);
+		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
+		console.log(selected);
+		var text = textArea.innerText;        
+		var cacheText = text.slice(selectedText.anchorOffset);
+		text = text.slice(0,selectedText.anchorOffset);		
+		cacheText = cacheText.replace(selected,selected+"&#"+smiley.id+";");
+		text=text+cacheText;
+		textArea.innerText=text;        
+        restoreSelection(textArea, savedSelection);
+        console.log(aOffset);
+	}else{
+        console.log("Else");
+        var selectedText = getSelectedText();
+        var savedSelection = saveSelection(textArea,9);
+		textArea.focus();	
+		textArea.innerText="&#"+smiley.id+";";
+        restoreSelection(textArea, savedSelection);
+	}	
+}
+
 function createMakroDiv(hidden,caller,sibling){
 	var makros = getGMArray("makros");
 	if(typeof makros == 'undefined' || makros.length<=0){
@@ -457,6 +548,28 @@ function moveDownMakro (parent,caller,sibling){
 }
 function editMakro (parent,caller,sibling){
     createEdit(parent,caller,sibling);
+}
+
+function openSmiley(caller){	
+	var container = document.getElementById("smileyContainer");
+	console.log(container);
+	if (typeof container == "undefined" || container == null){
+		if(caller.classList.contains("editMain")){			
+			createSmileyDiv(false,caller,document.getElementsByClassName("nav-secondary")[0]);
+		}else{
+			createSmileyDiv(false,caller,caller.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
+		}
+		console.log("Creating Smiley Div");
+		
+	}else{		
+		var isMain = container.parentNode.id == "conversation";
+		if (caller.classList.contains("editMain")&&!isMain){
+			removeSmileyDiv();
+			openSmiley(caller);
+		}else{
+			removeSmileyDiv();
+		}
+	}
 }
 
 function createEdit(parent,caller,sibling){
@@ -600,6 +713,7 @@ function createTag(element,tag,endTag){
 function setAdvancedEditorReply(link){	
 	setTimeout(function(){		
 		removeMakroDiv();
+        removeSmileyDiv();
 		var container = $(link).parent().parent().parent().parent();	
 		console.log(container.get(0));
 		var div = container.find(".temp-post");		
@@ -635,7 +749,12 @@ function setAdvancedEditorReply(link){
 			scribbleButton.setAttribute ('class', 'editBtn editscribbleReply btn post-action__button');	
 			// 
 			console.log("Bold" + div);
-			div.appendChild(boldButton);			
+			div.appendChild(boldButton);		
+            
+            var smileyButton = document.createElement ('div');				
+			smileyButton.innerHTML='<a style="color:white;">&#128512;</a>';						
+			smileyButton.setAttribute ('class', 'editBtn editSmileyReply btn post-action__button');	
+			// 											
 			
 			var makroButton = document.createElement ('div');				
 			makroButton.innerHTML='<a style="color:white;">Makro</a>';						
@@ -658,6 +777,10 @@ function setAdvancedEditorReply(link){
 			$(".editscribbleReply").click(function(e) {
 				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<s>","</s>");
 			});						
+            div.appendChild(smileyButton);	
+            $(".editSmileyReply").click(function(e) {
+				openSmiley(this);
+			});			
 			div.appendChild(makroButton);
 			$(".editMakroReply").click(function(e) {
 				openMakro(this);
