@@ -8,7 +8,7 @@
 //@author       You
 //@match        https://disqus.com/embed/comments/*
 //@require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
-//@run-at        body
+//@run-at       document-idle
 //@grant        GM_getValue
 //@grant        GM_setValue
 //@grant        GM_listValues
