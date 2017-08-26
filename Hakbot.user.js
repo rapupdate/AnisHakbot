@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.8
+//@version      1.8.5
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -130,6 +130,7 @@
             repostBot();			
 			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);
             clearInterval(checkDisqus);			
+            plugBot();
             if(clearUrl)urlBot();		
             
             //var progress = document.createElement ('div');            
@@ -143,7 +144,27 @@
 //=======================================================      
 //Functions
 //=======================================================      
+function plugBot(){
+    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"]];
+    var plugDropDown = document.createElement("li");    
+    plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
+    plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-community");
+    $(".tab-community").get(0).after(plugDropDown);
+    for (var i = 0; i<plugs.length;i++){        
+        var option = document.createElement("option");
+        option.innerHTML = plugs[i][0];
+        option.setAttribute("value",plugs[i][1]);
+        $("#plugSelect").get(0).append(option);
+    }    
+    $("#plugSelect").change(function(){
+        openPlug(this);
+    })
+}
 
+function openPlug(select){
+    link = $( "#plugSelect option:selected" ).attr("value");
+    GM_openInTab(link,false);
+}
 function cacheBreaker() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -249,7 +270,7 @@ function newArticleBot(switchArticle){
                 }						
             }
         });	   
-    },1000);
+    },500);
 }
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -1395,15 +1416,15 @@ function blacklistedUser(upvoteLink){
     for(var i=0; i<blacklist.length; i++){
         var link=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].href;                
         if(link.indexOf(blacklist[i])>-1){
-            console.log("Blacklisted User: "+ blacklist[i]);
+            //console.log("Blacklisted User: "+ blacklist[i]);
             return true;
         }
     }
     for(var i=0; i<blacklistClan.length; i++){
         var name=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerText;        
-        console.log(name);
+        //console.log(name);
         if(name.indexOf(blacklistClan[i])>-1){
-            console.log("Blacklisted User: "+ name);
+            //console.log("Blacklisted User: "+ name);
             return true;
         }
     }    
@@ -1440,7 +1461,7 @@ function clickLink(upvoteLink,number){
 function initialHak(){
     var checkExist = setInterval(function() {
         if (document.getElementsByClassName("textarea").length) {
-            console.log("Exists!");
+            console.log("Kommentarfeld Vorhanden - Erster Hak wird verteilt!");
             //document.getElementsByClassName("textarea")[0].innerHTML="Absinth ist ein Hurensohn aber ein begnadeter Liebhaber";
             //document.getElementsByClassName("btn post-action__button")[0].click();
             setTimeout(function(){ 
@@ -1465,7 +1486,7 @@ function giveHak(){
 			myLoop(upvoteLinks,i);                      //  start the loop                                                                
 			//console.log(document.getElementsByClassName("textarea").length);
 		}else{
-			console.log(typeof $(".post-list.loading").get(0));
+			//console.log(typeof $(".post-list.loading").get(0));
 		}
     }, 100); // check every 100ms
 }
@@ -1547,7 +1568,7 @@ function reloadBot(time){
     }
     duration= time + duration;
     if(!natural)duration=time;
-    console.log(duration);
+    //console.log(duration);
     setTimeout(function(){
         location.reload();  
     },duration);
@@ -1623,7 +1644,7 @@ function commentBot(){
                     //console.log("Der Link zum bild lautet: "+linkNormal);
                     var img=true;
                 }       
-				console.log("Linknormal:" + linkNormal);
+				//console.log("Linknormal:" + linkNormal);
 				if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
 					fakeLink(comments[i],linkNormal,commentHtml);                          
 				}else{
@@ -1676,7 +1697,7 @@ function commentBot(){
                         //console.log("Der Link zum bild lautet: "+linkNormal);
                         var img=true;
                     }                  
-					console.log("Linknormal:" + linkNormal);
+					//console.log("Linknormal:" + linkNormal);
 					if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
 						fakeLink(comments[i],linkNormal,commentHtml);                        
 					}else{
@@ -1717,7 +1738,7 @@ function commentBot(){
                     var linkLengthSpace=linkNormal.indexOf(" ");
                     var linkLengthBreak=linkNormal.indexOf("</p");  
                     var linkLengthBreak2=linkNormal.indexOf("<br");  
-                    console.log("p: "+linkLengthBreak+"   br:"+linkLengthBreak2+"   Link: "+linkNormal);
+                    //console.log("p: "+linkLengthBreak+"   br:"+linkLengthBreak2+"   Link: "+linkNormal);
                     if (linkLengthBreak2>-1&&linkLengthBreak>linkLengthBreak2){
                         linkLengthBreak=linkLengthBreak2;
                     }                        
@@ -1731,7 +1752,7 @@ function commentBot(){
                     if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1){                                                
                         var img=true;
                     }                    
-					console.log("Linknormal (Else):" + linkNormal);
+					//console.log("Linknormal (Else):" + linkNormal);
                     if(commentHtml.indexOf('href="'+linkNormal)==-1){                    
 						if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
 							fakeLink(comments[i],linkNormal,commentHtml);                 
@@ -1766,13 +1787,13 @@ function fakeLink(comment,linkNormal,commentHtml){
 			}else{
 				linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
 			}
-			console.log(linkNormal);
-			console.log(linkClickable);			
-			console.log(commentHtml);			
+			//console.log(linkNormal);
+			//console.log(linkClickable);			
+			//console.log(commentHtml);			
 			commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     
-			console.log(commentHtml);			
+			//console.log(commentHtml);			
 			comment.innerHTML=commentHtml;			
-			console.log(comment.innerHTML);			
+			//console.log(comment.innerHTML);			
 		},
 		onerror: function(response){
 			var fakeLinkError = GM_getValue("error");
@@ -1864,12 +1885,12 @@ function repostBot(){
         if (document.getElementsByClassName("alert error").length && document.getElementsByClassName("alert error").length>0) {    
 			var container = $(document.getElementsByClassName("alert error")[0]).parent().parent();
 			var textArea = container.find(".textarea").get(0);
-			console.log(textArea);
+			//console.log(textArea);
             textArea.innerHTML=textArea.innerHTML.replace("</p>",""); 
             textArea.innerHTML=textArea.innerHTML+".</p>"; 
             textArea.innerHTML=textArea.innerHTML.replace("<br>",""); 
             //console.log(document.getElementsByClassName("textarea")[0].innerHTML);
-			console.log(container);
+			//console.log(container);
             container.find(".btn.post-action__button").get(0).click();
         }
     }, 1500);     
@@ -1892,7 +1913,7 @@ if (window.getSelection && document.createRange) {
         range.startOffset=11;
         preSelectionRange.selectNodeContents(containerEl);
         preSelectionRange.setEnd(range.startContainer, range.startOffset);
-        console.log("preSelcection: "+preSelectionRange.toString().length);
+        //console.log("preSelcection: "+preSelectionRange.toString().length);
         var start = preSelectionRange.toString().length+offset;
 
         return {
@@ -1965,7 +1986,7 @@ if (window.getSelection && document.createRange) {
 function backupKram(){
     var checkExist = setInterval(function() {
         if (document.getElementsByClassName("textarea").length) {
-            console.log("Exists!");
+            //console.log("Exists!");
             //document.getElementsByClassName("textarea")[0].innerHTML="Absinth ist ein Hurensohn aber ein begnadeter Liebhaber";
             //document.getElementsByClassName("btn post-action__button")[0].click();
             setTimeout(function(){ 
@@ -1992,7 +2013,7 @@ function futureHurensohnBot(){
     }
     var checkExist = setInterval(function() {
         if (document.getElementsByClassName("textarea").length) {
-            console.log("Exists!");
+            //console.log("Exists!");
             document.getElementsByClassName("textarea")[0].innerHTML="Future ist ein Hurensohn " + duration;
             document.getElementsByClassName("btn post-action__button")[0].click();            
             //console.log(document.getElementsByClassName("textarea").length);
