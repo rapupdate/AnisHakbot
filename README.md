@@ -19,6 +19,7 @@ Bot der Ru ein wenig aufmöbelt
 * Links werden Postbar gemacht - Wenn ein link eingegeben wird, wird dieser in Postbare Form gebracht
 * Kommentare können vorgelesen werden
 * Neue Artikel Checker - Bringt Infofeld über Kommentarbereich, Webnotification und automatischen Wechsel auf neuen Kommentar
+* FastSend - Abschicken von Kommentaren per Enter, Neue Zeile per Shift+Enter
 
 ## TODO - Weitere Todos finden sich in der Issues Liste
 
