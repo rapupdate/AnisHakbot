@@ -207,7 +207,7 @@ function newArticleBot(switchArticle){
 	var articleNotification = GM_getValue("articleNotification");
 	var noNew;
     var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/"
-    console.log(rndmUrl);
+    //console.log(rndmUrl);
     GM_xmlhttpRequest({
         method: "GET",
         url: rndmUrl,
@@ -220,7 +220,7 @@ function newArticleBot(switchArticle){
             console.log(link);
             var url = encodeURI(link);		
             var para = getParameterByName("t_u", location.href)
-            console.log(document.getElementsByClassName("articleWarning").length);
+            //console.log(document.getElementsByClassName("articleWarning").length);
             if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
                 var newArticle = document.createElement ('div');
                 newArticle.setAttribute("class","articleWarning");
@@ -229,7 +229,7 @@ function newArticleBot(switchArticle){
                 $("#posts").before(newArticle);
                 $("#articleWarning").click(function(e){
                     GM_openInTab(link,false);
-                    console.log("Click");
+                    //console.log("Click");
                 });				
                 if(articleNotification&&!GM_getValue("onceNotified")){
                     GM_setValue("onceNotified",true);
@@ -253,7 +253,7 @@ function newArticleBot(switchArticle){
     });	   
     setInterval(function(){		
         var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/"
-        console.log(rndmUrl);
+        //console.log(rndmUrl);
         GM_xmlhttpRequest({
             method: "GET",
             url: rndmUrl,
