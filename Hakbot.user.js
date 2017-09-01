@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.8.8
+//@version      1.8.9
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -55,6 +55,11 @@
 			var FakeLinkChecker = GM_getValue("checkLinks");
 			if (typeof FakeLinkChecker=='undefined'){
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+			}
+			
+			var answerHak = GM_getValue("answerHak");			
+			if (typeof answerHak=='undefined'){
+				GM_setValue("answerHak",true);
 			}
 			
 			var fastSendStatus = GM_getValue("fastSend");
@@ -903,6 +908,7 @@ function setInterface(botRunning){
             blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</div><br>';                        			                           
             setTimeout(function(){                                
 				var fakeLinks = GM_getValue("checkLinks");
+				var answerHak = GM_getValue("answerHak");
                 var loadComments = GM_getValue("loadComments");
                 var loadSubcomments = GM_getValue("loadSubcomments");                
                 var natural = GM_getValue("natural");
@@ -923,6 +929,13 @@ function setInterface(botRunning){
 				}else{
 					var boxStatusSwitch = "";
 				}               
+				
+				if(answerHak){
+					var boxStatusAnswer = "checked";
+				}else{
+					var boxStatusAnswer = "";
+				}               
+				
 				
 				if(fastSend){
 					var boxStatusFastSend = "checked";
@@ -974,6 +987,7 @@ function setInterface(botRunning){
 				}                                                
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Speed - Kommentare nachladen"><input type="checkbox" id="loadComments" '+boxStatusComments+'><span class="label helper">Kommentare automatisch laden</span></a><br>';						
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Ich hasse Diskussionen, ich hasse Antworten, das ist kein Upvote Wert!"><input type="checkbox" id="answerHak" '+boxStatusAnswer+'><span class="label helper">Hak an Kommentarantworten verteilen oder nicht</span></a><br>';												
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
@@ -1009,6 +1023,10 @@ function setInterface(botRunning){
 				$("#switchArticle").click(function(e){
 					toggleSetting(this,"switchArticle");
 				});
+				$("#answerHak").click(function(e){
+					toggleSetting(this,"answerHak");
+				});
+				
 				$("#notifyArticle").click(function(e){
 					toggleSetting(this,"articleNotification");
 				});
@@ -1481,12 +1499,14 @@ function clickLink(upvoteLink,number){
     duration = duration * 1000;
     if(!natural)duration = 100;
     var link=upvoteLink;
+	var answerHak = GM_getValue("answerHak");
     //setTimeout(function(){ 
         //console.log(typeof $(upvoteLink).closest("li").closest(".post").attr('id'));
         //console.log($(upvoteLink).closest("li").closest(".post").attr('id'));
         //.parent("li.post").id
         //console.log(link);
-        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined"){                    
+        //console.log();
+        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak)){                    
 			return;
 		}else{
             link.click();
