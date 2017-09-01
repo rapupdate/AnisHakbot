@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.8.6
+//@version      1.8.7
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -55,6 +55,11 @@
 			var FakeLinkChecker = GM_getValue("checkLinks");
 			if (typeof FakeLinkChecker=='undefined'){
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+			}
+			
+			var fastSendStatus = GM_getValue("fastSend");
+			if (typeof fastSendStatus=='undefined'){
+				GM_setValue("fastSend",false);
 			}
             
 			if (typeof FakeLinkChecker=='undefined'){
@@ -113,8 +118,7 @@
             if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
                 hakBot();                    
                 hideBot();
-                console.log(reload);
-                if(reload)reloadBot(reloadTime);
+                console.log(reload);                
             }
             //=======================================================      
             //Folgende Bots sind immer an:
@@ -125,14 +129,15 @@
             //=======================================================      
             if(loadComments)newCommentBot(natural);
             if(loadSubComments)newSubcommentBot(natural);            
-            commentBot();    
-            statusBot(botRunning,botSites);
-            repostBot();			
-			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);
-            clearInterval(checkDisqus);			
+            if(clearUrl)urlBot();				
+            if(fastSendStatus)fastSend();	
+			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);            
+			if(reload)reloadBot(reloadTime);
+			commentBot();                
+            repostBot();					
             plugBot();
-            if(clearUrl)urlBot();		
-            
+			statusBot(botRunning,botSites);            	
+			clearInterval(checkDisqus);			
             //var progress = document.createElement ('div');            
             //progress.innerHTML = "<progress id='timeToReload'></progress>";
             //$(".nav.nav-primary").children("ul").get(0).after(progress);
@@ -144,6 +149,28 @@
 //=======================================================      
 //Functions
 //=======================================================      
+
+function fastSend(){
+	var checkExistTextArea = setInterval(function() {
+		$(".textarea").not(".fastSend").unbind("keydown").keydown(function(e){
+			if (e.keyCode == 13 && e.shiftKey) {
+				console.log("Shift Enter");
+				var content = this.value;
+				var caret = getCaret(this);
+				this.value = content.substring(0,caret)+"\n"+content.substring(carent,content.length-1);
+				this.focus();
+				e.stopPropagation();
+			}else if(e.keyCode == 13){
+				var container = $(this).parent().parent();				
+				container.find(".btn.post-action__button").get(0).click();
+				this.focus();
+				e.stopPropagation();
+			}
+			$(".textarea").addClass("fastSend");
+		});
+	}, 1000); 
+}
+
 function plugBot(){
     var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"],["Kiesel-Stein","https://plug.dj/hinterhof"]];
     var plugDropDown = document.createElement("li");    
@@ -884,7 +911,8 @@ function setInterface(botRunning){
                 var reloadTime = GM_getValue("reloadTime");
 				var checkArticle = GM_getValue("checkArticle");
 				var articleNotification = GM_getValue("articleNotification");				
-				var switchArticle = GM_getValue("switchArticle");				
+				var switchArticle = GM_getValue("switchArticle");
+				var fastSend = GM_getValue("fastSend");
                 reloadTime=reloadTime/60/1000;
 
 				console.log(fakeLinks);
@@ -895,6 +923,12 @@ function setInterface(botRunning){
 				}else{
 					var boxStatusSwitch = "";
 				}               
+				
+				if(fastSend){
+					var boxStatusFastSend = "checked";
+				}else{
+					var boxStatusFastSend = "";
+				}   
 				
                 if(loadComments){
 					var boxStatusComments = "checked";
@@ -940,6 +974,7 @@ function setInterface(botRunning){
 				}                                                
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Speed - Kommentare nachladen"><input type="checkbox" id="loadComments" '+boxStatusComments+'><span class="label helper">Kommentare automatisch laden</span></a><br>';						
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
@@ -980,6 +1015,11 @@ function setInterface(botRunning){
 				$("#fakeBot").click(function(e){
 					toggleSetting(this,"checkLinks");
 				});     
+				
+				$("#fastSend").click(function(e){
+					toggleSetting(this,"fastSend");
+				});     
+				
                 $("#reloadBot").click(function(e){
 					toggleReloadBot(this);
 				});     
@@ -1881,8 +1921,8 @@ function findClass(element, className) {
 //Gets Around Repost Alert
 //=======================================================
 function repostBot(){
-    var checkExist3 = setInterval(function() {
-        if (document.getElementsByClassName("alert error").length && document.getElementsByClassName("alert error").length>0) {    
+    var checkExist3 = setInterval(function() {		
+        if (document.getElementsByClassName("alert error").length && document.getElementsByClassName("alert error").length>0 && $(document.getElementsByClassName("alert error")).find("span").text().indexOf("already made") > -1) {    
 			var container = $(document.getElementsByClassName("alert error")[0]).parent().parent();
 			var textArea = container.find(".textarea").get(0);
 			//console.log(textArea);
