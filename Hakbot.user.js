@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.8.7
+//@version      1.8.8
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -309,8 +309,8 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 function urlBot(){
-    var checkExistTextArea = setInterval(function() {
-		$(".textarea").not(".cleared").keyup(function(e){
+    var checkExistTextArea = setInterval(function() {		
+		$(".textarea").not(".cleared").unbind("keypress").keypress(function(e){
             clearUrl(this);
             $(".textarea").addClass("cleared");
         });
