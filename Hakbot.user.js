@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.8.9
+//@version      1.8.9.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -75,6 +75,11 @@
 				GM_setValue("switchArticle",false);
 			}
 			
+			var quaffles = GM_getValue("quaffles");
+			if (typeof quaffles=='undefined'){
+				GM_setValue("quaffles",false);
+			}
+			
 			var checkArticle = GM_getValue("checkArticle");
 			if (typeof checkArticle=='undefined'){
 				GM_setValue("checkArticle",confirm("Soll nach neuen Artikeln gesucht werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\nWenn ihr den Fakelinkchecker aktiviert habt und dieser funktioniert, dann sollte kein Popup kommen.\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
@@ -143,6 +148,7 @@
             plugBot();
 			statusBot(botRunning,botSites);            	
 			clearInterval(checkDisqus);			
+			if (quaffles)quaffleBot();
             //var progress = document.createElement ('div');            
             //progress.innerHTML = "<progress id='timeToReload'></progress>";
             //$(".nav.nav-primary").children("ul").get(0).after(progress);
@@ -177,7 +183,7 @@ function fastSend(){
 }
 
 function plugBot(){
-    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"],["Kiesel-Stein","https://plug.dj/hinterhof"]];
+    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"],["Kiesel-Stein","https://plug.dj/hinterhof"],["Codein-Crazy","https://plug.dj/look-at-me-now"]];
     var plugDropDown = document.createElement("li");    
     plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
     plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-community");
@@ -919,6 +925,7 @@ function setInterface(botRunning){
 				var articleNotification = GM_getValue("articleNotification");				
 				var switchArticle = GM_getValue("switchArticle");
 				var fastSend = GM_getValue("fastSend");
+				var quaffles = GM_getValue("quaffles");
                 reloadTime=reloadTime/60/1000;
 
 				console.log(fakeLinks);
@@ -929,6 +936,13 @@ function setInterface(botRunning){
 				}else{
 					var boxStatusSwitch = "";
 				}               
+				
+				if(quaffles){
+					var boxStatusQuaffles = "checked";
+				}else{
+					var boxStatusQuaffles = "";
+				}               
+				
 				
 				if(answerHak){
 					var boxStatusAnswer = "checked";
@@ -991,6 +1005,7 @@ function setInterface(botRunning){
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Zack und rüber mit mir!"><input type="checkbox" id="switchArticle" '+boxStatusSwitch+'><span class="label helper">Automatisch auf neuen Artikel wechseln (Benötigt Auf neue Artikel checken! Beta!!!)</span></a><br>';										
@@ -1032,6 +1047,9 @@ function setInterface(botRunning){
 				});
 				$("#fakeBot").click(function(e){
 					toggleSetting(this,"checkLinks");
+				});     
+				$("#quafflesBot").click(function(e){
+					toggleSetting(this,"quaffles");
 				});     
 				
 				$("#fastSend").click(function(e){
@@ -2097,7 +2115,7 @@ function quaffleBot(){
                 if(user[i].href=="https://disqus.com/by/DarthWaffle/"){
                     console.log("Quaffles Found");
                     console.log(user[i].childNodes[0]);
-                    user[i].childNodes[0].src="https://i.imgur.com/Q8twCGV.jpg";
+                    user[i].childNodes[0].src="https://img.webme.com/pic/a/aggro-berlin-info/tony.jpg";
                 }
             }
         },200);
