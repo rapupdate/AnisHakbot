@@ -20,6 +20,7 @@ Bot der Ru ein wenig aufmöbelt
 * Kommentare können vorgelesen werden
 * Neue Artikel Checker - Bringt Infofeld über Kommentarbereich, Webnotification und automatischen Wechsel auf neuen Kommentar
 * FastSend - Abschicken von Kommentaren per Enter, Neue Zeile per Shift+Enter
+* Show Downvotes - Zeigt einen kleinen Counter mit Downvotes an. Beta: Daten sind nicht immer Korrekt!
 
 ## TODO - Weitere Todos finden sich in der Issues Liste
 
