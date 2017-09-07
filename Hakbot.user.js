@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.8.9.1
+//@version      1.9
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -49,7 +49,8 @@
 			GM_addStyle('.editBtn:active{background-color:#2e9fff}');
 			GM_addStyle('.helper{cursor:help;}');    			
 			GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
-            GM_addStyle('.smiley{font-size: 150%;padding:10px;display: inline-block;cursor:pointer;}');    	            
+            GM_addStyle('.smiley{font-size: 150%;padding:10px;display: inline-block;cursor:pointer;}');    	  
+			GM_addStyle('.downed{color:#f05f70;}');    	  						
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
@@ -60,6 +61,12 @@
 			var answerHak = GM_getValue("answerHak");			
 			if (typeof answerHak=='undefined'){
 				GM_setValue("answerHak",true);
+			}
+			
+			var showDownvotes = GM_getValue("showDownvotes");			
+			if (typeof showDownvotes=='undefined'){
+				GM_setValue("showDownvotes",true);
+				showDownvotes = GM_getValue("showDownvotes");			
 			}
 			
 			var fastSendStatus = GM_getValue("fastSend");
@@ -146,7 +153,8 @@
 			commentBot();                
             repostBot();					
             plugBot();
-			statusBot(botRunning,botSites);            	
+			statusBot(botRunning,botSites);
+			if (showDownvotes) showDownvotesBot();
 			clearInterval(checkDisqus);			
 			if (quaffles)quaffleBot();
             //var progress = document.createElement ('div');            
@@ -160,7 +168,24 @@
 //=======================================================      
 //Functions
 //=======================================================      
-
+function showDownvotesBot(){
+	setInterval(function(){
+		var downVotes=document.getElementsByClassName("vote-down");
+		for (var i=0; i<downVotes.length; i++){
+			if (!downVotes[i].classList.contains("revealed")){
+				downVotes[i].classList.add("revealed")
+				var classAdd = "";
+				if (downVotes[i].classList.contains("downvoted")){ 					
+					var downVoteClass = downVotes[i].classList.item(2);								
+					classAdd = "downed";
+				}else var downVoteClass = downVotes[i].classList.item(1);								
+				var downVotesCount = downVoteClass.substr(6);
+				$(downVotes[i]).append($("<span class='updatable count "+classAdd+"'>"+downVotesCount+"</span>"));				
+				console.log("Downvotes: "+downVotesCount);
+			}
+		}
+	},1000)
+}
 function fastSend(){
 	var checkExistTextArea = setInterval(function() {
 		$(".textarea").not(".fastSend").unbind("keydown").keydown(function(e){
@@ -926,6 +951,7 @@ function setInterface(botRunning){
 				var switchArticle = GM_getValue("switchArticle");
 				var fastSend = GM_getValue("fastSend");
 				var quaffles = GM_getValue("quaffles");
+				var showDownvotes = GM_getValue("showDownvotes");			
                 reloadTime=reloadTime/60/1000;
 
 				console.log(fakeLinks);
@@ -936,6 +962,12 @@ function setInterface(botRunning){
 				}else{
 					var boxStatusSwitch = "";
 				}               
+				
+				if (showDownvotes){
+					var boxStatusDownvotes = "checked";
+				}else{
+					var boxStatusDownvotes = "";
+				}
 				
 				if(quaffles){
 					var boxStatusQuaffles = "checked";
@@ -1002,13 +1034,14 @@ function setInterface(botRunning){
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Speed - Kommentare nachladen"><input type="checkbox" id="loadComments" '+boxStatusComments+'><span class="label helper">Kommentare automatisch laden</span></a><br>';						
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Ich hasse Diskussionen, ich hasse Antworten, das ist kein Upvote Wert!"><input type="checkbox" id="answerHak" '+boxStatusAnswer+'><span class="label helper">Hak an Kommentarantworten verteilen oder nicht</span></a><br>';												
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Ufff, warum ist mein Topkommi unten, zeig mal jetzt Downvotes du Hurensohn!"><input type="checkbox" id="showDownvotes" '+boxStatusDownvotes+'><span class="label helper">Downvote Zähler anzeigen (Beta)</span></a><br>';												
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Zack und rüber mit mir!"><input type="checkbox" id="switchArticle" '+boxStatusSwitch+'><span class="label helper">Automatisch auf neuen Artikel wechseln (Benötigt Auf neue Artikel checken! Beta!!!)</span></a><br>';										
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Zack und rüber mit mir!"><input type="checkbox" id="switchArticle" '+boxStatusSwitch+'><span class="label helper">Automatisch auf neuen Artikel wechseln (Benötigt Auf neue Artikel checken!)</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Verlinkungen endlich wieder einfach nur eintippen... Puh wie geil ist das denn?"><input type="checkbox" id="clearUrl" '+boxStatusUrl+'><span class="label helper">URLs in Postfähige Form verwandeln</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Es nervt manchmal, aber glaubt mir es ist zu eurem Besten"><input type="checkbox" id="reloadBot" '+boxStatusReload+'><span class="label helper">Reload Bot - Lädt Disqus automatisch neu (Empfohlen!)</span></a><br>';										
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">Reload Interval (In Minuten): </span><input type="Number" id="reloadTime" value="'+reloadTime+'" min="1" max="60"></input><input id="setReloadTime" type="button" value="Speichern" style="margin:20px"></input></a><br>';										
@@ -1038,6 +1071,10 @@ function setInterface(botRunning){
 				$("#switchArticle").click(function(e){
 					toggleSetting(this,"switchArticle");
 				});
+				$("#showDownvotes").click(function(e){
+					toggleSetting(this,"showDownvotes");
+				});
+				
 				$("#answerHak").click(function(e){
 					toggleSetting(this,"answerHak");
 				});
