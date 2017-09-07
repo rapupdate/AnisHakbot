@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.9
+//@version      1.9.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -1560,8 +1560,8 @@ function clickLink(upvoteLink,number){
         //console.log($(upvoteLink).closest("li").closest(".post").attr('id'));
         //.parent("li.post").id
         //console.log(link);
-        //console.log();
-        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak)){                    
+        console.log(upvoteLink.nextSibling);
+        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak) || upvoteLink.nextSibling.nextSibling.classList.contains("downvoted")){                    
 			return;
 		}else{
             link.click();
