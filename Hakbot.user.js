@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.9.1
+//@version      1.9.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -50,7 +50,7 @@
 			GM_addStyle('.helper{cursor:help;}');    			
 			GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
             GM_addStyle('.smiley{font-size: 150%;padding:10px;display: inline-block;cursor:pointer;}');    	  
-			GM_addStyle('.downed{color:#f05f70;}');    	  						
+			GM_addStyle('.downed{color:#f05f70;font-family: inherit;line-height: .85;font-weight: 500;}');    	  						
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
@@ -181,7 +181,7 @@ function showDownvotesBot(){
 				}else var downVoteClass = downVotes[i].classList.item(1);								
 				var downVotesCount = downVoteClass.substr(6);
 				$(downVotes[i]).append($("<span class='updatable count "+classAdd+"'>"+downVotesCount+"</span>"));				
-				console.log("Downvotes: "+downVotesCount);
+				//console.log("Downvotes: "+downVotesCount);
 			}
 		}
 	},1000)
@@ -1555,18 +1555,32 @@ function clickLink(upvoteLink,number){
     if(!natural)duration = 100;
     var link=upvoteLink;
 	var answerHak = GM_getValue("answerHak");
-    //setTimeout(function(){ 
-        //console.log(typeof $(upvoteLink).closest("li").closest(".post").attr('id'));
-        //console.log($(upvoteLink).closest("li").closest(".post").attr('id'));
-        //.parent("li.post").id
-        //console.log(link);
-        console.log(upvoteLink.nextSibling);
-        if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak) || upvoteLink.nextSibling.nextSibling.classList.contains("downvoted")){                    
-			return;
-		}else{
-            link.click();
-        }
-    //}, duration);              
+	//setTimeout(function(){ 
+	//console.log(typeof $(upvoteLink).closest("li").closest(".post").attr('id'));
+	//console.log($(upvoteLink).closest("li").closest(".post").attr('id'));
+	//.parent("li.post").id
+	//console.log(link);        
+	var downvotes = upvoteLink.nextSibling;
+	var reply=false;
+	//console.log(downvotes);
+	if(typeof downvotes != "undefined" && downvotes != null) downvotes=downvotes.nextSibling;
+	else reply = true;
+	var downVoted = false;
+	//console.log(downvotes);
+	if (!reply){
+		if(typeof downvotes != 'undefined' && downvotes.classList.contains("downvoted")){
+			downVoted = true;
+		}
+	}
+	//console.log(downVoted);
+	if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak) || downVoted){                    
+		//console.log(upvoteLink);
+		//console.log(downvotes);
+		return;
+	}else{
+		link.click();
+	}
+	//}, duration);              
 }
 
 //=======================================================      
@@ -2143,15 +2157,15 @@ function futureHurensohnBot(){
 //Changes Darth Qullis Profilepic to the Old one
 //=======================================================
 function quaffleBot(){
-    setInterval(function(){
-        console.log("Search Quaffles");
+	console.log("Quaffle Bot Aktiviert");
+    setInterval(function(){        
         setTimeout(function(){
             var user=document.getElementsByClassName("user");
             for (var i =0; i<user.length;i++){
                 //console.log(user[i].href);
                 if(user[i].href=="https://disqus.com/by/DarthWaffle/"){
-                    console.log("Quaffles Found");
-                    console.log(user[i].childNodes[0]);
+                    //console.log("Quaffles Found");
+                    //console.log(user[i].childNodes[0]);
                     user[i].childNodes[0].src="https://img.webme.com/pic/a/aggro-berlin-info/tony.jpg";
                 }
             }
