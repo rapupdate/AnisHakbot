@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.9.2
+//@version      1.9.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -50,7 +50,7 @@
 			GM_addStyle('.helper{cursor:help;}');    			
 			GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
             GM_addStyle('.smiley{font-size: 150%;padding:10px;display: inline-block;cursor:pointer;}');    	  
-			GM_addStyle('.downed{color:#f05f70;font-family: inherit;line-height: .85;font-weight: 500;}');    	  						
+			GM_addStyle('.downed{color:#f05f70;font-family: inherit;line-height: .85;font-weight: 500;display: inline-block;}');    	  						
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
@@ -74,6 +74,11 @@
 				GM_setValue("fastSend",false);
 			}
             
+			var embedImages = GM_getValue("embedImages");
+			if (typeof embedImages=='undefined'){
+				GM_setValue("embedImages",true);
+			}
+			
 			if (typeof FakeLinkChecker=='undefined'){
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
 			}
@@ -951,7 +956,8 @@ function setInterface(botRunning){
 				var switchArticle = GM_getValue("switchArticle");
 				var fastSend = GM_getValue("fastSend");
 				var quaffles = GM_getValue("quaffles");
-				var showDownvotes = GM_getValue("showDownvotes");			
+				var showDownvotes = GM_getValue("showDownvotes");		
+				var embedImages = GM_getValue("embedImages");
                 reloadTime=reloadTime/60/1000;
 
 				console.log(fakeLinks);
@@ -981,7 +987,11 @@ function setInterface(botRunning){
 				}else{
 					var boxStatusAnswer = "";
 				}               
-				
+				if(embedImages){
+					var boxStatusEmbed = "checked";
+				}else{
+					var boxStatusEmbed = "";
+				}              
 				
 				if(fastSend){
 					var boxStatusFastSend = "checked";
@@ -1038,6 +1048,7 @@ function setInterface(botRunning){
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Bunte Bilder im Feed sind schon schön <3"><input type="checkbox" id="embedImages" '+boxStatusEmbed+'><span class="label helper">Bilder automatisch einbetten</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
@@ -1071,6 +1082,11 @@ function setInterface(botRunning){
 				$("#switchArticle").click(function(e){
 					toggleSetting(this,"switchArticle");
 				});
+				
+				$("#embedImages").click(function(e){
+					toggleSetting(this,"embedImages");
+				});
+				
 				$("#showDownvotes").click(function(e){
 					toggleSetting(this,"showDownvotes");
 				});
@@ -1712,6 +1728,7 @@ function reloadBot(time){
 function commentBot(){
     setInterval(function(){
 		var FakeLinkChecker = GM_getValue("checkLinks");
+		var embedImages = GM_getValue("embedImages");
         var comments = document.getElementsByClassName("post-message");
         for (var i = 0;i<comments.length;i++){
             //console.log(comments[i].classList.contains("embed"));
@@ -1769,7 +1786,7 @@ function commentBot(){
                     var linkNormal=linkNormal.substr(0,linkLengthSpace);
                     //console.log("Der Link mit Space ist "+linkLengthSpace+" Zeichen lang");
                 }
-                if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1){                        
+                if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1 && embedImages){                        
                     //console.log("Der Link zum bild lautet: "+linkNormal);
                     var img=true;
                 }       
@@ -1822,7 +1839,7 @@ function commentBot(){
                         var linkNormal=linkNormal.substr(0,linkLengthSpace);
                         //console.log("Der Link mit Space ist "+linkLengthSpace+" Zeichen lang");
                     }
-                    if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1){                        
+                    if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1 && embedImages){                        
                         //console.log("Der Link zum bild lautet: "+linkNormal);
                         var img=true;
                     }                  
@@ -1878,7 +1895,7 @@ function commentBot(){
                         var linkNormal=linkNormal.substr(0,linkLengthSpace);
                         //console.log("Der Link mit Space ist "+linkLengthSpace+" Zeichen lang");
                     }
-                    if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1){                                                
+                    if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1&&embedImages){                                                
                         var img=true;
                     }                    
 					//console.log("Linknormal (Else):" + linkNormal);
