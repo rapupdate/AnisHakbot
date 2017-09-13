@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.9.4
+//@version      1.9.9
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -17,20 +17,21 @@
 //@grant        GM_openInTab
 //@grant        GM_xmlhttpRequest
 //@grant        GM_notification
+//@grant        window.close
 //==/UserScript==
 
 //=======================================================      
 //Mainprogramm
 //=======================================================      
 (function() {
-	'use strict';   	
+	'use strict';   		
 	//=======================================================      
 	//Wenn Bots angeschaltet startet er die folgenden Funktionen
 	//Hakbot - Gibt Hak und lädt die Kommentare nach
 	//hideBot - Versteckt upvote Fenster
 	//reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
 	//=======================================================      
-    console.log("RU-Bot injeziert");
+    console.log("RU-Bot injeziert");	
 	var checkDisqus = setInterval(function(){		
 		if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){
 			GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
@@ -58,11 +59,16 @@
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
 			}
 			
+			var askDisqus = GM_getValue("askDisqus");			
+			if (typeof askDisqus =='undefined'){
+				GM_setValue("askDisqus",false);
+			}
+			
 			var answerHak = GM_getValue("answerHak");			
 			if (typeof answerHak=='undefined'){
 				GM_setValue("answerHak",true);
 			}
-			
+			GM_setValue("dontHide",false);
 			var showDownvotes = GM_getValue("showDownvotes");			
 			if (typeof showDownvotes=='undefined'){
 				GM_setValue("showDownvotes",true);
@@ -138,7 +144,7 @@
 			setAdvancedEditor();
 			setReplyOnclick();
             if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
-                hakBot();                    
+                hakBot(); 				
                 hideBot();
                 console.log(reload);                
             }
@@ -162,6 +168,12 @@
 			if (showDownvotes) showDownvotesBot();
 			clearInterval(checkDisqus);			
 			if (quaffles)quaffleBot();
+			if(inIframe()){
+				if(askDisqus&&confirm("Zu DisqusThread wechseln?")){				
+					GM_openInTab(location.href,{active:true});
+					window.close();
+				}
+			}
             //var progress = document.createElement ('div');            
             //progress.innerHTML = "<progress id='timeToReload'></progress>";
             //$(".nav.nav-primary").children("ul").get(0).after(progress);
@@ -173,6 +185,14 @@
 //=======================================================      
 //Functions
 //=======================================================      
+function inIframe () {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
+
 function showDownvotesBot(){
 	setInterval(function(){
 		var downVotes=document.getElementsByClassName("vote-down");
@@ -213,7 +233,7 @@ function fastSend(){
 }
 
 function plugBot(){
-    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"],["Kiesel-Stein","https://plug.dj/hinterhof"],["Codein-Crazy","https://plug.dj/look-at-me-now"]];
+    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"],["Kiesel-Stein","https://plug.dj/hinterhof"],["Codeine-Crazy","https://plug.dj/look-at-me-now"]];
     var plugDropDown = document.createElement("li");    
     plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
     plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-community");
@@ -958,11 +978,19 @@ function setInterface(botRunning){
 				var quaffles = GM_getValue("quaffles");
 				var showDownvotes = GM_getValue("showDownvotes");		
 				var embedImages = GM_getValue("embedImages");
+				var askDisqus = GM_getValue("askDisqus");
                 reloadTime=reloadTime/60/1000;
 
 				console.log(fakeLinks);
                 blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input><hr><br>';                            				
 				blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<h3>Bot Einstellungen</h3>';
+				
+				if(askDisqus){
+					var boxStatusDisqus = "checked";
+				}else{
+					var boxStatusDisqus = "";
+				}
+				
 				if(switchArticle){
 					var boxStatusSwitch = "checked";
 				}else{
@@ -1041,6 +1069,7 @@ function setInterface(botRunning){
 				}else{
 					var boxStatus = "";
 				}                                                
+				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Was interessiert mich Rap, ich will Grinden"><input type="checkbox" id="askDisqus" '+boxStatusDisqus+'><span class="label helper">Fullgrind - Disqusthread Only anfragen</span></a><br>';												
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Speed - Kommentare nachladen"><input type="checkbox" id="loadComments" '+boxStatusComments+'><span class="label helper">Kommentare automatisch laden</span></a><br>';						
                 blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
 				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Ich hasse Diskussionen, ich hasse Antworten, das ist kein Upvote Wert!"><input type="checkbox" id="answerHak" '+boxStatusAnswer+'><span class="label helper">Hak an Kommentarantworten verteilen oder nicht</span></a><br>';												
@@ -1082,6 +1111,10 @@ function setInterface(botRunning){
 				$("#switchArticle").click(function(e){
 					toggleSetting(this,"switchArticle");
 				});
+				
+				$("#askDisqus").click(function(e){
+					toggleSetting(this,"askDisqus");
+				});				
 				
 				$("#embedImages").click(function(e){
 					toggleSetting(this,"embedImages");
@@ -1685,10 +1718,18 @@ function hideBot(){
     duration = duration *150;
     if (duration < 20){
         duration = 20;
-    }
+    }		
     if(!natural)duration=10;
-    var checkExist4 = setInterval(function() {
-        if (document.getElementsByClassName("tooltip upvoters").length) {
+	var checkExist4 = setInterval(function() {
+		$(".vote-up").not(".hover").hover(
+			function(){
+				GM_setValue("dontHide",true);			
+			},function(){
+				GM_setValue("dontHide",false);
+			}
+		);
+		$(".voting").addClass("hover");
+        if (document.getElementsByClassName("tooltip upvoters").length && !GM_getValue("dontHide")) {
             var annoyingShit = document.getElementsByClassName("tooltip-outer upvoters-outer");
             for (var i = 0; i<annoyingShit.length;i++){
                 if (annoyingShit[i].style.display != "none"){
@@ -1716,7 +1757,12 @@ function reloadBot(time){
     if(!natural)duration=time;
     //console.log(duration);
     setTimeout(function(){
-        location.reload();  
+		if(!$(".textarea").is(":focus")){
+			location.reload();  
+		}else{
+			console.log("Reload Denied");
+			reloadBot(0);
+		}
     },duration);
 }
 
@@ -1787,7 +1833,7 @@ function commentBot(){
                     var linkNormal=linkNormal.substr(0,linkLengthSpace);
                     //console.log("Der Link mit Space ist "+linkLengthSpace+" Zeichen lang");
                 }
-                if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1 && embedImages){                        
+                if((link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1) && embedImages){                        
                     //console.log("Der Link zum bild lautet: "+linkNormal);
                     var img=true;
                 }       
@@ -1795,7 +1841,7 @@ function commentBot(){
 				if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
 					fakeLink(comments[i],linkNormal,commentHtml);                          
 				}else{
-					linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
+					linkClickable = '<a target="_blank" href="'+linkNormal+'">'+linkNormal+'</a>';
 					if(commentHtml.indexOf('href="'+linkNormal)==-1){                    
 						commentHtml=commentHtml.replace(link,linkClickable);
 					}
@@ -1840,7 +1886,7 @@ function commentBot(){
                         var linkNormal=linkNormal.substr(0,linkLengthSpace);
                         //console.log("Der Link mit Space ist "+linkLengthSpace+" Zeichen lang");
                     }
-                    if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1 && embedImages){                        
+                    if((link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1) && embedImages){                        
                         //console.log("Der Link zum bild lautet: "+linkNormal);
                         var img=true;
                     }                  
@@ -1848,7 +1894,7 @@ function commentBot(){
 					if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
 						fakeLink(comments[i],linkNormal,commentHtml);                        
 					}else{
-						linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
+						linkClickable = '<a target="_blank" href="'+linkNormal+'">'+linkNormal+'</a>';
 						if(commentHtml.indexOf('href="'+linkNormal)<0){
 							commentHtml=commentHtml.replace(link,linkClickable);
 							var indexEmbed=commentHtml.indexOf("<iframe");
@@ -1896,7 +1942,7 @@ function commentBot(){
                         var linkNormal=linkNormal.substr(0,linkLengthSpace);
                         //console.log("Der Link mit Space ist "+linkLengthSpace+" Zeichen lang");
                     }
-                    if(link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1&&embedImages){                                                
+                    if((link.indexOf(".png")>-1||link.indexOf(".jpg")>-1||link.indexOf(".gif")>-1)&&embedImages){                                                
                         var img=true;
                     }                    
 					//console.log("Linknormal (Else):" + linkNormal);
@@ -1904,7 +1950,7 @@ function commentBot(){
 						if(linkNormal.toLowerCase().indexOf("rapupdate.de")>-1 && linkNormal.toLowerCase().indexOf("disq.us")==-1 && FakeLinkChecker){
 							fakeLink(comments[i],linkNormal,commentHtml);                 
 						}else{
-							linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';
+							linkClickable = '<a target="_blank" href="'+linkNormal+'">'+linkNormal+'</a>';
 							commentHtml=commentHtml.replace(link,linkClickable);                    
 							comments[i].innerHTML=commentHtml;
 							if(img){
