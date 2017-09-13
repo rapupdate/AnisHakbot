@@ -1319,7 +1319,8 @@ function addBlacklistButton(){
             if (blacklist.length>0){
                 for(var j=0; j<blacklist.length; j++){                                    
                     if(link.indexOf(blacklist[j])>-1){                        
-                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Blacklist entfernen</a>';                                                            
+                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Blacklist entfernen</a>';             
+						break;
                     }else{
                         blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';                                                            
                     }
