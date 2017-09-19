@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.9.9
+//@version      1.9.9.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -233,7 +233,7 @@ function fastSend(){
 }
 
 function plugBot(){
-    var plugs = [["Django","https://plug.dj/-2864672022448580469"],["Knarv","https://plug.dj/marios-treue-diener/"],["Kiesel-Stein","https://plug.dj/hinterhof"],["Codeine-Crazy","https://plug.dj/look-at-me-now"]];
+    var plugs = [["*Knarv <3*","https://plug.dj/marios-treue-diener/"],["Django","https://plug.dj/-2864672022448580469"],["Kiesel-Stein","https://plug.dj/hinterhof"],["Codeine-Crazy","https://plug.dj/look-at-me-now"]];
     var plugDropDown = document.createElement("li");    
     plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
     plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-community");
