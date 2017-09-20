@@ -10,7 +10,7 @@ Bot der Ru ein wenig aufmöbelt
 		* Blacklist nach Disqus ID: User können per Dropdown im Commentar auf die Disqus Blacklist gesetzt und von dieser entfernt werden 
 		* Blacklist nach Namepattern: Namepattern, also Usernames oder Clans können per Formular in der Blacklist Konfiguration geblacklisted werden 
 
-	* Whitelists - Nur User die auf den Blacklists stehen bekommen Hak 
+	* Whitelists - Nur User die auf den Whitelists stehen bekommen Hak 
 		* Whitelist nach Disqus ID: User können per Dropdown im Commentar auf die Disqus Whitelist gesetzt und von dieser entfernt werden 
 		* Whitelist nach Namepattern: Namepattern, also Usernames oder Clans können per Formular in der Whitelist Konfiguration geblacklisted werden 
 	
