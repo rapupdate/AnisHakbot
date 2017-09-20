@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      1.9.9.1
+//@version      2.0
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -30,6 +30,7 @@
 	//Hakbot - Gibt Hak und lädt die Kommentare nach
 	//hideBot - Versteckt upvote Fenster
 	//reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
+	//Verrückte Scheiße dieser Bot ist riesig und geht jetzt in Verrsion 2.0, krasse sache
 	//=======================================================      
     console.log("RU-Bot injeziert");	
 	var checkDisqus = setInterval(function(){		
@@ -52,6 +53,8 @@
 			GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
             GM_addStyle('.smiley{font-size: 150%;padding:10px;display: inline-block;cursor:pointer;}');    	  
 			GM_addStyle('.downed{color:#f05f70;font-family: inherit;line-height: .85;font-weight: 500;display: inline-block;}');    	  						
+			GM_addStyle('span.settingLable{font-weight: 300;display: inline-block;margin-right:10px}');    	  						
+			GM_addStyle('summary{font-size:16px;font-weight: 600;cursor:pointer}');    	  						
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
@@ -62,6 +65,11 @@
 			var askDisqus = GM_getValue("askDisqus");			
 			if (typeof askDisqus =='undefined'){
 				GM_setValue("askDisqus",false);
+			}
+			
+			var mode = GM_getValue("hakMode");			
+			if (typeof mode =='undefined'){
+				GM_setValue("hakMode","blacklist");
 			}
 			
 			var answerHak = GM_getValue("answerHak");			
@@ -920,15 +928,25 @@ function getSelectedText() {
 
 function setInterface(botRunning){
 	var blacklist = getGMArray("blacklist");
-    if(typeof blacklist == 'undefined' || blacklist.length<=0) {
-        setGMArray("blacklist",[]);
-        blacklist = getGMArray("blacklist");
-        console.log("Blacklist reset");
-    }else{
-        console.log("Blacklist: "+blacklist);
-    }
-	
-    var blacklistClan = getGMArray("blacklistClan");
+	var blacklistClan = getGMArray("blacklistClan");
+	var whitelist = getGMArray("whitelist");
+	var whitelistClan = getGMArray("whitelistClan");
+	var mode = GM_getValue("hakMode");	
+	if(typeof blacklist == 'undefined' || blacklist.length<=0) {
+		setGMArray("blacklist",[]);
+		blacklist = getGMArray("blacklist");
+		console.log("Blacklist reset");
+	}else{
+		console.log("Blacklist: "+blacklist);
+	}
+	if(typeof whitelist == 'undefined' || whitelist.length<=0) {
+		setGMArray("whitelist",[]);
+		blacklist = getGMArray("whitelist");
+		console.log("Whitelist reset");
+	}else{
+		console.log("Whitelist: "+whitelist);
+	}
+    
     if(typeof blacklistClan == 'undefined' || blacklistClan.length<=0){
         setGMArray("blacklistClan",[]);
         blacklistClan = getGMArray("blacklistClan");
@@ -937,6 +955,14 @@ function setInterface(botRunning){
         console.log("BlacklistClan: "+blacklistClan);
     }
     
+	if(typeof whitelistClan == 'undefined' || whitelistClan.length<=0){
+        setGMArray("whitelistClan",[]);
+        blacklistClan = getGMArray("whitelistClan");
+        console.log("Whitelist Clan reset");
+    }else{
+        console.log("WhitelistClan: "+whitelistClan);
+    }
+	
     var botSites = getGMArray("botSites");
     if(typeof botSites == 'undefined' || botSites.length<=0) {
         setGMArray("botSites",[]);
@@ -951,18 +977,79 @@ function setInterface(botRunning){
             //=======================================================
             //Sets Blacklist Div
             //=======================================================
-            var blacklistDiv = document.createElement ('div');
-            blacklistDiv.setAttribute ('id', 'BlacklistContainer');
-            blacklistDiv.innerHTML = '<h3>Blacklist Einstellungen</h3><h4 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h4><hr>';
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<ol>';
-            for (var i = 0; i<blacklist.length; i++){
-                blacklistDiv.innerHTML = blacklistDiv.innerHTML + "<li><a data-dsq-mention=\""+blacklist[i]+":disqus\" href=\"https://disqus.com/by/"+blacklist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+blacklist[i]+"\">@" + blacklist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";				
-            }						
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</ol>';
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<br><h4 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Blacklisted Clans/Names: </h4><hr>';
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<div id="blacklistClanList">';
-            blacklistDiv.innerHTML = blacklistDiv.innerHTML + '</div><br>';                        			                           
-            setTimeout(function(){                                
+			var blacklist = getGMArray("blacklist");
+			var blacklistClan = getGMArray("blacklistClan");
+			var whitelist = getGMArray("whitelist");
+			var whitelistClan = getGMArray("whitelistClan");
+            var blacklistDiv = document.createElement ('div');			
+            blacklistDiv.setAttribute ('id', 'BlacklistContainer');			
+			blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<details id="settings"><summary>Bot Einstellungen</summary></details>';
+            setTimeout(function(){                                																
+				//blacklistDiv.setAttribute ('style', 'display:none');                    
+				if(mode=="blacklist"){
+					blacklistDiv.innerHTML += '<hr><br><details id="blacklistSettings"><summary>Blacklist Einstellungen</summary></details>';					                    			                           
+				}else{
+					blacklistDiv.innerHTML += '<hr><br><details id="whitelistSettings"><summary>Whitelist Einstellungen</summary></details>';
+					                      			                           
+				}
+
+                document.getElementsByClassName("nav nav-secondary")[0].after(blacklistDiv);   
+				if (mode=="blacklist"){
+					var settings=document.getElementById("blacklistSettings");	
+					settings.innerHTML = settings.innerHTML + '<br><h4 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h4>'
+					settings.innerHTML = settings.innerHTML + '<ol>';					
+					for (var i = 0; i<blacklist.length; i++){					
+						settings.innerHTML = settings.innerHTML + "<li><a data-dsq-mention=\""+blacklist[i]+":disqus\" href=\"https://disqus.com/by/"+blacklist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+blacklist[i]+"\">@" + blacklist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";				
+					}						
+					settings.innerHTML = settings.innerHTML + '</ol>';
+					settings.innerHTML = settings.innerHTML + '<br><h4 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Blacklisted Clans/Names: </h4><hr>';
+					settings.innerHTML = settings.innerHTML + '<div id="blacklistClanList">';
+					settings.innerHTML = settings.innerHTML + '</div><br>';    
+					settings.innerHTML = settings.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input>';                            				
+					var addClanBlacklist = document.getElementById("addToClanBlacklist");
+					addClanBlacklist.addEventListener('click', addToClanBlacklist);                  
+					var blacklistClanLi=document.getElementById("blacklistClanList");                       
+					for (var i = 0; i<blacklistClan.length; i++){
+						var blacklistClanLis = document.createElement ('li');                    
+						blacklistClanLis.innerHTML = blacklistClan[i] + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage'><hr>";      
+						blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
+						blacklistClanLi.appendChild(blacklistClanLis);
+					}                					
+					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
+						blacklistClanLi.childNodes.forEach(function(li){
+							console.log(li);
+							li.addEventListener('click', removeFromClanListOnClick);                                
+						});
+					}				
+				}else{
+					var settings=document.getElementById("whitelistSettings");	
+					settings.innerHTML = settings.innerHTML + '<br><h4 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Whitelisted Disqus ID: </h4><ol>';
+					for (var i = 0; i<whitelist.length; i++){
+						settings.innerHTML = settings.innerHTML + "<li><a data-dsq-mention=\""+whitelist[i]+":disqus\" href=\"https://disqus.com/by/"+whitelist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+whitelist[i]+"\">@" + whitelist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";				
+					}						
+					settings.innerHTML = settings.innerHTML + '</ol>';
+					settings.innerHTML = settings.innerHTML + '<br><h4 title="Per Click auf den Namen/Clan in dieser Liste können User entfernt werden. Hinzugefügt wird über das Formular unten!">Whitelisted Clans/Names: </h4><hr>';
+					settings.innerHTML = settings.innerHTML + '<div id="whitelistClanList">';
+					settings.innerHTML = settings.innerHTML + '</div><br>';  
+					
+					settings.innerHTML = settings.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newWhitelistedClan"></input><input id="addToClanWhitelist" type="button" value="Auf Whitelist" style="margin:20px"></input>';                            				
+					var addClanBlacklist = document.getElementById("addToClanWhitelist");
+					addClanBlacklist.addEventListener('click', addToClanWhitelist);                  
+					var blacklistClanLi=document.getElementById("whitelistClanList");                       
+					for (var i = 0; i<whitelistClan.length; i++){
+						var blacklistClanLis = document.createElement ('li');                    
+						blacklistClanLis.innerHTML = whitelistClan[i] + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage'><hr>";      
+						blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
+						blacklistClanLi.appendChild(blacklistClanLis);
+					}                
+
+					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
+						blacklistClanLi.childNodes.forEach(function(li){
+							console.log(li);
+							li.addEventListener('click', removeFromWhitelistClanListOnClick);                                
+						});
+					}								
+				}
 				var fakeLinks = GM_getValue("checkLinks");
 				var answerHak = GM_getValue("answerHak");
                 var loadComments = GM_getValue("loadComments");
@@ -980,11 +1067,6 @@ function setInterface(botRunning){
 				var embedImages = GM_getValue("embedImages");
 				var askDisqus = GM_getValue("askDisqus");
                 reloadTime=reloadTime/60/1000;
-
-				console.log(fakeLinks);
-                blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input><hr><br>';                            				
-				blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<h3>Bot Einstellungen</h3>';
-				
 				if(askDisqus){
 					var boxStatusDisqus = "checked";
 				}else{
@@ -1069,45 +1151,35 @@ function setInterface(botRunning){
 				}else{
 					var boxStatus = "";
 				}                                                
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Was interessiert mich Rap, ich will Grinden"><input type="checkbox" id="askDisqus" '+boxStatusDisqus+'><span class="label helper">Fullgrind - Disqusthread Only anfragen</span></a><br>';												
-                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Speed - Kommentare nachladen"><input type="checkbox" id="loadComments" '+boxStatusComments+'><span class="label helper">Kommentare automatisch laden</span></a><br>';						
-                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Ich hasse Diskussionen, ich hasse Antworten, das ist kein Upvote Wert!"><input type="checkbox" id="answerHak" '+boxStatusAnswer+'><span class="label helper">Hak an Kommentarantworten verteilen oder nicht</span></a><br>';												
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Ufff, warum ist mein Topkommi unten, zeig mal jetzt Downvotes du Hurensohn!"><input type="checkbox" id="showDownvotes" '+boxStatusDownvotes+'><span class="label helper">Downvote Zähler anzeigen (Beta)</span></a><br>';												
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
-                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Bunte Bilder im Feed sind schon schön <3"><input type="checkbox" id="embedImages" '+boxStatusEmbed+'><span class="label helper">Bilder automatisch einbetten</span></a><br>';										
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
-				blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Zack und rüber mit mir!"><input type="checkbox" id="switchArticle" '+boxStatusSwitch+'><span class="label helper">Automatisch auf neuen Artikel wechseln (Benötigt Auf neue Artikel checken!)</span></a><br>';										
-                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Verlinkungen endlich wieder einfach nur eintippen... Puh wie geil ist das denn?"><input type="checkbox" id="clearUrl" '+boxStatusUrl+'><span class="label helper">URLs in Postfähige Form verwandeln</span></a><br>';										
-                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Es nervt manchmal, aber glaubt mir es ist zu eurem Besten"><input type="checkbox" id="reloadBot" '+boxStatusReload+'><span class="label helper">Reload Bot - Lädt Disqus automatisch neu (Empfohlen!)</span></a><br>';										
-                blacklistDiv.innerHTML += '<a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">Reload Interval (In Minuten): </span><input type="Number" id="reloadTime" value="'+reloadTime+'" min="1" max="60"></input><input id="setReloadTime" type="button" value="Speichern" style="margin:20px"></input></a><br>';										
-				blacklistDiv.innerHTML += '<hr><h3>Über den Hakbot</h3>';						
+				document.getElementById("settings").innerHTML += '<br><a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">HakBot Modus: </span><select id="hakMode"><option value="blacklist">Blacklist Modus</option><option value="whitelist">Whitelist Modus</option></select></a><br><br>';
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Was interessiert mich Rap, ich will Grinden"><input type="checkbox" id="askDisqus" '+boxStatusDisqus+'><span class="label helper">Fullgrind - Disqusthread Only anfragen</span></a><br>';												
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="RU auf Speed - Kommentare nachladen"><input type="checkbox" id="loadComments" '+boxStatusComments+'><span class="label helper">Kommentare automatisch laden</span></a><br>';						
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Ich hasse Diskussionen, ich hasse Antworten, das ist kein Upvote Wert!"><input type="checkbox" id="answerHak" '+boxStatusAnswer+'><span class="label helper">Hak an Kommentarantworten verteilen oder nicht</span></a><br>';												
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Ufff, warum ist mein Topkommi unten, zeig mal jetzt Downvotes du Hurensohn!"><input type="checkbox" id="showDownvotes" '+boxStatusDownvotes+'><span class="label helper">Downvote Zähler anzeigen (Beta)</span></a><br>';												
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Bunte Bilder im Feed sind schon schön <3"><input type="checkbox" id="embedImages" '+boxStatusEmbed+'><span class="label helper">Bilder automatisch einbetten</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Zack und rüber mit mir!"><input type="checkbox" id="switchArticle" '+boxStatusSwitch+'><span class="label helper">Automatisch auf neuen Artikel wechseln (Benötigt Auf neue Artikel checken!)</span></a><br>';										
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Verlinkungen endlich wieder einfach nur eintippen... Puh wie geil ist das denn?"><input type="checkbox" id="clearUrl" '+boxStatusUrl+'><span class="label helper">URLs in Postfähige Form verwandeln</span></a><br>';										
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Es nervt manchmal, aber glaubt mir es ist zu eurem Besten"><input type="checkbox" id="reloadBot" '+boxStatusReload+'><span class="label helper">Reload Bot - Lädt Disqus automatisch neu (Empfohlen!)</span></a><br>';										
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">Reload Interval (In Minuten): </span><input type="Number" id="reloadTime" value="'+reloadTime+'" min="1" max="60"></input><input id="setReloadTime" type="button" value="Speichern" style="margin:20px"></input></a><br>';														
+				
+				blacklistDiv.innerHTML += '<hr><br><h3>Über den Hakbot</h3>';						
 				blacklistDiv.innerHTML += '<i>Version: '+GM_info["script"]["version"]+'</i><br>';
 				blacklistDiv.innerHTML += '<i>Autor: <a href="https://disqus.com/by/anis_fencheltee/">Anis Fencheltee</a></i><br>';
 				blacklistDiv.innerHTML += '<i>Readme: <a href="https://github.com/rapupdate/AnisHakbot/blob/master/README.md">Klick hier</i><br>';
 				blacklistDiv.innerHTML += '<i>Probleme oder Wünsche? <a href="https://github.com/rapupdate/AnisHakbot/issues">Klick hier</i><br><br>';
-                //blacklistDiv.setAttribute ('style', 'display:none');                        
-                document.getElementsByClassName("nav nav-secondary")[0].after(blacklistDiv);                                       
-                var addClanBlacklist = document.getElementById("addToClanBlacklist");
-                addClanBlacklist.addEventListener('click', addToClanBlacklist);                  
-                var blacklistClanLi=document.getElementById("blacklistClanList");                       
-                for (var i = 0; i<blacklistClan.length; i++){
-                    var blacklistClanLis = document.createElement ('li');                    
-                    blacklistClanLis.innerHTML = blacklistClan[i] + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage'><hr>";      
-                    blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
-                    blacklistClanLi.appendChild(blacklistClanLis);
-                }                
-
-                if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
-                    blacklistClanLi.childNodes.forEach(function(li){
-                        console.log(li);
-                        li.addEventListener('click', removeFromClanListOnClick);                                
-                    });
-                }				
+				$('#hakMode').val(mode).change();
+				$("#hakMode").change(function(e){							
+					GM_setValue("hakMode",this.value);
+					location.reload();
+				});
+				
 				$("#switchArticle").click(function(e){
 					toggleSetting(this,"switchArticle");
 				});
@@ -1166,16 +1238,22 @@ function setInterface(botRunning){
 				$(".deleteImage.disqusId").click(function(e){
 					removeBlacklist(this);
 				});     
-                $("#BlacklistContainer").hide();     
+                $("#BlacklistContainer").hide();     				
             },1000);                                               
+			
             //=======================================================
             //=======================================================
             //Sets Blacklist Button
             //=======================================================
             setTimeout(function(){
-                addBlacklistButton();    
-				addTTSButton();
-            },2000);
+				if(mode=="blacklist"){
+					addBlacklistButton(); 					
+					//addTTSButton();
+				}else{
+					addWhitelistButton(); 					
+					//addTTSButton();
+				}
+            },2000);				
             clearInterval(checkExistDisqus); 
             //=======================================================
             //Sets Toggle Blacklist Button
@@ -1210,8 +1288,7 @@ function setInterface(botRunning){
             botButton.setAttribute ('class', 'nav-tab nav-tab--secondary dropdown sorting pull-right');
             botButton.addEventListener('click', toggleBot);
             document.getElementsByClassName("nav-tab--secondary")[0].parentNode.appendChild(botButton);               
-            //=======================================================
-                        
+            //=======================================================						
         }    
     }, 100);
 }
@@ -1293,6 +1370,23 @@ function addToClanBlacklist(){
         location.reload();
     }
 }
+
+function addToClanWhitelist(){
+    var blacklistClan = getGMArray("whitelistClan");
+    if(blacklistClan.indexOf(document.getElementById("newWhitelistedClan").value)>-1){
+        alert("Der Clan steht bereits auf der Blacklist");
+    }else{
+        var input = document.getElementById("newWhitelistedClan").value;
+        if (input==null || input=="")
+        {
+            alert("Bitte einen Clan oder Namen eingeben!");
+            return false;
+        }
+        blacklistClan.push(document.getElementById("newWhitelistedClan").value);                
+        setGMArray("whitelistClan",blacklistClan);       
+        location.reload();
+    }
+}
 //=======================================================      
 //=======================================================      
 //Shows and Hides the Blacklist Container
@@ -1304,7 +1398,7 @@ function toggleBlacklistContainer(){
 }
 //=======================================================      
 //=======================================================      
-//Removes a Clan or a Namepattern from the Blacklist
+//Removes a Clan or a Namepattern from the Whitelist/Blacklist
 //=======================================================      
 function removeFromClanList(){
     var blacklistClan = getGMArray("blacklistClan");
@@ -1317,9 +1411,21 @@ function removeFromClanList(){
     setGMArray("blacklistClan",blacklistClan);       
     location.reload();
 }
+
+function removeFromWhitelistClanList(){
+    var blacklistClan = getGMArray("whitelistClan");
+    for(var i=0; i<blacklistClan.length; i++){        
+        if(blacklistClan[i].indexOf(document.getElementById("newBlockedClan").value)>-1){                        
+            blacklistClan.splice(i, 1);                        
+            console.log("Freigeschaltet: "+whitelistClanClan[i]);            
+        }
+    }   
+    setGMArray("whitelistClan",blacklistClan);       
+    location.reload();
+}
 //=======================================================      
 //=======================================================      
-//Removes a Clan or a Namepattern from the Blacklist Onclick Event 
+//Removes a Clan or a Namepattern from the Whitelist/Blacklist Onclick Event 
 //=======================================================      
 function removeFromClanListOnClick(evt){	
     var blacklistClan = getGMArray("blacklistClan");    
@@ -1330,6 +1436,19 @@ function removeFromClanListOnClick(evt){
     }   
     if(confirm("Soll User/Clan \""+this.innerText.substr(0,document.getElementById("blacklistClanList").childNodes[0].innerText.length-1)+"\" von der Blacklist genommen werden?")){
         setGMArray("blacklistClan",blacklistClan);               
+        location.reload();
+    }
+}
+
+function removeFromWhitelistClanListOnClick(evt){	
+    var blacklistClan = getGMArray("whitelistClan");    
+    for(var i=0; i<blacklistClan.length; i++){        
+        if(blacklistClan[i].indexOf(this.innerText.substr(0,document.getElementById("whitelistClanList").childNodes[0].innerText.length-1))>-1){                        
+            blacklistClan.splice(i, 1);                                    
+        }
+    }   
+    if(confirm("Soll User/Clan \""+this.innerText.substr(0,document.getElementById("whitelistClanList").childNodes[0].innerText.length-1)+"\" von der Whitelist genommen werden?")){
+        setGMArray("whitelistClan",blacklistClan);               
         location.reload();
     }
 }
@@ -1362,6 +1481,39 @@ function addBlacklistButton(){
                 blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';                                                            
             }
             blacklistUser.addEventListener('click', toggleBlacklist);        
+            dropdowns[i].append(blacklistUser);
+			addTTSButton(dropdowns[i]);
+            dropdowns[i].classList.add("done");                           
+            //console.log("Erledigt");
+
+        }
+    }
+}
+
+function addWhitelistButton(){
+    var dropdowns=document.getElementsByClassName("dropdown-menu");
+    var userDropdowns=[];
+    var whitelist = getGMArray("whitelist");                            
+    for (var i=1;i<dropdowns.length;i++){
+        var blacklistUser = document.createElement ('li');
+        if (dropdowns[i].classList.length==1){
+            var comment = dropdowns[i].parentNode.parentNode.parentNode.parentNode;            
+            var link=$(comment).find(".post-byline").find(".author.publisher-anchor-color").find("a").get(0);
+            link=link.href;
+            //console.log(link);
+            if (whitelist.length>0){
+                for(var j=0; j<whitelist.length; j++){                                    
+                    if(link.indexOf(blacklist[j])>-1){                        
+                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Whitelist entfernen</a>';             
+						break;
+                    }else{
+                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';                                                            
+                    }
+                }                       
+            }else{
+                blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';                                                            
+            }
+            blacklistUser.addEventListener('click', toggleWhitelist);        
             dropdowns[i].append(blacklistUser);
 			addTTSButton(dropdowns[i]);
             dropdowns[i].classList.add("done");                           
@@ -1485,6 +1637,32 @@ function toggleBlacklist(evt){
     location.reload();
 }
 
+function toggleWhitelist(evt){    
+    var container=this.parentNode.parentNode.parentNode.parentNode.parentNode;
+    var header= container.getElementsByTagName("header")[0];
+    var link =  header.getElementsByTagName("a")[0].href;        
+    var whitelist = getGMArray("whitelist");
+    console.log("Whitelist: "+ whitelist);
+    var remove=false;
+    for(var i=0; i<whitelist.length; i++){
+        console.log(whitelist[i]);
+        if(link.indexOf(whitelist[i])>-1){                                    
+            console.log("Freigeschaltet: "+whitelist[i]);
+            whitelist.splice(i, 1);            
+            remove=true;                        
+        }
+    }   
+    if(!remove){
+        var disqusID= link.substr(0,link.lastIndexOf("/"));            
+        disqusID= disqusID.substr(disqusID.lastIndexOf("/")+1);        
+        whitelist.push(disqusID);        
+        console.log("Gesperrt: "+whitelist[i]);        
+    }
+    console.log("Whitelist: "+ whitelist);
+    setGMArray("whitelist",whitelist);       
+    location.reload();
+}
+
 //=======================================================      
 //=======================================================      
 //Sets/Unsets the HakBot 
@@ -1547,6 +1725,7 @@ function statusBot(running,botSites) {
 function myLoop (upvoteLinks,i) {
     //  create a loop function
     var natural = GM_getValue("natural");
+	var mode = GM_getValue("hakMode");
     var duration = Math.random();
     duration = duration * 1000;
     if (duration < 650){
@@ -1555,7 +1734,7 @@ function myLoop (upvoteLinks,i) {
     if(!natural)duration = 1000;
     setTimeout(function () {    //  call a 3s setTimeout when the loop is called
 		if(upvoteLinks.length > 0){
-			if (upvoteLinks[i].classList.contains('upvoted') || (upvoteLinks[i].classList.contains('vote-up') && blacklistedUser(upvoteLinks[i]))) {
+			if (upvoteLinks[i].classList.contains('upvoted') || (upvoteLinks[i].classList.contains('vote-up') && mode=="blacklist" && blacklistedUser(upvoteLinks[i]))|| (upvoteLinks[i].classList.contains('vote-up') && mode=="whitelist" && !whitelistedUser(upvoteLinks[i]))) {
 				//console.log("Bereits geliked:" + upvoteLinks[i] + "");            
 			}else{
 				clickLink(upvoteLinks[i],i);
@@ -1587,6 +1766,26 @@ function blacklistedUser(upvoteLink){
         var name=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerText;        
         //console.log(name);
         if(name.indexOf(blacklistClan[i])>-1){
+            //console.log("Blacklisted User: "+ name);
+            return true;
+        }
+    }    
+    return false;
+}
+function whitelistedUser(upvoteLink){   
+    var whitelist = getGMArray("whitelist");
+    var whitelistClan = getGMArray("whitelistClan");
+    for(var i=0; i<whitelist.length; i++){
+        var link=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].href;                
+        if(link.indexOf(whitelist[i])>-1){
+            //console.log("Blacklisted User: "+ blacklist[i]);
+            return true;
+        }
+    }
+    for(var i=0; i<whitelistClan.length; i++){
+        var name=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerText;        
+        //console.log(name);
+        if(name.indexOf(whitelistClan[i])>-1){
             //console.log("Blacklisted User: "+ name);
             return true;
         }
