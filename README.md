@@ -5,9 +5,15 @@ Bot der Ru ein wenig aufmöbelt
 ## Features 
 * HakBot - Verteilt automatisch Hak 
 * CommentBot - Links werden anklickbar, Youtube Videos und Images automatisch eingeblendet 
-* Blacklists - User die auf den Blacklists stehen bekommen kein Hak 
-	* Blacklist nach Disqus ID: User können per Dropdown im Commentar auf die Disqus Blacklist gesetzt und von dieser entfernt werden 
-	* Blacklist nach Namepattern: Namepattern, also Usernames oder Clans können per Formular in der Blacklist Konfiguration geblacklisted werden 
+* Hakbotmodus umschaltbar zwischen Blacklist und Whitelist
+	* Blacklists - User die auf den Blacklists stehen bekommen kein Hak 
+		* Blacklist nach Disqus ID: User können per Dropdown im Commentar auf die Disqus Blacklist gesetzt und von dieser entfernt werden 
+		* Blacklist nach Namepattern: Namepattern, also Usernames oder Clans können per Formular in der Blacklist Konfiguration geblacklisted werden 
+
+	* Whitelists - Nur User die auf den Blacklists stehen bekommen Hak 
+		* Whitelist nach Disqus ID: User können per Dropdown im Commentar auf die Disqus Whitelist gesetzt und von dieser entfernt werden 
+		* Whitelist nach Namepattern: Namepattern, also Usernames oder Clans können per Formular in der Whitelist Konfiguration geblacklisted werden 
+	
 * Erweiterter Kommentar Editor - Icons für Fettschrift, Kursiv, Unterstrichen oder Durchgestrichen werden beim Kommentarfeld eingeblendet Wird ein Text im Kommentar markiert und einer der Knöpf gedrückt werden die notwendigen HTML Tags gesetzt um den Text so darzustellen 
 * Zinkus Button - Reloadet das Disqus Plugin um im Falle von Zinkus nicht ganze RU Seite neuladen zu müssen 
 * Kommentare nachladen - Neue Kommentare und Antworten werden automatisch nachgeladen 
