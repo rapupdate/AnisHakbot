@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.1.1
+//@version      2.1.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -280,7 +280,11 @@ function fillQuoteDiv(){
 	}else if(oldComment<commentHakQuote){		
 		$("#commentsIndicator").html("⬆");
 		$("#commentsIndicator").addClass("quoteUp");
-	}
+	}else{
+		$("#commentsIndicator").html("⇨");
+		$("#commentsIndicator").addClass("quoteStable");
+	}	
+	
 	if(oldAnswer>answerHakQuote){
 		$("#answersIndicator").html("⬇");
 		$("#answersIndicator").addClass("quoteDown");
