@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.0
+//@version      2.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -53,8 +53,20 @@
 			GM_addStyle('.articleWarning{background: linear-gradient(to bottom, rgba(202,0,0,1) 0%,rgba(154,10,0,1) 100%);background-image: linear-gradient(rgb(202, 0, 0) 0%, rgb(154, 10, 0) 100%);background-position-x: initial;background-position-y: initial;background-size: initial;background-repeat-x: initial;background-repeat-y: initial;background-attachment: initial;background-origin: initial;background-clip: initial;background-color: initial;text-align:center;color:white;width:97%;padding:10px;margin-left:30px;margin:10px;border-radius:5px 5px 5px 5px;cursor:pointer}');    	
             GM_addStyle('.smiley{font-size: 150%;padding:10px;display: inline-block;cursor:pointer;}');    	  
 			GM_addStyle('.downed{color:#f05f70;font-family: inherit;line-height: .85;font-weight: 500;display: inline-block;}');    	  						
+			GM_addStyle('.quoteDiv{margin-bottom:12px;text-align:center;}');    	  						
+			GM_addStyle('.quoteLable{font-size:13px;color:#656c7a!important;font-weight:700}');    	  									
 			GM_addStyle('span.settingLable{font-weight: 300;display: inline-block;margin-right:10px}');    	  						
-			GM_addStyle('summary{font-size:16px;font-weight: 600;cursor:pointer}');    	  						
+			GM_addStyle('summary{font-size:16px;font-weight: 600;cursor:pointer}');    	  					
+			GM_addStyle('summary::-webkit-details-marker {display: none;}');
+			GM_addStyle('summary:before {content: "►";}');
+			GM_addStyle('details.open summary:before {content: "▼";}');
+			GM_addStyle('summary:before, summary:after {font-size:.8em;margin-right:6px;}');
+			GM_addStyle('@keyframes down {from {color: #f05f70;}to {color: #656c7a;}}');						
+			GM_addStyle('.quoteDown {animation-name: down;animation-duration: 2s;}')			 
+			GM_addStyle('@keyframes up {from {color: #7CFC00;}to {color: #656c7a;}}');						
+			GM_addStyle('.quoteUp {animation-name: up;animation-duration: 2s;}')	
+			GM_addStyle('@keyframes stable {from {color: #2e9fff;}to {color: #656c7a;}}');						
+			GM_addStyle('.quoteStable {animation-name: stable;animation-duration: 2s;}')	
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
@@ -172,6 +184,7 @@
 			commentBot();                
             repostBot();					
             plugBot();
+			quoteBot();
 			statusBot(botRunning,botSites);
 			if (showDownvotes) showDownvotesBot();
 			clearInterval(checkDisqus);			
@@ -193,6 +206,88 @@
 //=======================================================      
 //Functions
 //=======================================================      
+
+function quoteBot() {
+	var quoteDiv = document.createElement("div");    
+	quoteDiv.innerHTML = "<a class='quoteLable'>Hakquote: Gesamt: <span id='full'></span><span id='fullIndicator'></span> Kommentare: <span id='comments'></span> <span id='commentsIndicator'></span>  Antworten: <span id='answers'></span><span id='answersIndicator'></span></a>";
+	quoteDiv.setAttribute("id","quote");
+	quoteDiv.setAttribute("class","quoteDiv");
+	$("#posts").get(0).before(quoteDiv);
+	fillQuoteDiv();
+	setInterval(function(){		
+		fillQuoteDiv();
+	},5000);
+}
+
+function fillQuoteDiv(){
+	//downvote counter ausschließen!			
+	var oldAll = GM_getValue("oldHak");
+	var oldComment=GM_getValue("oldCommentHak");
+	var oldAnswer=GM_getValue("oldAnswerHak");
+	var allHak = $(".vote-up").children(".updatable.count").get();
+	var allHakCount=0;
+	var answerHak= $(".children").find(".vote-up").find(".updatable.count").get();
+	var answerHakCount=0;
+	var commentHak = [];
+	var commentHakCount=0;
+	for(var i=0; i<allHak.length;i++){		
+		if(! $(allHak[i]).closest(".children").length ) {			
+			commentHak.push(allHak[i]);
+		}
+		var help=allHak[i].innerHTML;
+		allHakCount+=parseInt(help);
+	}
+	for(var j=0; j< answerHak.length; j++){
+		var help=answerHak[j].innerHTML;
+		answerHakCount+=parseInt(help);
+	}
+	for(var k=0; k< commentHak.length; k++){
+		var help=commentHak[k].innerHTML;
+		commentHakCount+=parseInt(help);
+	}
+	var allHakQuote=Math.round(allHakCount/allHak.length*100)/100;
+	var answerHakQuote=Math.round(answerHakCount/answerHak.length*100)/100;
+	var commentHakQuote=Math.round(commentHakCount/commentHak.length*100)/100;	
+	$("#full").html(allHakQuote);
+	$("#comments").html(commentHakQuote);
+	$("#answers").html(answerHakQuote);
+	//console.log(oldAll);
+	$("#fullIndicator").removeClass("quoteUp quoteDown quoteStable");
+	$("#commentsIndicator").removeClass("quoteUp quoteDown quoteStable");
+	$("#answersIndicator").removeClass("quoteUp quoteDown quoteStable");
+	console.log(GM_getValue("oldAnswerHak"));
+	GM_setValue("oldHak",allHakQuote);
+	GM_setValue("oldCommentHak",commentHakQuote);
+	GM_setValue("oldAnswerHak",answerHakQuote);
+	if(oldAll>allHakQuote){		
+		$("#fullIndicator").html("⬇");
+		$("#fullIndicator").addClass("quoteDown");
+	}else if(oldAll<allHakQuote){
+		$("#fullIndicator").html("⬆");
+		$("#fullIndicator").addClass("quoteUp");
+	}else{
+		$("#fullIndicator").html("⇨");
+		$("#fullIndicator").addClass("quoteStable");
+	}
+	if(oldComment>commentHakQuote){		
+		$("#commentsIndicator").html("⬇");
+		$("#commentsIndicator").addClass("quoteDown");
+	}else if(oldComment<commentHakQuote){		
+		$("#commentsIndicator").html("⬆");
+		$("#commentsIndicator").addClass("quoteUp");
+	}
+	if(oldAnswer>answerHakQuote){
+		$("#answersIndicator").html("⬇");
+		$("#answersIndicator").addClass("quoteDown");
+	}else if(oldAnswer<answerHakQuote){
+		$("#answersIndicator").html("⬆");
+		$("#answersIndicator").addClass("quoteUp");
+	}else{
+		$("#answersIndicator").html("⇨");
+		$("#answersIndicator").addClass("quoteStable");
+	}	
+}
+
 function inIframe () {
     try {
         return window.self !== window.top;
@@ -1006,21 +1101,18 @@ function setInterface(botRunning){
 					settings.innerHTML = settings.innerHTML + '<div id="blacklistClanList">';
 					settings.innerHTML = settings.innerHTML + '</div><br>';    
 					settings.innerHTML = settings.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input>';                            				
-					var addClanBlacklist = document.getElementById("addToClanBlacklist");
-					addClanBlacklist.addEventListener('click', addToClanBlacklist);                  
+					              
 					var blacklistClanLi=document.getElementById("blacklistClanList");                       
 					for (var i = 0; i<blacklistClan.length; i++){
 						var blacklistClanLis = document.createElement ('li');                    
 						blacklistClanLis.innerHTML = blacklistClan[i] + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage'><hr>";      
 						blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
 						blacklistClanLi.appendChild(blacklistClanLis);
-					}                					
-					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
-						blacklistClanLi.childNodes.forEach(function(li){
-							console.log(li);
-							li.addEventListener('click', removeFromClanListOnClick);                                
-						});
-					}				
+					}
+					
+					  
+					
+							
 				}else{
 					var settings=document.getElementById("whitelistSettings");	
 					settings.innerHTML = settings.innerHTML + '<br><h4 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Whitelisted Disqus ID: </h4><ol>';
@@ -1032,9 +1124,7 @@ function setInterface(botRunning){
 					settings.innerHTML = settings.innerHTML + '<div id="whitelistClanList">';
 					settings.innerHTML = settings.innerHTML + '</div><br>';  
 					
-					settings.innerHTML = settings.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newWhitelistedClan"></input><input id="addToClanWhitelist" type="button" value="Auf Whitelist" style="margin:20px"></input>';                            				
-					var addClanBlacklist = document.getElementById("addToClanWhitelist");
-					addClanBlacklist.addEventListener('click', addToClanWhitelist);                  
+					settings.innerHTML = settings.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newWhitelistedClan"></input><input id="addToClanWhitelist" type="button" value="Auf Whitelist" style="margin:20px"></input>';                            									              
 					var blacklistClanLi=document.getElementById("whitelistClanList");                       
 					for (var i = 0; i<whitelistClan.length; i++){
 						var blacklistClanLis = document.createElement ('li');                    
@@ -1042,13 +1132,10 @@ function setInterface(botRunning){
 						blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
 						blacklistClanLi.appendChild(blacklistClanLis);
 					}                
-
-					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
-						blacklistClanLi.childNodes.forEach(function(li){
-							console.log(li);
-							li.addEventListener('click', removeFromWhitelistClanListOnClick);                                
-						});
-					}								
+					
+                    
+					
+													
 				}
 				var fakeLinks = GM_getValue("checkLinks");
 				var answerHak = GM_getValue("answerHak");
@@ -1238,7 +1325,41 @@ function setInterface(botRunning){
 				$(".deleteImage.disqusId").click(function(e){
 					removeBlacklist(this);
 				});     
-                $("#BlacklistContainer").hide();     				
+                $("#BlacklistContainer").hide();    
+				$('details summary').each(function(){
+					$(this).nextAll().wrapAll('<div id="wrap"></div>');
+				});
+				$('details').attr('open','').find('#wrap').css('display','none');
+				$('details summary').click(function(e) {
+					e.preventDefault();
+					$(this).siblings('div#wrap').slideToggle(function(){
+						$(this).parent('details').toggleClass('open');
+					});
+				});
+				if (mode=="blacklist"){
+					var addClanBlacklist = document.getElementById("addToClanBlacklist");
+					var blacklistClanLi=document.getElementById("blacklistClanList");                       
+					console.log(addClanBlacklist);
+					addClanBlacklist.addEventListener('click', addToClanBlacklist);  
+					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
+						blacklistClanLi.childNodes.forEach(function(li){
+							console.log(li);
+							li.addEventListener('click', removeFromClanListOnClick);                                
+						});
+					}		
+				}else{
+					var addClanBlacklist = document.getElementById("addToClanWhitelist");
+					var blacklistClanLi=document.getElementById("whitelistClanList");                       
+					console.log("Whitelist:" + blacklistClanLi);
+					addClanBlacklist.addEventListener('click', addToClanWhitelist);    
+					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
+						blacklistClanLi.childNodes.forEach(function(li){
+							console.log(li);
+							li.addEventListener('click', removeFromWhitelistClanListOnClick);                                
+						});
+					}
+				}
+				
             },1000);                                               
 			
             //=======================================================
@@ -1256,13 +1377,13 @@ function setInterface(botRunning){
             },2000);				
             clearInterval(checkExistDisqus); 
             //=======================================================
-            //Sets Toggle Blacklist Button
+            //Sets Toggle Einstellungs Button
             //=======================================================
             var blacklistButton = document.createElement ('li');                        
-            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="Öffnet die Konfigurationsseite für die RU-Toolbox"><span class="label">Einstellungen</span></a>';
+            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="Öffnet die Konfigurationsseite für die RU-Toolbox"><span class="label">►Einstellungen</span></a>';
             blacklistButton.setAttribute ('id', 'blacklistToggle');
             blacklistButton.setAttribute ('class', 'nav-tab nav-tab--secondary dropdown sorting pull-right');
-            blacklistButton.addEventListener('click', toggleBlacklistContainer);
+            blacklistButton.addEventListener('click', function(){toggleBlacklistContainer(this)});
             document.getElementsByClassName("nav-tab--secondary")[0].parentNode.appendChild(blacklistButton);               
             //=======================================================      
             //=======================================================
@@ -1391,7 +1512,10 @@ function addToClanWhitelist(){
 //=======================================================      
 //Shows and Hides the Blacklist Container
 //=======================================================      
-function toggleBlacklistContainer(){    
+function toggleBlacklistContainer(caller){    
+	console.log($(caller).find("span").get(0).innerHTML.indexOf("►"));
+	if ($(caller).find("span").get(0).innerHTML.indexOf("►")>-1) setTimeout(function(){$(caller).find("span").get(0).innerHTML = $(caller).find("span").get(0).innerHTML.replace("►","▼");},400);
+	else $(caller).find("span").get(0).innerHTML = $(caller).find("span").get(0).innerHTML.replace("▼","►");
     var container = $("#BlacklistContainer");
     container.slideToggle();
 
@@ -1440,7 +1564,7 @@ function removeFromClanListOnClick(evt){
     }
 }
 
-function removeFromWhitelistClanListOnClick(evt){	
+function removeFromWhitelistClanListOnClick(evt){		
     var blacklistClan = getGMArray("whitelistClan");    
     for(var i=0; i<blacklistClan.length; i++){        
         if(blacklistClan[i].indexOf(this.innerText.substr(0,document.getElementById("whitelistClanList").childNodes[0].innerText.length-1))>-1){                        
