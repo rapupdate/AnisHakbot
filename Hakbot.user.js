@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.1
+//@version      2.1.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -72,6 +72,11 @@
 			var FakeLinkChecker = GM_getValue("checkLinks");
 			if (typeof FakeLinkChecker=='undefined'){
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+			}
+			
+			var showQuote = GM_getValue("showQuote");
+			if (typeof showQuote =='undefined'){
+				GM_setValue("showQuote",true);
 			}
 			
 			var askDisqus = GM_getValue("askDisqus");			
@@ -184,7 +189,7 @@
 			commentBot();                
             repostBot();					
             plugBot();
-			quoteBot();
+			if (showQuote)quoteBot();
 			statusBot(botRunning,botSites);
 			if (showDownvotes) showDownvotesBot();
 			clearInterval(checkDisqus);			
@@ -1153,11 +1158,18 @@ function setInterface(botRunning){
 				var showDownvotes = GM_getValue("showDownvotes");		
 				var embedImages = GM_getValue("embedImages");
 				var askDisqus = GM_getValue("askDisqus");
+				var showQuote = GM_getValue("showQuote");
                 reloadTime=reloadTime/60/1000;
 				if(askDisqus){
 					var boxStatusDisqus = "checked";
 				}else{
 					var boxStatusDisqus = "";
+				}
+				
+				if(showQuote){
+					var boxStatusQuote = "checked";
+				}else{
+					var boxStatusQuote = "";
 				}
 				
 				if(switchArticle){
@@ -1248,6 +1260,7 @@ function setInterface(botRunning){
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Bunte Bilder im Feed sind schon schön <3"><input type="checkbox" id="embedImages" '+boxStatusEmbed+'><span class="label helper">Bilder automatisch einbetten</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Poste nur wenn Quote gut ist!"><input type="checkbox" id="showQuote" '+boxStatusQuote+'><span class="label helper">Hakquote anzeigen</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
@@ -1270,7 +1283,9 @@ function setInterface(botRunning){
 				$("#switchArticle").click(function(e){
 					toggleSetting(this,"switchArticle");
 				});
-				
+				$("#showQuote").click(function(e){
+					toggleSetting(this,"showQuote");
+				});
 				$("#askDisqus").click(function(e){
 					toggleSetting(this,"askDisqus");
 				});				
