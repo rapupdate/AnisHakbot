@@ -1,13 +1,14 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.2.5
+//@version      2.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@author       You
 //@match        https://disqus.com/embed/comments/*
 //@require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
+//@require      http://benpickles.github.io/peity/jquery.peity.js
 //@run-at       document-start
 //@grant        GM_getValue
 //@grant        GM_setValue
@@ -34,7 +35,7 @@
 	//=======================================================      
     console.log("RU-Bot injeziert");	
 	var checkDisqus = setInterval(function(){		
-		if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){
+		if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){			
 			GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
 			GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:60px;height:38px;float:right;}');
 			GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
@@ -229,17 +230,22 @@ function hideRecommendBot(){
 }
 function quoteBot() {
 	var quoteDiv = document.createElement("div");    
-	quoteDiv.innerHTML = "<a class='quoteLable'>Hakquote: Gesamt: <span id='full'></span><span id='fullIndicator'></span> Kommentare: <span id='comments'></span> <span id='commentsIndicator'></span>  Antworten: <span id='answers'></span><span id='answersIndicator'></span></a>";
+	quoteDiv.innerHTML = "<a class='quoteLable'>Hakquote: Gesamt: <span id='full'></span><span id='fullIndicator'></span> <span id='allGraph' class='line all'></span> Kommentare: <span id='comments'></span><span id='commentsIndicator'></span> <span id='commentGraph' class='line comment'></span> Antworten: <span id='answers'></span> <span id='answersIndicator'></span> <span id='answerGraph' class='line answers'></span></a>";
 	quoteDiv.setAttribute("id","quote");
 	quoteDiv.setAttribute("class","quoteDiv");
 	$("#posts").get(0).before(quoteDiv);
-	fillQuoteDiv();
-	setInterval(function(){		
-		fillQuoteDiv();
-	},5000);
+	var checkPosts = setInterval(function(){
+		if(document.getElementsByClassName("post").length>0){
+			clearInterval(checkPosts);
+			fillQuoteDiv(true);			
+			setInterval(function(){		
+				fillQuoteDiv(false);
+			},5000);			
+		}
+	},100);
 }
 
-function fillQuoteDiv(){
+function fillQuoteDiv(first){
 	//downvote counter ausschließen!			
 	var oldAll = GM_getValue("oldHak");
 	var oldComment=GM_getValue("oldCommentHak");
@@ -250,6 +256,36 @@ function fillQuoteDiv(){
 	var answerHakCount=0;
 	var commentHak = [];
 	var commentHakCount=0;
+	var graphResults = GM_getValue("graphResults");
+	var graphResultsCounter = GM_getValue("graphResultsCounter");
+
+	var graphResultsComments = GM_getValue("graphResultsComments");
+	var graphResultsCounterComments = GM_getValue("graphResultsCounterComments");
+	var graphResultsAnswers = GM_getValue("graphResultsAnswers");
+	var graphResultsCounterAnswers = GM_getValue("graphResultsCounterAnswers");
+	
+	if (typeof graphResults == "undefined"){
+		var graphResultsArray=[];
+		var graphResultsArrayComments=[];
+		var graphResultsArrayAnswers=[];
+		for(var l = 0; l<120;l++){		
+			graphResultsArray.push("0");
+			graphResultsArrayComments.push("0");
+			graphResultsArrayAnswers.push("0");
+		}
+		GM_setValue("graphResults",graphResultsArray.toString());
+		GM_setValue("graphResultsComments",graphResultsArrayComments.toString());
+		GM_setValue("graphResultsAnswers",graphResultsArrayAnswers.toString());
+		graphResults = GM_getValue("graphResults");
+		graphResultsCounter = 0;
+		graphResultsCounterComments = 0;
+		graphResultsCounterAnswers = 0;
+	}else{
+		var graphResultsArray=graphResults.split(",");
+		var graphResultsArrayComments=graphResultsComments.split(",");
+		var graphResultsArrayAnswers=graphResultsAnswers.split(",");
+	}	
+	
 	for(var i=0; i<allHak.length;i++){		
 		if(! $(allHak[i]).closest(".children").length ) {			
 			commentHak.push(allHak[i]);
@@ -268,6 +304,39 @@ function fillQuoteDiv(){
 	var allHakQuote=Math.round(allHakCount/allHak.length*100)/100;
 	var answerHakQuote=Math.round(answerHakCount/answerHak.length*100)/100;
 	var commentHakQuote=Math.round(commentHakCount/commentHak.length*100)/100;	
+	
+	if(graphResultsCounter<120){
+		graphResultsArray[graphResultsCounter]=allHakQuote;
+		graphResultsArrayComments[graphResultsCounterComments]=commentHakQuote;
+		graphResultsArrayAnswers[graphResultsCounterAnswers]=answerHakQuote;
+		graphResultsCounterComments+=1;
+		graphResultsCounterAnswers+=1;
+		graphResultsCounter+=1;
+	}else{
+		graphResultsArray.splice(0, 1);
+		graphResultsArray.push(allHakQuote);
+		graphResultsArrayAnswers.splice(0, 1);
+		graphResultsArrayAnswers.push(answerHakQuote);
+		graphResultsArrayComments.splice(0, 1);
+		graphResultsArrayComments.push(commentHakQuote);
+	}
+	$("#allGraph").html(graphResultsArray.toString());
+	$("#commentGraph").html(graphResultsArrayComments.toString());
+	$("#answerGraph").html(graphResultsArrayAnswers.toString());
+	
+	//Math.max.apply(Math,_array); // 3
+	console.log("Minimum: "+ Math.min.apply(Math,graphResultsArray)+" Aus: "+ graphResultsArray);
+	$(".line.all").peity("line", { min: Math.min.apply(Math,graphResultsArray),max: Math.max.apply(Math,graphResultsArray)});
+	$(".line.comment").peity("line", { min: Math.min.apply(Math,graphResultsArrayComments),max: Math.max.apply(Math,graphResultsArrayComments)});
+	$(".line.answers").peity("line", { min: Math.min.apply(Math,graphResultsArrayAnswers),max: Math.max.apply(Math,graphResultsArrayAnswers)});
+	
+	GM_setValue("graphResultsCounter",graphResultsCounter);
+	GM_setValue("graphResults",graphResultsArray.toString());
+	GM_setValue("graphResultsCounterComments",graphResultsCounterComments);
+	GM_setValue("graphResultsComments",graphResultsArrayComments.toString());
+	GM_setValue("graphResultsCounterAnswers",graphResultsCounterAnswers);
+	GM_setValue("graphResultsAnswers",graphResultsArrayAnswers.toString());
+	
 	$("#full").html(allHakQuote);
 	$("#comments").html(commentHakQuote);
 	$("#answers").html(answerHakQuote);
