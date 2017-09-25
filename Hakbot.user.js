@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.2.1
+//@version      2.1.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -483,8 +483,9 @@ function getParameterByName(name, url) {
 }
 function urlBot(){
     var checkExistTextArea = setInterval(function() {		
-		$(".textarea").not(".cleared").unbind("keypress").keypress(function(e){
+		$(".textarea").not(".cleared").unbind("keyup").keyup(function(e){
             clearUrl(this);
+			clearWords(this);
             $(".textarea").addClass("cleared");
         });
 	}, 1000);    
@@ -508,6 +509,20 @@ function clearUrl(textArea){
         console.log("Link!");
     }    
 }
+
+function clearWords(textArea){
+    var expression = /(Mario|Nigga)/g;
+    var regex = new RegExp(expression);
+    if(textArea.innerHTML.match(regex)){
+        var selectedText = getSelectedText();
+        var savedSelection = saveSelection(textArea,0);        
+        textArea.innerHTML=textArea.innerHTML.replace("Mario","Mаrio");
+        textArea.innerHTML=textArea.innerHTML.replace("Nigga","Niggа ");        
+        restoreSelection(textArea, savedSelection);
+        console.log("Mario/nignog");
+    }    
+}
+
 function setReplyOnclick(){
 	var checkExistDisqus = setInterval(function() {
 		var replies = document.getElementsByClassName("reply");
