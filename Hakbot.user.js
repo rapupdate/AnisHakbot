@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.2.4
+//@version      2.2.5
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -72,6 +72,12 @@
 			var FakeLinkChecker = GM_getValue("checkLinks");
 			if (typeof FakeLinkChecker=='undefined'){
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
+			}
+			
+			var hideRecommend = GM_getValue("hideRecommend");
+			if (typeof hideRecommend=='undefined'){
+				GM_setValue("hideRecommend",true);
+				hideRecommend = GM_getValue("hideRecommend");
 			}
 			
 			var showQuote = GM_getValue("showQuote");
@@ -186,6 +192,7 @@
             if(fastSendStatus)fastSend();	
 			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);            
 			if(reload)reloadBot(reloadTime);
+			if(hideRecommend)hideRecommendBot();
 			commentBot();                
             repostBot();					
             plugBot();
@@ -211,7 +218,15 @@
 //=======================================================      
 //Functions
 //=======================================================      
-
+function hideRecommendBot(){
+	var recommend = setInterval(function(){
+		var recommendButton=document.getElementById("recommend-button");
+		if(typeof recommendButton !="undefined"){
+			recommendButton.setAttribute("style", "display:none");
+			clearInterval(recommend);
+		}
+	},100);
+}
 function quoteBot() {
 	var quoteDiv = document.createElement("div");    
 	quoteDiv.innerHTML = "<a class='quoteLable'>Hakquote: Gesamt: <span id='full'></span><span id='fullIndicator'></span> Kommentare: <span id='comments'></span> <span id='commentsIndicator'></span>  Antworten: <span id='answers'></span><span id='answersIndicator'></span></a>";
@@ -1183,12 +1198,20 @@ function setInterface(botRunning){
 				var embedImages = GM_getValue("embedImages");
 				var askDisqus = GM_getValue("askDisqus");
 				var showQuote = GM_getValue("showQuote");
+				var hideRecommend = GM_getValue("hideRecommend");
                 reloadTime=reloadTime/60/1000;
-				if(askDisqus){
+				
+				if(hideRecommend){				
+					var boxStatusRecommend = "checked";
+				}else{
+					var boxStatusRecommend = "";
+				}	
+				if(askDisqus){				
 					var boxStatusDisqus = "checked";
 				}else{
 					var boxStatusDisqus = "";
-				}
+				}	
+				
 				
 				if(showQuote){
 					var boxStatusQuote = "checked";
@@ -1280,6 +1303,7 @@ function setInterface(botRunning){
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="RU auf Meth - Kommentarantworten nachladen"><input type="checkbox" id="loadSubcomments" '+boxStatusSubComments+'><span class="label helper">Kommentarantworten automatisch laden</span></a><br>';												
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Ich hasse Diskussionen, ich hasse Antworten, das ist kein Upvote Wert!"><input type="checkbox" id="answerHak" '+boxStatusAnswer+'><span class="label helper">Hak an Kommentarantworten verteilen oder nicht</span></a><br>';												
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Ufff, warum ist mein Topkommi unten, zeig mal jetzt Downvotes du Hurensohn!"><input type="checkbox" id="showDownvotes" '+boxStatusDownvotes+'><span class="label helper">Downvote Zähler anzeigen (Beta)</span></a><br>';												
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Digger Spam mal nicht Empfehlen Button!"><input type="checkbox" id="hideRecommend" '+boxStatusRecommend+'><span class="label helper">Empfehlen ausblenden</span></a><br>';												
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
@@ -1307,6 +1331,11 @@ function setInterface(botRunning){
 				$("#switchArticle").click(function(e){
 					toggleSetting(this,"switchArticle");
 				});
+				
+				$("#hideRecommend").click(function(e){
+					toggleSetting(this,"hideRecommend");
+				});
+				
 				$("#showQuote").click(function(e){
 					toggleSetting(this,"showQuote");
 				});
