@@ -43,9 +43,7 @@ Bot der Ru ein wenig aufmöbelt
 * ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
 
 ## Installation
-<a href="https://www.youtube.com/embed/H6CuLzc17xY">Installationsanleitung - Youtube Video</a>
-
-Als Skript verwendet die <a href="https://github.com/rapupdate/AnisHakbot/blob/master/Hakbot.user.js">Hakbot.user.js</a> aus diesem Repository
+<a href="https://www.youtube.com/watch?v=ST5U4hKV2Uo">Installationsanleitung - Youtube Video</a>
 
 ## Known Bugs:
 * Hin und wieder Abmeldung von Disqus. 
