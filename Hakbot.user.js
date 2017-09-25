@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.2
+//@version      2.2.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -855,10 +855,10 @@ function openMakro(caller){
 function useMakro(parent,caller){
 	var makros = getGMArray("makros");
 	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);		
-	textarea.innerHTML=makros[$(caller).closest(".snglMakroContainer").get(0).id];
+	textarea.innerHTML=makros[$(parent).closest(".snglMakroContainer").get(0).id];
 	console.log("Textarea:" + textarea.innerHTML);
 	$(caller).parent().parent().parent().parent().parent().find(".btn.post-action__button").get(0).click();   	    
-	removeMakroDiv();
+	//removeMakroDiv();
 }
 
 function insertMakro(parent,caller){
