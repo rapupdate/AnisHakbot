@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.3
+//@version      2.3.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -326,9 +326,9 @@ function fillQuoteDiv(first){
 	
 	//Math.max.apply(Math,_array); // 3
 	console.log("Minimum: "+ Math.min.apply(Math,graphResultsArray)+" Aus: "+ graphResultsArray);
-	$(".line.all").peity("line", { min: Math.min.apply(Math,graphResultsArray),max: Math.max.apply(Math,graphResultsArray)});
-	$(".line.comment").peity("line", { min: Math.min.apply(Math,graphResultsArrayComments),max: Math.max.apply(Math,graphResultsArrayComments)});
-	$(".line.answers").peity("line", { min: Math.min.apply(Math,graphResultsArrayAnswers),max: Math.max.apply(Math,graphResultsArrayAnswers)});
+	$(".line.all").peity("line", { min: Math.min.apply(Math,graphResultsArray)-1,max: Math.max.apply(Math,graphResultsArray)});
+	$(".line.comment").peity("line", { min: Math.min.apply(Math,graphResultsArrayComments)-1,max: Math.max.apply(Math,graphResultsArrayComments)});
+	$(".line.answers").peity("line", { min: Math.min.apply(Math,graphResultsArrayAnswers)-1,max: Math.max.apply(Math,graphResultsArrayAnswers)});
 	
 	GM_setValue("graphResultsCounter",graphResultsCounter);
 	GM_setValue("graphResults",graphResultsArray.toString());
