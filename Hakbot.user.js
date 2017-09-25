@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.2.3
+//@version      2.2.4
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -511,13 +511,15 @@ function clearUrl(textArea){
 }
 
 function clearWords(textArea){
-    var expression = /(Mario|Nigga)/g;
+    var expression = /(Mario|Nigga|mario|nigga|Nigger|nigger)/g;
     var regex = new RegExp(expression);
     if(textArea.innerHTML.match(regex)){
         var selectedText = getSelectedText();
         var savedSelection = saveSelection(textArea,0);        
         textArea.innerHTML=textArea.innerHTML.replace("Mario","Mаrio");
         textArea.innerHTML=textArea.innerHTML.replace("Nigga","Niggа ");        
+		textArea.innerHTML=textArea.innerHTML.replace("Nigger","Niggа ");        
+		textArea.innerHTML=textArea.innerHTML.replace("nigger","Niggа ");        
 		textArea.innerHTML=textArea.innerHTML.replace("mario","Mаrio");
         textArea.innerHTML=textArea.innerHTML.replace("nigga","Niggа ");  
         restoreSelection(textArea, savedSelection);
