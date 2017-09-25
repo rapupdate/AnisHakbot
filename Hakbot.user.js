@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.1.2
+//@version      2.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -704,11 +704,11 @@ function createMakroDiv(hidden,caller,sibling){
 		console.log(text);                
         //makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
         if (i==0){
-            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+            makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
         }else if (i==makros.length-1){
-            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
+            makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                              
         }else{
-            makroDiv.innerHTML+= "<span id='"+i+"'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
+            makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";                                                          
         }		
 	}                
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
@@ -855,7 +855,7 @@ function openMakro(caller){
 function useMakro(parent,caller){
 	var makros = getGMArray("makros");
 	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);		
-	textarea.innerHTML=makros[parent.id];
+	textarea.innerHTML=makros[$(caller).closest(".snglMakroContainer").get(0).id];
 	console.log("Textarea:" + textarea.innerHTML);
 	$(caller).parent().parent().parent().parent().parent().find(".btn.post-action__button").get(0).click();   	    
 	removeMakroDiv();
@@ -863,9 +863,10 @@ function useMakro(parent,caller){
 
 function insertMakro(parent,caller){
 	var makros = getGMArray("makros");
-	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);		
-	textarea.innerHTML=makros[parent.id];
-	console.log("Textarea:" + textarea.innerHTML);
+	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);	
+	console.log($(parent).get(0));
+	textarea.innerText =makros[$(parent).closest(".snglMakroContainer").get(0).id].replace(/(?:<br \/>)/g,'\n' );
+	console.log("Textarea:" + textarea.innerText);
     textarea.focus();
 	removeMakroDiv();
 }
