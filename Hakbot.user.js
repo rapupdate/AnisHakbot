@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.3.1
+//@version      2.3.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -595,17 +595,19 @@ function clearUrl(textArea){
 }
 
 function clearWords(textArea){
-    var expression = /(Mario|Nigga|mario|nigga|Nigger|nigger)/g;
+    var expression = /(Mario|Nigga|mario|nigga|Nigger|nigger|Bimbo|bimbo)/g;
     var regex = new RegExp(expression);
     if(textArea.innerHTML.match(regex)){
         var selectedText = getSelectedText();
         var savedSelection = saveSelection(textArea,0);        
         textArea.innerHTML=textArea.innerHTML.replace("Mario","Mаrio");
-        textArea.innerHTML=textArea.innerHTML.replace("Nigga","Niggа ");        
-		textArea.innerHTML=textArea.innerHTML.replace("Nigger","Niggа ");        
-		textArea.innerHTML=textArea.innerHTML.replace("nigger","Niggа ");        
+        textArea.innerHTML=textArea.innerHTML.replace("Nigga","Niggа");        
+		textArea.innerHTML=textArea.innerHTML.replace("Nigger","Niggа");        
+		textArea.innerHTML=textArea.innerHTML.replace("nigger","Niggа");        
 		textArea.innerHTML=textArea.innerHTML.replace("mario","Mаrio");
-        textArea.innerHTML=textArea.innerHTML.replace("nigga","Niggа ");  
+        textArea.innerHTML=textArea.innerHTML.replace("nigga","Niggа");  
+		textArea.innerHTML=textArea.innerHTML.replace("bimbo","Вimbo");  		
+		textArea.innerHTML=textArea.innerHTML.replace("Bimbo","Вimbo");  		
         restoreSelection(textArea, savedSelection);
         console.log("Mario/nignog");
     }    
