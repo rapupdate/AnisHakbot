@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.3.2
+//@version      2.3.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -68,6 +68,7 @@
 			GM_addStyle('.quoteUp {animation-name: up;animation-duration: 2s;}')	
 			GM_addStyle('@keyframes stable {from {color: #2e9fff;}to {color: #656c7a;}}');						
 			GM_addStyle('.quoteStable {animation-name: stable;animation-duration: 2s;}')	
+			GM_addStyle('.graphContainer {cursor:pointer}')	
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
@@ -230,10 +231,13 @@ function hideRecommendBot(){
 }
 function quoteBot() {
 	var quoteDiv = document.createElement("div");    
-	quoteDiv.innerHTML = "<a class='quoteLable'>Hakquote: Gesamt: <span id='full'></span><span id='fullIndicator'></span> <span id='allGraph' class='line all'></span> Kommentare: <span id='comments'></span><span id='commentsIndicator'></span> <span id='commentGraph' class='line comment'></span> Antworten: <span id='answers'></span> <span id='answersIndicator'></span> <span id='answerGraph' class='line answers'></span></a>";
+	quoteDiv.innerHTML = "<a class='quoteLable'>Hakquote: Gesamt: <span id='full'></span><span id='fullIndicator'></span> <span class='graphContainer'><span id='allGraph' class='line all'></span></span> Kommentare: <span id='comments'></span><span id='commentsIndicator'></span> <span class='graphContainer'><span id='commentGraph' class='line comment'></span></span> Antworten: <span id='answers'></span> <span id='answersIndicator'></span> <span class='graphContainer'><span id='answerGraph' class='line answers'></span></span></a>";	
 	quoteDiv.setAttribute("id","quote");
 	quoteDiv.setAttribute("class","quoteDiv");
 	$("#posts").get(0).before(quoteDiv);
+	$(".graphContainer").click(function(){		
+		bigGraph($(this).find(".line"),true);
+	});
 	var checkPosts = setInterval(function(){
 		if(document.getElementsByClassName("post").length>0){
 			clearInterval(checkPosts);
@@ -379,6 +383,27 @@ function fillQuoteDiv(first){
 		$("#answersIndicator").html("⇨");
 		$("#answersIndicator").addClass("quoteStable");
 	}	
+	if($("#bigGraph").length){
+		bigGraph($("#"+$("#bigGraph").attr("value")),false);
+	}
+}
+
+function bigGraph(span,click){
+	
+	var renew=true;
+	if($("#bigGraph").length){
+		if($("#bigGraph").attr("value")==span.attr("id")&&click){			
+			renew=false;
+		}		
+		$("#bigGraph").remove();		
+	}
+	if(renew){
+		$("#quote").after("<div id='bigGraph' value='"+span.attr("id")+"'><span id='bigGraphValues' class='line bigGraph'></span></div>");
+		var bigGraphArray = span.html().split(",");
+		$("#bigGraphValues").html(span.html());
+		$(".line.bigGraph").peity("line", { min: Math.min.apply(Math,bigGraphArray)-1,max: Math.max.apply(Math,bigGraphArray),width: $("#bigGraph").width(), height: 50});
+	}
+	
 }
 
 function inIframe () {
