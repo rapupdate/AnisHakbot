@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.3.3
+//@version      2.4
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -733,7 +733,17 @@ function setAdvancedEditor(){
 				openMakro(this);
 			});
             
-            
+            $("button.post-action__button").unbind("click").click(function(){
+				console.log("clicked");
+				if ($(".MakroContainer").length){
+					//console.log("Makro");
+					$(".MakroContainer").remove();
+				}
+				if ($("#smileyContainer").length){
+					//console.log("Smiley");
+					$("#smileyContainer").remove()
+				};
+			});
             
 			document.getElementsByClassName("temp-post")[0].classList.add("advanced");
             clearInterval(checkExistDisqus); 
@@ -927,7 +937,7 @@ function createEdit(parent,caller,sibling){
     var makros = getGMArray("makros");
     var editDiv = document.createElement ('div');
     editDiv.setAttribute ('id', 'editContainer');            
-    editDiv.innerHTML="<textarea id='editText' rows='4' cols='50'>"+makros[parent.id]+"</textarea>";
+    editDiv.innerHTML="<textarea id='editText' rows='4' cols='50'>"+makros[$(parent).closest(".snglMakroContainer").get(0).id]+"</textarea>";
     editDiv.innerHTML+="<br><input type='button' value='speichern' id='saveEdit'><input type='button' value='abbrechen' id='cancelEdit'>"
     parent.append(editDiv);
     $("#cancelEdit").click(function(e) {
@@ -1136,7 +1146,18 @@ function setAdvancedEditorReply(link){
 			div.appendChild(makroButton);
 			$(".editMakroReply").click(function(e) {
 				openMakro(this);
-			});						
+			});			
+			$("button.post-action__button").unbind("click").click(function(){
+				console.log("clicked");
+				if ($(".MakroContainer").length){
+					//console.log("Makro");
+					$(".MakroContainer").remove();
+				}
+				if ($("#smileyContainer").length){
+					//console.log("Smiley");
+					$("#smileyContainer").remove()
+				};
+			});
 			div.classList.add("advanced");
 			//       clearInterval(checkExist);
 		}            				
