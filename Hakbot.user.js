@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.4
+//@version      2.4.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -329,7 +329,7 @@ function fillQuoteDiv(first){
 	$("#answerGraph").html(graphResultsArrayAnswers.toString());
 	
 	//Math.max.apply(Math,_array); // 3
-	console.log("Minimum: "+ Math.min.apply(Math,graphResultsArray)+" Aus: "+ graphResultsArray);
+	//console.log("Minimum: "+ Math.min.apply(Math,graphResultsArray)+" Aus: "+ graphResultsArray);
 	$(".line.all").peity("line", { min: Math.min.apply(Math,graphResultsArray)-1,max: Math.max.apply(Math,graphResultsArray)});
 	$(".line.comment").peity("line", { min: Math.min.apply(Math,graphResultsArrayComments)-1,max: Math.max.apply(Math,graphResultsArrayComments)});
 	$(".line.answers").peity("line", { min: Math.min.apply(Math,graphResultsArrayAnswers)-1,max: Math.max.apply(Math,graphResultsArrayAnswers)});
@@ -348,7 +348,7 @@ function fillQuoteDiv(first){
 	$("#fullIndicator").removeClass("quoteUp quoteDown quoteStable");
 	$("#commentsIndicator").removeClass("quoteUp quoteDown quoteStable");
 	$("#answersIndicator").removeClass("quoteUp quoteDown quoteStable");
-	console.log(GM_getValue("oldAnswerHak"));
+	//console.log(GM_getValue("oldAnswerHak"));
 	GM_setValue("oldHak",allHakQuote);
 	GM_setValue("oldCommentHak",commentHakQuote);
 	GM_setValue("oldAnswerHak",answerHakQuote);
