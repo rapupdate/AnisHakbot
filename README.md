@@ -119,6 +119,11 @@ Bot der Ru ein wenig aufmöbelt
   <blockquote>Das kann abgestellt werden indem die Zeilen "UpdateURL" und DownloadURL aus den Kopfdaten gelöscht werden
   </blockquote>
 </details> 
+  <details> 
+  <summary>"Herr Fencheltee, wie haben sie es geschafft Disqus zu revolutionieren?"</summary>
+  
+"Naja, da war dieses Mädchen in dieser Rap Community, die ist irgendwann gegangen, da habe ich einen Bot geschrieben der Sie zurückrufen sollte... Der Rest ist Geschichte."
+</details> 
 
 ## Screenshots
 <details> 
