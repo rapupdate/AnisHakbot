@@ -620,7 +620,7 @@ function clearUrl(textArea){
 }
 
 function clearWords(textArea){
-    var expression = /(Mario|Nigga|mario|nigga|Nigger|nigger|Bimbo|bimbo|Harms|harms|Down|down)/g;
+    var expression = /(Mario|Nigga|mario|nigga|Nigger|nigger|Bimbo|bimbo|Harms|harms|Down|down|Rapdeutschland|rapdeutschland)/g;
     var regex = new RegExp(expression);
     if(textArea.innerHTML.match(regex)){
         var selectedText = getSelectedText();
@@ -637,6 +637,8 @@ function clearWords(textArea){
 	textArea.innerHTML=textArea.innerHTML.replace("harms","Hаrms");  
 	textArea.innerHTML=textArea.innerHTML.replace("Down","Dоwn");  
 	textArea.innerHTML=textArea.innerHTML.replace("down","dоwn");  
+	    textArea.innerHTML=textArea.innerHTML.replace("rapdeutschland","Rаpdeutschland");
+	    textArea.innerHTML=textArea.innerHTML.replace("Rapdeutschland","Rаpdeutschland");
 	    
         restoreSelection(textArea, savedSelection);
         console.log("Mario/nignog");
