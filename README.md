@@ -1,6 +1,6 @@
-# Anis Hakbot
+# Anis RU-Toolbox
 
-Bot der Ru ein wenig aufmöbelt
+Bot der Ru ein wenig aufmöbelt...
 
 ## Features 
 * HakBot - Verteilt automatisch Hak 
