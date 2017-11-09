@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.4.3
+//@version      2.4.4
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -68,7 +68,8 @@
 			GM_addStyle('.quoteUp {animation-name: up;animation-duration: 2s;}')	
 			GM_addStyle('@keyframes stable {from {color: #2e9fff;}to {color: #656c7a;}}');						
 			GM_addStyle('.quoteStable {animation-name: stable;animation-duration: 2s;}')	
-			GM_addStyle('.graphContainer {cursor:pointer}')	
+			GM_addStyle('.graphContainer {cursor:pointer}')
+			//GM_addStyle('.textarea-wrapper--top-level .textarea-wrapper {margin-left: 120px !important;}.avatar img{width: 100px !important;height: 100px !important;}.textarea-wrapper--top-level .postbox {height: 150px !important;}');
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
@@ -2742,7 +2743,7 @@ function quaffleBot(){
             var user=document.getElementsByClassName("user");
             for (var i =0; i<user.length;i++){
                 //console.log(user[i].href);
-                if(user[i].href=="https://disqus.com/by/DarthWaffle/"){
+                if(user[i].href=="https://disqus.com/by/DarthWaffle/"||user[i].href=="https://disqus.com/by/pipi_vagina/"){
                     //console.log("Quaffles Found");
                     //console.log(user[i].childNodes[0]);
                     user[i].childNodes[0].src="https://img.webme.com/pic/a/aggro-berlin-info/tony.jpg";
