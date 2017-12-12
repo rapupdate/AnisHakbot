@@ -45,6 +45,13 @@ Bot der Ru ein wenig aufmöbelt...
 ## Installation
 <a href="https://www.youtube.com/watch?v=ST5U4hKV2Uo">Installationsanleitung - Youtube Video</a>
 
+*Um den Hakbot im Firefox funktionsfähig zu machen:
+	*Tampermonkey Icon clicken -> Übersicht
+	*Einstellungen
+	*Konfigurationsmodus -> Experte
+	*Experimente -> Skript-Injektion -> Instant
+	
+
 ## Known Bugs:
 * Hin und wieder Abmeldung von Disqus. 
 	* Anmeldung nicht immer direkt wieder möglich, dauert manchmal moment oder Browser muss neu geladen
