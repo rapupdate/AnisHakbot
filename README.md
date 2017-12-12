@@ -45,11 +45,11 @@ Bot der Ru ein wenig aufmöbelt...
 ## Installation
 <a href="https://www.youtube.com/watch?v=ST5U4hKV2Uo">Installationsanleitung - Youtube Video</a>
 
-*Um den Hakbot im Firefox funktionsfähig zu machen:
-	*Tampermonkey Icon clicken -> Übersicht
-	*Einstellungen
-	*Konfigurationsmodus -> Experte
-	*Experimente -> Skript-Injektion -> Instant
+* Um den Hakbot im Firefox funktionsfähig zu machen:
+	* Tampermonkey Icon clicken -> Übersicht
+	* Einstellungen
+	* Konfigurationsmodus -> Experte
+	* Experimente -> Skript-Injektion -> Instant
 	
 
 ## Known Bugs:
