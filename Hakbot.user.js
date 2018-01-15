@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.4.5
+//@version      2.4.6
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -934,9 +934,6 @@ function openSmiley(caller){
 			createSmileyDiv(false,caller,document.getElementsByClassName("nav-secondary")[0]);
 		}else{
 			createSmileyDiv(false,caller,caller.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
-			$(":button.btn.post-action__button").click(function(){
-				alert("Test");
-			})
 		}
 		console.log("Creating Smiley Div");
 		
