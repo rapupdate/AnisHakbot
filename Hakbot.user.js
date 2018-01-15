@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.4.4
+//@version      2.4.5
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -839,6 +839,12 @@ function createMakroDiv(hidden,caller,sibling){
 	}else{
 		console.log("Makros: "+makros);
 	}
+	var smileyContainer = document.getElementById("smileyContainer");
+	if (typeof smileyContainer == "undefined" || smileyContainer == null){
+
+	}else{
+		removeSmileyDiv();
+	}
 
 	var makroDiv = document.createElement ('div');
 	makroDiv.setAttribute ('id', 'MakroContainer');            
@@ -921,12 +927,16 @@ function editMakro (parent,caller,sibling){
 
 function openSmiley(caller){	
 	var container = document.getElementById("smileyContainer");
+	var makroContainer = document.getElementById("MakroContainer");
 	console.log(container);
 	if (typeof container == "undefined" || container == null){
 		if(caller.classList.contains("editMain")){			
 			createSmileyDiv(false,caller,document.getElementsByClassName("nav-secondary")[0]);
 		}else{
 			createSmileyDiv(false,caller,caller.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
+			$(":button.btn.post-action__button").click(function(){
+				alert("Test");
+			})
 		}
 		console.log("Creating Smiley Div");
 		
@@ -938,6 +948,11 @@ function openSmiley(caller){
 		}else{
 			removeSmileyDiv();
 		}
+	}
+	if (typeof makroContainer == "undefined" || makroContainer == null){
+
+	}else{
+		removeMakroDiv();
 	}
 }
 
