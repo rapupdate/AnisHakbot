@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.5
+//@version      2.5.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -84,8 +84,13 @@
 			}
             var embedYoutube = GM_getValue("embedYoutube");
 			if (typeof embedYoutube=='undefined'){
-				GM_setValue("embedYoutube",false);
+				GM_setValue("embedYoutube",true);
 				embedYoutube = GM_getValue("embedYoutube");
+			}
+            var comment = GM_getValue("comment");
+			if (typeof comment=='undefined'){
+				GM_setValue("comment",true);
+				comment = GM_getValue("comment");
 			}
 			
 			var showQuote = GM_getValue("showQuote");
@@ -201,7 +206,7 @@
 			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);            
 			if(reload)reloadBot(reloadTime);
 			if(hideRecommend)hideRecommendBot();
-			commentBot();
+			if (comment) commentBot();
             repostBot();					
             plugBot();
 			if (showQuote)quoteBot();
@@ -1342,7 +1347,10 @@ function setInterface(botRunning){
 				var showQuote = GM_getValue("showQuote");
 				var hideRecommend = GM_getValue("hideRecommend");
                 var embedYoutube = GM_getValue("embedYoutube");
+                var comment = GM_getValue("comment");
+
                 reloadTime=reloadTime/60/1000;
+
 
                 if(embedYoutube){
 					var boxStatusYoutube = "checked";
@@ -1419,7 +1427,14 @@ function setInterface(botRunning){
 					var boxStatusArticle = "";
 					boxStatusNotify+=" disabled";
 					boxStatusSwitch+=" disabled";
-				}    
+				}
+                if(comment){
+					var boxStatusComment = "checked";
+				}else{
+					var boxStatusComment = "";
+                    boxStatusEmbed += " disabled";
+                    boxStatusYoutube += " disabled";
+				}
                 if(clearUrl){
 					var boxStatusUrl = "checked";
 				}else{
@@ -1454,10 +1469,11 @@ function setInterface(botRunning){
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Digger Spam mal nicht Empfehlen Button!"><input type="checkbox" id="hideRecommend" '+boxStatusRecommend+'><span class="label helper">Empfehlen ausblenden</span></a><br>';												
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
-				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Lass mal jetzt die comments in Ruhe!"><input type="checkbox" id="comment" '+boxStatusComment+'><span class="label helper">Sollen die Kommentare geparst werden? (Benötigt für: Youtube und Bilder einbettung und Links Clickbar machen)</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Bunte Bilder im Feed sind schon schön <3"><input type="checkbox" id="embedImages" '+boxStatusEmbed+'><span class="label helper">Bilder automatisch einbetten</span></a><br>';
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Dance zu Musik und Videos ausm Grind"><input type="checkbox" id="embedYoutube" '+boxStatusYoutube+'><span class="label helper">Youtube automatisch einbetten</span></a><br>';
-				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Poste nur wenn Quote gut ist!"><input type="checkbox" id="showQuote" '+boxStatusQuote+'><span class="label helper">Hakquote anzeigen</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Poste nur wenn Quote gut ist!"><input type="checkbox" id="showQuote" '+boxStatusQuote+'><span class="label helper">Hakquote anzeigen</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';										
@@ -1472,6 +1488,10 @@ function setInterface(botRunning){
 				blacklistDiv.innerHTML += '<i>Readme: <a href="https://github.com/rapupdate/AnisHakbot/blob/master/README.md">Klick hier</i><br>';
 				blacklistDiv.innerHTML += '<i>Probleme oder Wünsche? <a href="https://github.com/rapupdate/AnisHakbot/issues">Klick hier</i><br><br>';
 				$('#hakMode').val(mode).change();
+                $("#comment").click(function(e){
+					toggleSetting(this,"comment");
+				});
+
 				$("#hakMode").change(function(e){							
 					GM_setValue("hakMode",this.value);
 					location.reload();
