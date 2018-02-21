@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.4.7
+//@version      2.5
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -81,6 +81,11 @@
 			if (typeof hideRecommend=='undefined'){
 				GM_setValue("hideRecommend",true);
 				hideRecommend = GM_getValue("hideRecommend");
+			}
+            var embedYoutube = GM_getValue("embedYoutube");
+			if (typeof embedYoutube=='undefined'){
+				GM_setValue("embedYoutube",false);
+				embedYoutube = GM_getValue("embedYoutube");
 			}
 			
 			var showQuote = GM_getValue("showQuote");
@@ -196,7 +201,7 @@
 			if(checkArticle&&location.href.indexOf("rapupdate")>-1)newArticleBot(switchArticle);            
 			if(reload)reloadBot(reloadTime);
 			if(hideRecommend)hideRecommendBot();
-			commentBot();                
+			commentBot();
             repostBot();					
             plugBot();
 			if (showQuote)quoteBot();
@@ -1336,8 +1341,14 @@ function setInterface(botRunning){
 				var askDisqus = GM_getValue("askDisqus");
 				var showQuote = GM_getValue("showQuote");
 				var hideRecommend = GM_getValue("hideRecommend");
+                var embedYoutube = GM_getValue("embedYoutube");
                 reloadTime=reloadTime/60/1000;
-				
+
+                if(embedYoutube){
+					var boxStatusYoutube = "checked";
+				}else{
+					var boxStatusYoutube = "";
+				}
 				if(hideRecommend){				
 					var boxStatusRecommend = "checked";
 				}else{
@@ -1444,7 +1455,8 @@ function setInterface(botRunning){
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';												                
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';												                
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';										
-				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Bunte Bilder im Feed sind schon schön <3"><input type="checkbox" id="embedImages" '+boxStatusEmbed+'><span class="label helper">Bilder automatisch einbetten</span></a><br>';										
+				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Bunte Bilder im Feed sind schon schön <3"><input type="checkbox" id="embedImages" '+boxStatusEmbed+'><span class="label helper">Bilder automatisch einbetten</span></a><br>';
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Dance zu Musik und Videos ausm Grind"><input type="checkbox" id="embedYoutube" '+boxStatusYoutube+'><span class="label helper">Youtube automatisch einbetten</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Poste nur wenn Quote gut ist!"><input type="checkbox" id="showQuote" '+boxStatusQuote+'><span class="label helper">Hakquote anzeigen</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Persönlicher Fetisch"><input type="checkbox" id="quafflesBot" '+boxStatusQuaffles+'><span class="label helper">Darth Qualli Waffles Profilbild auf altes Tony D Bild ändern</span></a><br>';										
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder zu spät zur Party!"><input type="checkbox" id="checkArticle" '+boxStatusArticle+'><span class="label helper">Auf neue Artikel checken (Benötigt XMLHTTP-Requests)</span></a><br>';										
@@ -1463,6 +1475,9 @@ function setInterface(botRunning){
 				$("#hakMode").change(function(e){							
 					GM_setValue("hakMode",this.value);
 					location.reload();
+				});
+                $("#embedYoutube").click(function(e){
+					toggleSetting(this,"embedYoutube");
 				});
 				
 				$("#switchArticle").click(function(e){
@@ -2304,6 +2319,7 @@ function commentBot(){
     setInterval(function(){
 		var FakeLinkChecker = GM_getValue("checkLinks");
 		var embedImages = GM_getValue("embedImages");
+        var embedYoutube = GM_getValue("embedYoutube");
         var comments = document.getElementsByClassName("post-message");
         for (var i = 0;i<comments.length;i++){
             //console.log(comments[i].classList.contains("embed"));
@@ -2311,7 +2327,7 @@ function commentBot(){
             //---------------------------------------------------------------------
             //Youtube Embed
             //---------------------------------------------------------------------
-            if(comments[i].innerText.toLowerCase().indexOf(".youtube.com/watch?v=") > -1 && !comments[i].classList.contains("embed")){                                                         
+            if(comments[i].innerText.toLowerCase().indexOf(".youtube.com/watch?v=") > -1 && !comments[i].classList.contains("embed") && embedYoutube){
                 var start = comments[i].innerText.indexOf("watch?v=")+8;
                 var end = start+11;
                 var id = comments[i].innerText.substr(start,11);                
@@ -2319,7 +2335,7 @@ function commentBot(){
                 comments[i].innerHTML=comments[i].innerHTML + "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/"+id+"\" frameborder=\"0\" allowfullscreen></iframe>";
                 comments[i].classList.add("embed");
             }
-            else if(comments[i].innerText.toLowerCase().indexOf("youtu.be/") > -1 && !comments[i].classList.contains("embed")){                                                         
+            else if(comments[i].innerText.toLowerCase().indexOf("youtu.be/") > -1 && !comments[i].classList.contains("embed") && embedYoutube){
                 var start = comments[i].innerText.toLowerCase().indexOf(".be/")+4;
                 var end = start+11;
                 var id = comments[i].innerText.substr(start,11);                
