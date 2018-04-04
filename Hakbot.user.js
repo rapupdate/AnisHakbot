@@ -465,7 +465,7 @@ function fastSend(){
 }
 
 function plugBot(){
-    var plugs = [["*Knarv <3*","https://plug.dj/marios-treue-diener/"],["Django","https://plug.dj/-2864672022448580469"],["Kiesel-Stein","https://plug.dj/hinterhof"],["Codeine-Crazy","https://plug.dj/look-at-me-now"],["Shksbr","https://plug.Dj/rapupdatede"]];
+    var plugs = [["->Hero Boiz<-","https://plug.dj/rapupdate-cafe/"],["Knarv","https://plug.dj/marios-treue-diener/"],["Shksbr","https://plug.Dj/rapupdatede"]];
     var plugDropDown = document.createElement("li");    
     plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
     plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-community");
