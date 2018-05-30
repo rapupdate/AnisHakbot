@@ -43,7 +43,11 @@ Bot der Ru ein wenig aufmöbelt...
 * ~~Blacklist Dropdown Link entsprechend der Dahinterliegenden Funktion beschriften~~
 
 ## Installation
-<a href="https://www.youtube.com/watch?v=ST5U4hKV2Uo">Installationsanleitung - Youtube Video</a>
+* Chrome Erweiterung Tampermonkey installieren
+* <a href="https://github.com/rapupdate/AnisHakbot/blob/master/Hakbot.user.js">Link klicken und auf "RAW" drücken</a>
+* Tampermonkey erlauben das Skript zu installieren
+* Ru aktualisieren
+* *Fertig*
 
 * Um den Hakbot im Firefox funktionsfähig zu machen:
 	* Tampermonkey Icon clicken -> Übersicht
