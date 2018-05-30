@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.6.1
+//@version      2.6.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -499,97 +499,95 @@ function newArticleBot(switchArticle){
 	console.log("New Article Bot startet");
 	var articleNotification = GM_getValue("articleNotification");
 	var noNew;
-    var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/"
-    //console.log(rndmUrl);
-    GM_xmlhttpRequest({
-        method: "GET",
-        url: rndmUrl,
-        onload: function(response) {							
-            var ruApi = response.responseText;
-            var tempDiv = document.createElement('div');
-            tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
-            var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
-            var link = $(li).find("a").attr("href");
-            console.log(link);
-            var url = encodeURI(link);		
-            var para = getParameterByName("t_u", location.href)
-            //console.log(document.getElementsByClassName("articleWarning").length);
-            if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
-                var newArticle = document.createElement ('div');
-                newArticle.setAttribute("class","articleWarning");
-                newArticle.setAttribute("id","articleWarning");
-                newArticle.innerHTML = "Neuer Artikel";
-                $("#posts").before(newArticle);
-                $("#articleWarning").click(function(e){
-                    GM_openInTab(link,false);
-                    //console.log("Click");
-                });				
-                if(articleNotification&&!GM_getValue("onceNotified")){
-                    GM_setValue("onceNotified",true);
-                    GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});						
-                }
-                if(switchArticle)GM_openInTab(link,false);
-            }
-        },
-        onerror: function(response){
-            //var fakeLinkError = GM_getValue("error");
-            linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
-            commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
-            comment.innerHTML=commentHtml;						
-            if(typeof fakeLinkError=='undefined'){
-                if (confirm("Die Domain wurde nicht zum Zugriff zugelassen. Eine Anleitung wie dies zu ändern ist findest du in den FAQ auf:\n'https://github.com/rapupdate/AnisHakbot/blob/master/README.md\nWillst du die Readme in neuem Tab öffnen?")){
-                    GM_openInTab("https://github.com/rapupdate/AnisHakbot/blob/master/README.md#faq",{active:true});
-                }
-                //	GM_setValue("error",true);
-            }						
-        }
-    });	   
+    var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/";
+	setTimeout(function(){
+		//console.log(rndmUrl);
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: rndmUrl,
+			onload: function(response) {
+				var ruApi = response.responseText;
+				console.log(ruApi);
+				if (typeof ruApi != 'undefined'){
+					var tempDiv = document.createElement('div');
+					console.log(ruApi);
+					tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
+					var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
+					var link = $(li).find("a").attr("href");
+					console.log(link);
+					var url = encodeURI(link);
+					var para = getParameterByName("t_u", location.href)
+					//console.log(document.getElementsByClassName("articleWarning").length);
+					if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
+						var newArticle = document.createElement ('div');
+						newArticle.setAttribute("class","articleWarning");
+						newArticle.setAttribute("id","articleWarning");
+						newArticle.innerHTML = "Neuer Artikel";
+						$("#posts").before(newArticle);
+						$("#articleWarning").click(function(e){
+							GM_openInTab(link,false);
+							//console.log("Click");
+						});
+						if(articleNotification&&!GM_getValue("onceNotified")){
+							GM_setValue("onceNotified",true);
+							GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});
+						}
+						if(switchArticle)GM_openInTab(link,false);
+					}
+				}else{
+					//console.log("Fehler beim überprüfen auf neue Artikel\n"+rndmUrl);
+				}
+			},
+			onerror: function(response){
+				//console.log("Fehler beim überprüfen auf neue Artikel");
+			}
+		});
+	},300);
     setInterval(function(){		
-        var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/"
-        //console.log(rndmUrl);
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: rndmUrl,
-            onload: function(response) {						
-                var ruApi = response.responseText;
-                var tempDiv = document.createElement('div');
-                tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
-                var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
-                var link = $(li).find("a").attr("href");
-                var url = encodeURI(link);		
-                var para = getParameterByName("t_u", location.href)
-                //console.log(document.getElementsByClassName("articleWarning").length);
-                if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
-                    var newArticle = document.createElement ('div');
-                    newArticle.setAttribute("class","articleWarning");
-                    newArticle.setAttribute("id","articleWarning");
-                    newArticle.innerHTML = "Neuer Artikel";
-                    $("#posts").before(newArticle);
-                    $("#articleWarning").click(function(e){
-                        GM_openInTab(link,false);
-                        //console.log("Click");
-                    });				
-                    if(switchArticle)GM_openInTab(link,false);
-                    if(articleNotification&&!GM_getValue("onceNotified")){
-                        GM_setValue("onceNotified",true);
-                        GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});												
-                    }
-                }
-
-            },
-            onerror: function(response){
-                //var fakeLinkError = GM_getValue("error");
-                linkClickable = '<a href="'+linkNormal+'">'+linkNormal+'</a>';			
-                commentHtml=commentHtml.replace(new RegExp(linkNormal.toLowerCase(), 'g'),linkClickable);     			
-                comment.innerHTML=commentHtml;						
-                if(typeof fakeLinkError=='undefined'){
-                    if (confirm("Die Domain wurde nicht zum Zugriff zugelassen. Eine Anleitung wie dies zu ändern ist findest du in den FAQ auf:\n'https://github.com/rapupdate/AnisHakbot/blob/master/README.md\nWillst du die Readme in neuem Tab öffnen?")){
-                        GM_openInTab("https://github.com/rapupdate/AnisHakbot/blob/master/README.md#faq",{active:true});
-                    }
-                    //	GM_setValue("error",true);
-                }						
-            }
-        });	   
+        var rndmUrl="http://www.rapupdate.de/"+cacheBreaker()+"/";
+        setTimeout(function(){
+			//console.log(rndmUrl);
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: rndmUrl,
+				onload: function(response) {
+					var ruApi = response.responseText;
+					//console.log(ruApi);
+					if (typeof ruApi != 'undefined'){
+						var tempDiv = document.createElement('div');
+						console.log(ruApi);
+						tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
+						var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
+						var link = $(li).find("a").attr("href");
+						//console.log(link);
+						var url = encodeURI(link);
+						var para = getParameterByName("t_u", location.href)
+						//console.log(document.getElementsByClassName("articleWarning").length);
+						if(link!=para && document.getElementsByClassName("articleWarning").length <=0){
+							var newArticle = document.createElement ('div');
+							newArticle.setAttribute("class","articleWarning");
+							newArticle.setAttribute("id","articleWarning");
+							newArticle.innerHTML = "Neuer Artikel";
+							$("#posts").before(newArticle);
+							$("#articleWarning").click(function(e){
+								GM_openInTab(link,false);
+								//console.log("Click");
+							});
+							if(articleNotification&&!GM_getValue("onceNotified")){
+								GM_setValue("onceNotified",true);
+								GM_notification("Neuer Artikel!","Rapupdate","https://lh3.googleusercontent.com/KRLdUry4tVh571_SDJRU9R6KfaOdnmdWcSIqhmG21KsmA9EdBeL9P7dlJB_HQw6Kqw=w300",function(){GM_openInTab(link,false);});
+							}
+							if(switchArticle)GM_openInTab(link,false);
+						}
+					}else{
+						//console.log("Fehler beim überprüfen auf neue Artikel\n"+rndmUrl);
+					}
+				},
+				onerror: function(response){
+					//console.log("Fehler beim überprüfen auf neue Artikel");
+				}
+			});
+		},300);
     },500);
 }
 function getParameterByName(name, url) {
