@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.6
+//@version      2.6.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -618,6 +618,7 @@ function clearUrl(textArea){
         var selectedText = getSelectedText();
         var savedSelection = saveSelection(textArea,0);        
         textArea.innerHTML=textArea.innerHTML.replace(".net",".Net");
+	textArea.innerHTML=textArea.innerHTML.replace(".ch",".Ch");
         textArea.innerHTML=textArea.innerHTML.replace(".com",".Com");
         textArea.innerHTML=textArea.innerHTML.replace(".de",".De");
         textArea.innerHTML=textArea.innerHTML.replace(".ru",".Ru");
