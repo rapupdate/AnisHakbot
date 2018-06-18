@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.6.3
+//@version      2.7
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -72,6 +72,7 @@
 			//GM_addStyle('.textarea-wrapper--top-level .textarea-wrapper {margin-left: 120px !important;}.avatar img{width: 100px !important;height: 100px !important;}.textarea-wrapper--top-level .postbox {height: 150px !important;}');
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
+			GM_setValue("loading",false);
 			var FakeLinkChecker = GM_getValue("checkLinks");
 			if (typeof FakeLinkChecker=='undefined'){
 				GM_setValue("checkLinks",confirm("Sollen Rapupdate-Links auf ihre Echtheit überprüft werden?\n\nWenn ihr OK drückt werden XMLHTTP Requests abgesetzt. Wenn das erste Request an eine Domain abgesetzt  wird, erscheint ein Popup von Tampermonkey welches fragt ob der Request zugelassen werden soll.\n\In diesem Popup überprüft die 'ANFRAGEZIEL-DOMAIN', wenn es sich um Rapupdate.de handelt, Klickt auf 'Diese Domain immer zulassen', ansonsten funktioniert der Bot nicht!\n\nDrückt ihr Abbrechen, dann funktioniert alles wie bisher und es werden keine XMLHTTP Requests verschickt!"));
@@ -220,6 +221,8 @@
 					window.close();
 				}
 			}
+			//console.log($(".nav-tab.nav-tab--secondary.dropdown.sorting.pull-right"));
+			$(".nav-tab.nav-tab--secondary.dropdown.sorting.pull-right").find("li").click(function(){loading();});
             //var progress = document.createElement ('div');
             //progress.innerHTML = "<progress id='timeToReload'></progress>";
             //$(".nav.nav-primary").children("ul").get(0).after(progress);
@@ -231,6 +234,25 @@
 //=======================================================
 //Functions
 //=======================================================
+
+function loading(){
+	//alert("test");
+	var waitAMoment = setInterval(function(){
+		var posts = $("#post-list").children();
+		//console.log(posts.length);
+		if(posts.length <= 1){
+		   GM_setValue("loading",true);
+		}else{           
+	       clearInterval(waitAMoment);
+			setTimeout(function(){
+				GM_setValue("loading",false);
+			},3000)
+
+		}
+	},100);
+
+}
+
 function hideRecommendBot(){
 	var recommend = setInterval(function(){
 		var recommendButton=document.getElementById("recommend-button");
@@ -507,14 +529,14 @@ function newArticleBot(switchArticle){
 			url: rndmUrl,
 			onload: function(response) {
 				var ruApi = response.responseText;
-				console.log(ruApi);
+				//console.log(ruApi);
 				if (typeof ruApi != 'undefined'){
 					var tempDiv = document.createElement('div');
 					console.log(ruApi);
 					tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
 					var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
 					var link = $(li).find("a").attr("href");
-					console.log(link);
+					//console.log(link);
 					var url = encodeURI(link);
 					var para = getParameterByName("t_u", location.href)
 					//console.log(document.getElementsByClassName("articleWarning").length);
@@ -555,7 +577,7 @@ function newArticleBot(switchArticle){
 					//console.log(ruApi);
 					if (typeof ruApi != 'undefined'){
 						var tempDiv = document.createElement('div');
-						console.log(ruApi);
+						//console.log(ruApi);
 						tempDiv.innerHTML = ruApi.replace(/<script(.|\s)*?\/script>/g, '');
 						var li = $(tempDiv).find("#miniloops-2").find("li").get(0);
 						var link = $(li).find("a").attr("href");
@@ -2089,14 +2111,17 @@ function myLoop (upvoteLinks,i) {
     //  create a loop function
     var natural = GM_getValue("natural");
 	var mode = GM_getValue("hakMode");
+	var loading = GM_getValue("loading");
     var duration = Math.random();
     duration = duration * 1000;
     if (duration < 650){
         duration = duration + 600;
     }
     if(!natural)duration = 1000;
-    setTimeout(function () {    //  call a 3s setTimeout when the loop is called
-		if(upvoteLinks.length > 0){
+	//console.log(loading);
+	if(!loading){
+	   setTimeout(function () {    //  call a 3s setTimeout when the loop is called
+		   if(upvoteLinks.length > 0){
 			if (upvoteLinks[i].classList.contains('upvoted') || (upvoteLinks[i].classList.contains('vote-up') && mode=="blacklist" && blacklistedUser(upvoteLinks[i]))|| (upvoteLinks[i].classList.contains('vote-up') && mode=="whitelist" && !whitelistedUser(upvoteLinks[i]))) {
 				//console.log("Bereits geliked:" + upvoteLinks[i] + "");
 			}else{
@@ -2107,7 +2132,11 @@ function myLoop (upvoteLinks,i) {
 				myLoop(upvoteLinks,i);             //  ..  again which will trigger another
 			}                        //  ..  setTimeout()
 		}
-    }, duration);
+	   }, duration);
+   }else{
+	   //console.log(loading);
+	   return;
+   };
 }
 
 //=======================================================
@@ -2185,12 +2214,16 @@ function clickLink(upvoteLink,number){
 		}
 	}
 	//console.log(downVoted);
-	if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak) || downVoted){
+	var loading = GM_getValue("loading");
+	if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak) || downVoted || loading){
 		//console.log(upvoteLink);
 		//console.log(downvotes);
 		return;
 	}else{
+		//console.log($(link).closest(".post").attr("id"));
 		link.click();
+
+		//console.log(link);
 	}
 	//}, duration);
 }
@@ -2220,7 +2253,8 @@ function initialHak(){
 
 function giveHak(){
     var hakGiver = setInterval(function() {
-		if(typeof $(".post-list.loading").get(0)=="undefined"){
+		var loading = GM_getValue("loading");
+		if(typeof $(".post-list.loading").get(0)=="undefined"&&!loading){
 			var upvoteLinks = $(".vote-up").not(".upvoted").get();
 			//console.log(upvoteLinks.length);
 			var i = 0;                     //  set your counter to 1
