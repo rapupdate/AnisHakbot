@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.7
+//@version      2.8
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -240,13 +240,13 @@ function loading(){
 	var waitAMoment = setInterval(function(){
 		var posts = $("#post-list").children();
 		//console.log(posts.length);
-		if(posts.length <= 1){
+		if(posts.length <= 1 || typeof $(".post-list.loading").get(0)!="undefined"){
 		   GM_setValue("loading",true);
 		}else{           
 	       clearInterval(waitAMoment);
 			setTimeout(function(){
 				GM_setValue("loading",false);
-			},3000)
+			},5000)
 
 		}
 	},100);
@@ -1239,6 +1239,7 @@ function setInterface(botRunning){
 	var whitelist = getGMArray("whitelist");
 	var whitelistClan = getGMArray("whitelistClan");
 	var mode = GM_getValue("hakMode");
+	console.log("Mode:"+mode)
 	if(typeof blacklist == 'undefined' || blacklist.length<=0) {
 		setGMArray("blacklist",[]);
 		blacklist = getGMArray("blacklist");
@@ -1289,10 +1290,12 @@ function setInterface(botRunning){
 			var whitelist = getGMArray("whitelist");
 			var whitelistClan = getGMArray("whitelistClan");
             var blacklistDiv = document.createElement ('div');
+
             blacklistDiv.setAttribute ('id', 'BlacklistContainer');
 			blacklistDiv.innerHTML = blacklistDiv.innerHTML + '<details id="settings"><summary>Bot Einstellungen</summary></details>';
             setTimeout(function(){
 				//blacklistDiv.setAttribute ('style', 'display:none');
+				console.log("Mode timeout:"+mode)
 				if(mode=="blacklist"){
 					blacklistDiv.innerHTML += '<hr><br><details id="blacklistSettings"><summary>Blacklist Einstellungen</summary></details>';
 				}else{
@@ -1597,6 +1600,7 @@ function setInterface(botRunning){
 						$(this).parent('details').toggleClass('open');
 					});
 				});
+				console.log("")
 				if (mode=="blacklist"){
 					var addClanBlacklist = document.getElementById("addToClanBlacklist");
 					var blacklistClanLi=document.getElementById("blacklistClanList");
@@ -1628,10 +1632,12 @@ function setInterface(botRunning){
             //Sets Blacklist Button
             //=======================================================
             setTimeout(function(){
+				console.log("mode Button:"+mode);
 				if(mode=="blacklist"){
 					addBlacklistButton();
 					//addTTSButton();
 				}else{
+					console.log("AddWhitelistButton");
 					addWhitelistButton();
 					//addTTSButton();
 				}
@@ -1846,6 +1852,7 @@ function addBlacklistButton(){
     var dropdowns=document.getElementsByClassName("dropdown-menu");
     var userDropdowns=[];
     var blacklist = getGMArray("blacklist");
+	console.log("BlacklistButtonAdding")
     for (var i=1;i<dropdowns.length;i++){
         var blacklistUser = document.createElement ('li');
         if (dropdowns[i].classList.length==1){
@@ -1879,6 +1886,7 @@ function addWhitelistButton(){
     var dropdowns=document.getElementsByClassName("dropdown-menu");
     var userDropdowns=[];
     var whitelist = getGMArray("whitelist");
+	console.log("WhitelistButtonAdding")
     for (var i=1;i<dropdowns.length;i++){
         var blacklistUser = document.createElement ('li');
         if (dropdowns[i].classList.length==1){
@@ -2280,7 +2288,15 @@ function newCommentBot(giveHak,natural){
                 document.getElementsByClassName("alert--realtime")[0].click();
             },duration);
         }
-        addBlacklistButton();
+		var mode = GM_getValue("hakMode");
+        if(mode=="blacklist"){
+					addBlacklistButton();
+					//addTTSButton();
+				}else{
+					console.log("AddWhitelistButton");
+					addWhitelistButton();
+					//addTTSButton();
+				}
         //console.log(document.getElementsByClassName("textarea").length);
     }, 2000); // check every 1000ms
 }
@@ -2298,7 +2314,15 @@ function newSubcommentBot(giveHak){
             myLoop(neueKommentare,i);     //  start the loop
 
         }
-        addBlacklistButton();
+		var mode = GM_getValue("hakMode");
+        if(mode=="blacklist"){
+					addBlacklistButton();
+					//addTTSButton();
+				}else{
+					console.log("AddWhitelistButton");
+					addWhitelistButton();
+					//addTTSButton();
+				}
         //console.log(document.getElementsByClassName("textarea").length);
     }, 1500); // check every 1000ms
 
