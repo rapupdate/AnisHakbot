@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.8
+//@version      2.8.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -1586,9 +1586,15 @@ function setInterface(botRunning){
                 $("#natural").click(function(e){
 					toggleSetting(this,"natural");
 				});
-				$(".deleteImage.disqusId").click(function(e){
-					removeBlacklist(this);
-				});
+				if(mode=="blacklist"){
+					$(".deleteImage.disqusId").click(function(e){
+						removeBlacklist(this);
+					});
+				}else{
+				   $(".deleteImage.disqusId").click(function(e){
+					removeWhitelist(this);
+			       });
+				}
                 $("#BlacklistContainer").hide();
 				$('details summary').each(function(){
 					$(this).nextAll().wrapAll('<div id="wrap"></div>');
@@ -1736,6 +1742,32 @@ function removeBlacklist(image){
     location.reload();
 }
 
+function removeWhitelist(image){
+	var container=image.parentNode;
+	console.log(container.firstChild.href);
+    var link =  container.firstChild.href;
+	console.log(link);
+    var blacklist = getGMArray("whitelist");
+    console.log("Blacklist: "+ blacklist);
+    var remove=false;
+    for(var i=0; i<blacklist.length; i++){
+        console.log(blacklist[i]);
+        if(link.indexOf(blacklist[i])>-1){
+            console.log("Freigeschaltet: "+blacklist[i]);
+            blacklist.splice(i, 1);
+            remove=true;
+        }
+    }
+    if(!remove){
+        var disqusID= link.substr(0,link.lastIndexOf("/"));
+        disqusID= disqusID.substr(disqusID.lastIndexOf("/")+1);
+        blacklist.push(disqusID);
+        console.log("Gesperrt: "+blacklist[i]);
+    }
+    console.log("Blacklist: "+ blacklist);
+    setGMArray("whitelist",blacklist);
+    location.reload();
+}
 function zinkus(){
     location.reload();
 }
@@ -1887,16 +1919,18 @@ function addWhitelistButton(){
     var userDropdowns=[];
     var whitelist = getGMArray("whitelist");
 	console.log("WhitelistButtonAdding")
+	console.log(dropdowns)
     for (var i=1;i<dropdowns.length;i++){
         var blacklistUser = document.createElement ('li');
         if (dropdowns[i].classList.length==1){
             var comment = dropdowns[i].parentNode.parentNode.parentNode.parentNode;
             var link=$(comment).find(".post-byline").find(".author.publisher-anchor-color").find("a").get(0);
             link=link.href;
-            //console.log(link);
+            console.log(link);
+			console.log(whitelist);
             if (whitelist.length>0){
                 for(var j=0; j<whitelist.length; j++){
-                    if(link.indexOf(blacklist[j])>-1){
+                    if(link.indexOf(whitelist[j])>-1){
                         blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Whitelist entfernen</a>';
 						break;
                     }else{
@@ -1907,6 +1941,7 @@ function addWhitelistButton(){
                 blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';
             }
             blacklistUser.addEventListener('click', toggleWhitelist);
+			console.log(blacklistUser);
             dropdowns[i].append(blacklistUser);
 			addTTSButton(dropdowns[i]);
             dropdowns[i].classList.add("done");
