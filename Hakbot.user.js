@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.9.4
+//@version      2.9.6
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -671,7 +671,9 @@ function clearWords(textArea){
 	textArea.innerHTML=textArea.innerHTML.replace("down","dоwn");
 	    textArea.innerHTML=textArea.innerHTML.replace("rapdeutschland","Rаpdeutschland");
 	    textArea.innerHTML=textArea.innerHTML.replace("Rapdeutschland","Rаpdeutschland");
-        textArea.innerHTML=textArea.innerHTML.replace("#generischeFrontGenerator",generateFront(textArea));
+	if (document.getElementsByName("User Menu")[0].innerText.indexOf("RUCnntn") > -1 || document.getElementsByName("User Menu")[0].innerText.indexOf("RTC") > -1){
+        	textArea.innerHTML=textArea.innerHTML.replace("#generischeFrontGenerator",generateFront(textArea));
+	}
         restoreSelection(textArea, savedSelection);
         console.log("Mario/nignog");
     }
