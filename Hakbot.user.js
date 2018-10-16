@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.9.2
+//@version      2.9.4
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -2875,7 +2875,7 @@ function futureHurensohnBot(){
 function generateFront(textArea){
     if (textArea.innerHTML.indexOf("#generischeFrontGenerator") > -1){
 
-        var tat=["Verbrenne","Esse","Grabe aus","Zerhacke","Bekehre","Schicke in die Hölle","Vergewaltige","Ficke","Hole raus","Breakdance tote Körper","Zerkaue","Töte","Attakiere"]
+        var tat=["Verbrenne","Esse","Grabe aus","Zerhacke","Bekehre","Schicke in die Hölle","Vergewaltige","Ficke","Hole raus","Breakdance auf tote Körper","Zerkaue","Töte","Attakiere"]
         var wort=["Trapez","Parallelogramm","Franzosen","Omnikron","Matrix","Vektor","Alpha","Omega","Minecraft","Fortnite","Computer","Zyklon","","Bonus","Nationalmannschaft","Atom","Metronom","Astronaut","Hyper","Mitryl","Platin"]
         var familie = ["Mutter","Eltern","Oma","Schwester","Familie","Ahnen","Uroma","geweitete Anus","Cousine"]
         var mittel=["mit meinem Kriegsbeil","mit seinem abgehackten Penis","mit meinem Penis","mit Flammenwerfer","mit Barbecue Soße","und benutze ihren Anus zum Cocktailmixen","und esse seine Ehre zum Frühstück","und verkaufe sie für 1g Koks","zum Barbecue","und verzehre sie","und rieche an sein Omas Tanga","mit Teleskop","mit Schaufel","mit Messer","mit Katana","mit Bratpfanne voller Fett","und esse ihre Eingeweide"]
