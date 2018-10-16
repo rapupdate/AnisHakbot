@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.9.1
+//@version      2.9.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -671,7 +671,7 @@ function clearWords(textArea){
 	textArea.innerHTML=textArea.innerHTML.replace("down","dоwn");
 	    textArea.innerHTML=textArea.innerHTML.replace("rapdeutschland","Rаpdeutschland");
 	    textArea.innerHTML=textArea.innerHTML.replace("Rapdeutschland","Rаpdeutschland");
-        textArea.innerHTML=textArea.innerHTML.replace("#generischeFrontGenerator",generateFront());
+        textArea.innerHTML=textArea.innerHTML.replace("#generischeFrontGenerator",generateFront(textArea));
         restoreSelection(textArea, savedSelection);
         console.log("Mario/nignog");
     }
@@ -2872,34 +2872,50 @@ function futureHurensohnBot(){
     //();
 }
 
-function generateFront(){
-    var tat=["Verbrenne","Esse","Grabe aus","Zerhacke","Bekehre","Schicke in die Hölle","Vergewaltige","Ficke","Hole raus","Breakdance tote Körper","Zerkaue","Töte","Attakiere"]
-    var wort=["Trapez","Parallelogramm","Franzosen","Omnikron","Matrix","Vektor","Alpha","Omega","Minecraft","Fortnite","Computer","Zyklon","","Bonus","Nationalmannschaft","Atom","Metronom","Astronaut","Hyper"]
-    var familie = ["Mutter","Eltern","Oma","Schwester","Familie","Ahnen","Uroma","geweitete Anus","Cousine"]
-    var mittel=["mit meinem Kriegsbeil","mit seinem abgehackten Penis","mit meinem Penis","mit Flammenwerfer","mit Barbecue Soße","und benutze ihren Anus zum Cocktailmixen","und esse seine Ehre zum Frühstück","und verkaufe sie für 1g Koks","zum Barbecue","und verzehre sie","und rieche an sein Omas Tanga","mit Teleskop","mit Schaufel","mit Messer","mit Katana","mit Bratpfanne voller Fett","und esse ihre Eingeweide"]
-    var aktion = ["komm ran [befreundeter RapupdateUser] und guck zu","während [befreundeter RapupdateUser] sich heimlich vor Fenster einen drauf wichst","währenddessen klaut [befreundeter RapupdateUser] heimlich die Süßigkeiten aus Schrank","während [befreundeter RapupdateUser] auf seiner E-Gitarre den Soundtrack dazu in Stereo spielt",", [befreundeter RapupdateUser] komm ran und nimm einen Bissen HAMHAM","",", [befreundeter RapupdateUser] nimm einen Schluck von Blut von seiner Familie GLUGLUG","während [befreundeter RapupdateUser] dazu beatboxt","und [befreundeter RapupdateUser] pöbelt wild herum","währenddessen rempelt [befreundeter RapupdateUser] ihn an Bruder"]
-    var front=""
-    var tatTmp = tat[Math.floor(Math.random()*tat.length)].split(" ")
-    console.log(tatTmp.length)
-    var tat1 = tatTmp[0];
-    var tat2 = ""
-    if(tatTmp.length > 1){
-        if(tatTmp[0] == "Breakdance"){
-            tat1 = tat1 + " " + tatTmp[1];
-            tatTmp.shift()
-        }
-        tatTmp.shift()
-        console.log(tatTmp)
-        tat2 = tatTmp.join()
-        tat2 = tat2.replaceAll(","," ");
+function generateFront(textArea){
+    if (textArea.innerHTML.indexOf("#generischeFrontGenerator") > -1){
 
+        var tat=["Verbrenne","Esse","Grabe aus","Zerhacke","Bekehre","Schicke in die Hölle","Vergewaltige","Ficke","Hole raus","Breakdance tote Körper","Zerkaue","Töte","Attakiere"]
+        var wort=["Trapez","Parallelogramm","Franzosen","Omnikron","Matrix","Vektor","Alpha","Omega","Minecraft","Fortnite","Computer","Zyklon","","Bonus","Nationalmannschaft","Atom","Metronom","Astronaut","Hyper","Mitryl","Platin"]
+        var familie = ["Mutter","Eltern","Oma","Schwester","Familie","Ahnen","Uroma","geweitete Anus","Cousine"]
+        var mittel=["mit meinem Kriegsbeil","mit seinem abgehackten Penis","mit meinem Penis","mit Flammenwerfer","mit Barbecue Soße","und benutze ihren Anus zum Cocktailmixen","und esse seine Ehre zum Frühstück","und verkaufe sie für 1g Koks","zum Barbecue","und verzehre sie","und rieche an sein Omas Tanga","mit Teleskop","mit Schaufel","mit Messer","mit Katana","mit Bratpfanne voller Fett","und esse ihre Eingeweide"]
+        var aktion = ["komm ran [befreundeter RapupdateUser] und guck zu","während [befreundeter RapupdateUser] sich heimlich vor Fenster einen drauf wichst","währenddessen klaut [befreundeter RapupdateUser] heimlich die Süßigkeiten aus Schrank","während [befreundeter RapupdateUser] auf seiner E-Gitarre den Soundtrack dazu in Stereo spielt",", [befreundeter RapupdateUser] komm ran und nimm einen Bissen HAMHAM","-",", [befreundeter RapupdateUser] nimm einen Schluck von Blut von seiner Familie GLUGLUG","während [befreundeter RapupdateUser] dazu beatboxt","und [befreundeter RapupdateUser] pöbelt wild herum","währenddessen rempelt [befreundeter RapupdateUser] ihn an Bruder"]
+        var ende = ["Wallahi","Bruder","HAHAHAHAHAHAHAAAAAAA","Nuttensohn","HABUB","Habibi Masallaaah","Ahahahahahahaaaaa",""]
+        var front=""
+        var ruUser = window.prompt("Wen willst du fronten?","");
+        var ruUserFriend = window.prompt("Wer ist auf deiner Seite?","");
+
+        var tatTmp = tat[Math.floor(Math.random()*tat.length)].split(" ")
+        console.log(tatTmp.length)
+        var tat1 = tatTmp[0];
+        var tat2 = ""
+        if(tatTmp.length > 1){
+            if(tatTmp[0] == "Breakdance"){
+                tat1 = tat1 + " " + tatTmp[1];
+                tatTmp.shift()
+            }
+            tatTmp.shift()
+            console.log(tatTmp)
+            tat2 = tatTmp.join()
+            tat2 = tat2.replaceAll(","," ");
+
+        }
+        if (tat2 !=""){
+            front = tat1 + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " +tat2 + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] + " " + ende[Math.floor(Math.random()*ende.length)] +"<br>#generischeFronts"
+        }else{
+            front = tat1 + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] + " " + ende[Math.floor(Math.random()*ende.length)] +"<br>#generischeFronts"
+        }
+        console.log(ruUser)
+        console.log(ruUserFriend)
+        if (ruUser != null || ruUser != "") {
+            front = front.replace("[RapupdateUser]",ruUser);
+        }
+        if (ruUserFriend != null || ruUserFriend != "") {
+            front = front.replace("[befreundeter RapupdateUser]",ruUserFriend);
+        }
+
+        return front;
     }
-    if (tat2 !=""){
-        front = tat1  + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " +tat2 + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] +"<br>#generischeFronts"
-    }else{
-        front = tat1  + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] +"<br>#generischeFronts"
-    }
-    return front;
 }
 
 String.prototype.replaceAll = function(search, replacement) {
