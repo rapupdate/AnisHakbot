@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      2.9.6
+//@version      2.9.7
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -2909,10 +2909,10 @@ function generateFront(textArea){
         }
         console.log(ruUser)
         console.log(ruUserFriend)
-        if (ruUser != null || ruUser != "") {
+        if (ruUser != null && ruUser != "") {
             front = front.replace("[RapupdateUser]",ruUser);
         }
-        if (ruUserFriend != null || ruUserFriend != "") {
+        if (ruUserFriend != null && ruUserFriend != "") {
             front = front.replace("[befreundeter RapupdateUser]",ruUserFriend);
         }
 
