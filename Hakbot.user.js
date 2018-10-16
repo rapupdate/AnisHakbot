@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.0
+//@version      3.0.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -2903,9 +2903,9 @@ function generateFront(textArea){
 
         }
         if (tat2 !=""){
-            front = tat1 + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " +tat2 + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] + " " + ende[Math.floor(Math.random()*ende.length)] +"<br>#generischeFronts"
+            front = tat1 + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " +tat2 + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] + " " + ende[Math.floor(Math.random()*ende.length)] +""
         }else{
-            front = tat1 + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] + " " + ende[Math.floor(Math.random()*ende.length)] +"<br>#generischeFronts"
+            front = tat1 + " [RapupdateUser] seine " + wort[Math.floor(Math.random()*wort.length)] + "hurensohn " + familie[Math.floor(Math.random()*familie.length)] + " " + mittel[Math.floor(Math.random()*mittel.length)] + " " + aktion[Math.floor(Math.random()*aktion.length)] + " " + ende[Math.floor(Math.random()*ende.length)] +""
         }
         console.log(ruUser)
         console.log(ruUserFriend)
