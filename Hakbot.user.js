@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.0.1
+//@version      3.0.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -2877,11 +2877,11 @@ function futureHurensohnBot(){
 function generateFront(textArea){
     if (textArea.innerHTML.indexOf("#generischeFrontGenerator") > -1){
 
-        var tat=["Verbrenne",,"Haue mit Kettensäge","Esse","Grabe aus","Zerhacke","Bekehre","Schicke in die Hölle","Vergewaltige","Ficke","Hole raus","Breakdance auf tote Körper","Zerkaue","Töte","Attakiere"]
-        var wort=["Trapez","Parallelogramm","Franzosen","Omnikron","Matrix","Vektor","Alpha","Omega","Minecraft","Fortnite","Computer","Zyklon","","Bonus","Nationalmannschaft","Atom","Metronom","Astronaut","Hyper","Mitryl","Platin"]
+        var tat=["Verbrenne",,"Haue mit Kettensäge","Esse","Grabe aus","Zerhacke","Bekehre","Schicke in die Hölle","Vergewaltige","Ficke","Hole raus","Breakdance auf tote Körper","Zerkaue","Töte","Attakiere","Stelle mir in Excel Tabellen vor"]
+        var wort=["Trapez","Parallelogramm","Franzosen","Omnikron","Matrix","Vektor","Alpha","Omega","Minecraft","Fortnite","Computer","Zyklon","","Bonus","Nationalmannschaft","Atom","Metronom","Astronaut","Hyper","Mitryl","Platin","Outlookspamverdachtordnervoll"]
         var familie = ["Mutter","Eltern","Oma","Schwester","Familie","Ahnen","Uroma","geweitete Anus","Cousine"]
-        var mittel=["mit meinem Kriegsbeil","mit seinem abgehackten Penis","mit meinem Penis","mit Flammenwerfer","mit Barbecue Soße","und benutze ihren Anus zum Cocktailmixen","und esse seine Ehre zum Frühstück","und verkaufe sie für 1g Koks","zum Barbecue","und verzehre sie","und rieche an sein Omas Tanga","mit Teleskop","mit Schaufel","mit Messer","mit Katana","mit Bratpfanne voller Fett","und esse ihre Eingeweide"]
-        var aktion = ["komm ran [befreundeter RapupdateUser] und guck zu","während [befreundeter RapupdateUser] sich heimlich vor Fenster einen drauf wichst","währenddessen klaut [befreundeter RapupdateUser] heimlich die Süßigkeiten aus Schrank","während [befreundeter RapupdateUser] auf seiner E-Gitarre den Soundtrack dazu in Stereo spielt",", [befreundeter RapupdateUser] komm ran und nimm einen Bissen HAMHAM","-",", [befreundeter RapupdateUser] nimm einen Schluck von Blut von seiner Familie GLUGLUG","während [befreundeter RapupdateUser] dazu beatboxt","und [befreundeter RapupdateUser] pöbelt wild herum","währenddessen rempelt [befreundeter RapupdateUser] ihn an Bruder"]
+        var mittel=["mit meinem Kriegsbeil","mit seinem abgehackten Penis","mit meinem Penis","mit Flammenwerfer","mit Barbecue Soße","und benutze ihren Anus zum Cocktailmixen","und esse seine Ehre zum Frühstück","und verkaufe sie für 1g Koks","zum Barbecue","und verzehre sie","und rieche an sein Omas Tanga","mit Teleskop","mit Schaufel","mit Messer","mit Katana","mit Bratpfanne voller Fett","und esse ihre Eingeweide","und schiebe meinen Penis in zersplitterte Brustkorb","während ich Alexa Despacito spielen lasse","ausserdem lasse ich seine Schwester meinen Schwanz liebkosen","und ich esse dabei lecker Kaviarbrot","während dieser autistische Nuttensohn MACHT MAL LÄÄÄRM BEEEERLIIIIIN rufst","danach schneide ich ihm die Fingerkuppen ab","dann werde ich sein Minecraftserver griefen"]
+        var aktion = ["komm ran [befreundeter RapupdateUser] und guck zu","während [befreundeter RapupdateUser] sich heimlich vor Fenster einen drauf wichst","währenddessen klaut [befreundeter RapupdateUser] heimlich die Süßigkeiten aus Schrank","während [befreundeter RapupdateUser] auf seiner E-Gitarre den Soundtrack dazu in Stereo spielt",", [befreundeter RapupdateUser] komm ran und nimm einen Bissen HAMHAM","-",", [befreundeter RapupdateUser] nimm einen Schluck von Blut von seiner Familie GLUGLUG","während [befreundeter RapupdateUser] dazu beatboxt","und [befreundeter RapupdateUser] pöbelt wild herum","währenddessen rempelt [befreundeter RapupdateUser] ihn an Bruder","bevor [befreundeter RapupdateUser] Auge deiner Uroma aus Puddingglas Löffelt","währenddessen ruft [befreundeter RapupdateUser] ITS JUST A PRANK BRO"]
         var ende = ["Wallahi","Bruder","HAHAHAHAHAHAHAAAAAAA","Nuttensohn","HABUB","Habibi Masallaaah","Ahahahahahahaaaaa",""]
         var front=""
         var ruUser = window.prompt("Wen willst du fronten?","");
@@ -2892,7 +2892,7 @@ function generateFront(textArea){
         var tat1 = tatTmp[0];
         var tat2 = ""
         if(tatTmp.length > 1){
-            if(tatTmp[0] == "Breakdance"){
+            if(tatTmp[0] == "Breakdance" || tatTmp[0] == "Stelle"){
                 tat1 = tat1 + " " + tatTmp[1];
                 tatTmp.shift()
             }
@@ -2909,13 +2909,23 @@ function generateFront(textArea){
         }
         console.log(ruUser)
         console.log(ruUserFriend)
+
+		var generic = true;
         if (ruUser != null && ruUser != "") {
             front = front.replace("[RapupdateUser]",ruUser);
-        }
+			generic = false
+        }else{
+			generic = true
+		}
         if (ruUserFriend != null && ruUserFriend != "") {
             front = front.replace("[befreundeter RapupdateUser]",ruUserFriend);
-        }
-
+			generic = false
+        }else{
+			generic = true
+		}
+        if (generic){
+			front = front + "<br><b>#generischeFronts</b>"
+		}
         return front;
     }
 }
