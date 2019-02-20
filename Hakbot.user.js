@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.0.4
+//@version      3.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -87,6 +87,11 @@
 			if (typeof embedYoutube=='undefined'){
 				GM_setValue("embedYoutube",true);
 				embedYoutube = GM_getValue("embedYoutube");
+			}
+            var advanced = GM_getValue("advanced");
+			if (typeof advanced=='undefined'){
+				GM_setValue("advanced",false);
+				advanced = GM_getValue("advanced");
 			}
             var comment = GM_getValue("comment");
 			if (typeof comment=='undefined'){
@@ -186,7 +191,7 @@
 			//Setting the Interface
 			//=======================================================
 			setInterface(botRunning);
-			setAdvancedEditor();
+            setAdvancedEditor(advanced);
 			setReplyOnclick();
             if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
                 hakBot();
@@ -692,7 +697,10 @@ function setReplyOnclick(){
 }
 
 function addAdvancedEditor(){
-	setAdvancedEditorReply(this);
+    var advanced = GM_getValue("advanced");
+    if(advanced){
+        setAdvancedEditorReply(this,advanced);
+    }
 }
 
 function readComment(comment){
@@ -700,62 +708,63 @@ function readComment(comment){
 	window.speechSynthesis.speak(msg);
 }
 
-function setAdvancedEditor(){
+function setAdvancedEditor(advanced){
 	var checkExistDisqus = setInterval(function() {
 		console.log(document.getElementsByClassName("btn post-action__button"));
         if (document.getElementsByClassName("btn post-action__button").length > 0 && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced") && document.getElementsByClassName("username").length>0) {
             console.log(document.getElementsByClassName("btn post-action__button"));
-			var sndButton = document.getElementsByClassName("btn post-action__button")[0];
-			var boldButton = document.createElement ('div');
-			boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';
-			boldButton.setAttribute ('class', 'editBtn editBold btn post-action__button');
-			//
-            var textArea=document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-			document.getElementsByClassName("temp-post")[0].appendChild(boldButton);
-			$(".editBold").click(function(e) {
-				createTag(textArea,"<b>","</b>");
-			});
-			var italicButton = document.createElement ('div');
-			italicButton.innerHTML='<a style="color:white;"><i>i</i></a>';
-			italicButton.setAttribute ('class', 'editBtn edititalic btn post-action__button');
-			//
-			document.getElementsByClassName("temp-post")[0].appendChild(italicButton);
-			$(".edititalic").click(function(e) {
-				createTag(textArea,"<i>","</i>");
-			});
-			var underButton = document.createElement ('div');
-			underButton.innerHTML='<a style="color:white;"><u>u</u></a>';
-			underButton.setAttribute ('class', 'editBtn editunder btn post-action__button');
-			//
-			document.getElementsByClassName("temp-post")[0].appendChild(underButton);
-			$(".editunder").click(function(e) {
-				createTag(textArea,"<u>","</u>");
-			});
-			var scribbleButton = document.createElement ('div');
-			scribbleButton.innerHTML='<a style="color:white;"><s>s</s></a>';
-			scribbleButton.setAttribute ('class', 'editBtn editscribble btn post-action__button');
-			//
-			document.getElementsByClassName("temp-post")[0].appendChild(scribbleButton);
-			$(".editscribble").click(function(e) {
-				createTag(textArea,"<s>","</s>");
-			});
-			var quoteButton = document.createElement ('div');
-			quoteButton.innerHTML='<a style="color:white;"><blockquote>„"</blockquote></a>';
-			quoteButton.setAttribute ('class', 'editBtn editquote btn post-action__button');
-			//
-			document.getElementsByClassName("temp-post")[0].appendChild(quoteButton);
-			$(".editquote").click(function(e) {
-				createTag(textArea,"<blockquote>","</blockquote>");
-			});
-			var spoilerButton = document.createElement ('div');
-			spoilerButton.innerHTML='<a style="color:white;"><spoiler>Spoiler</spoiler></a>';
-			spoilerButton.setAttribute ('class', 'editBtnBig editspoiler btn post-action__button');
-			//
-			document.getElementsByClassName("temp-post")[0].appendChild(spoilerButton);
-			$(".editspoiler").click(function(e) {
-				createTag(textArea,"<spoiler>","</spoiler>");
-			});
-
+            if (advanced){
+                    var sndButton = document.getElementsByClassName("btn post-action__button")[0];
+                    var boldButton = document.createElement ('div');
+                    boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';
+                    boldButton.setAttribute ('class', 'editBtn editBold btn post-action__button');
+                    //
+                    var textArea=document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
+                    document.getElementsByClassName("temp-post")[0].appendChild(boldButton);
+                    $(".editBold").click(function(e) {
+                        createTag(textArea,"<b>","</b>");
+                    });
+                    var italicButton = document.createElement ('div');
+                    italicButton.innerHTML='<a style="color:white;"><i>i</i></a>';
+                    italicButton.setAttribute ('class', 'editBtn edititalic btn post-action__button');
+                    //
+                    document.getElementsByClassName("temp-post")[0].appendChild(italicButton);
+                    $(".edititalic").click(function(e) {
+                        createTag(textArea,"<i>","</i>");
+                    });
+                    var underButton = document.createElement ('div');
+                    underButton.innerHTML='<a style="color:white;"><u>u</u></a>';
+                    underButton.setAttribute ('class', 'editBtn editunder btn post-action__button');
+                    //
+                    document.getElementsByClassName("temp-post")[0].appendChild(underButton);
+                    $(".editunder").click(function(e) {
+                        createTag(textArea,"<u>","</u>");
+                    });
+                    var scribbleButton = document.createElement ('div');
+                    scribbleButton.innerHTML='<a style="color:white;"><s>s</s></a>';
+                    scribbleButton.setAttribute ('class', 'editBtn editscribble btn post-action__button');
+                    //
+                    document.getElementsByClassName("temp-post")[0].appendChild(scribbleButton);
+                    $(".editscribble").click(function(e) {
+                        createTag(textArea,"<s>","</s>");
+                    });
+                    var quoteButton = document.createElement ('div');
+                    quoteButton.innerHTML='<a style="color:white;"><blockquote>„"</blockquote></a>';
+                    quoteButton.setAttribute ('class', 'editBtn editquote btn post-action__button');
+                    //
+                    document.getElementsByClassName("temp-post")[0].appendChild(quoteButton);
+                    $(".editquote").click(function(e) {
+                        createTag(textArea,"<blockquote>","</blockquote>");
+                    });
+                    var spoilerButton = document.createElement ('div');
+                    spoilerButton.innerHTML='<a style="color:white;"><spoiler>Spoiler</spoiler></a>';
+                    spoilerButton.setAttribute ('class', 'editBtnBig editspoiler btn post-action__button');
+                    //
+                    document.getElementsByClassName("temp-post")[0].appendChild(spoilerButton);
+                    $(".editspoiler").click(function(e) {
+                        createTag(textArea,"<spoiler>","</spoiler>");
+                    });
+            }
 			var smileyButton = document.createElement ('div');
 			smileyButton.innerHTML='<a style="color:white;">&#128512;</a>';
 			smileyButton.setAttribute ('class', 'editBtn editSmiley btn post-action__button');
@@ -766,8 +775,8 @@ function setAdvancedEditor(){
 			});
 
 			var makroButton = document.createElement ('div');
-			makroButton.innerHTML='<a style="color:white;">Makro</a>';
-			makroButton.setAttribute ('class', 'editMain editBtnBig editMakro btn post-action__button');
+			makroButton.innerHTML='<a style="color:white;">Mkr</a>';
+			makroButton.setAttribute ('class', 'editMain editBtn editMakro btn post-action__button');
 			//
 			document.getElementsByClassName("temp-post")[0].appendChild(makroButton);
 			$(".editMakro").click(function(e) {
@@ -936,6 +945,17 @@ function createMakroDiv(hidden,caller,sibling){
     $(".insertImageMakro").click(function(e) {
 		insertMakro(this.parentNode,caller,sibling);
 	});
+    $("button.post-action__button").unbind("click").click(function(){
+				console.log("clicked");
+				if ($(".MakroContainer").length){
+					//console.log("Makro");
+					$(".MakroContainer").remove();
+				}
+				if ($("#smileyContainer").length){
+					//console.log("Smiley");
+					$("#smileyContainer").remove()
+				};
+			});
 }
 function moveUpMakro (parent,caller,sibling){
     var makros = getGMArray("makros");
@@ -1125,7 +1145,7 @@ function createTag(element,tag,endTag){
 
 
 
-function setAdvancedEditorReply(link){
+function setAdvancedEditorReply(link,advanced){
 	setTimeout(function(){
 		removeMakroDiv();
         removeSmileyDiv();
@@ -1138,60 +1158,59 @@ function setAdvancedEditorReply(link){
 		//var checkExist = setInterval(function() {
 		console.log("Type: "+typeof div);
 		if (typeof div == "object" && !div.classList.contains("advanced")) {
-			console.log("War mal Object:" + div);
-			var boldButton = document.createElement ('div');
-			boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';
-			//BorderColor
-			//border-style: solid;border-color:#68757d;
-			boldButton.setAttribute ('class', 'editBtn editBoldReply btn post-action__button');
-			//
-			var italicButton = document.createElement ('div');
-			italicButton.innerHTML='<a style="color:white;"><i>i</i></a>';
-			//BorderColor
-			//border-style: solid;border-color:#68757d;
-			italicButton.setAttribute ('class', 'editBtn edititalicReply btn post-action__button');
-			//
-			var underButton = document.createElement ('div');
-			underButton.innerHTML='<a style="color:white;"><u>u</u></a>';
-			//BorderColor
-			//border-style: solid;border-color:#68757d;
-			underButton.setAttribute ('class', 'editBtn editunderReply btn post-action__button');
-			//
-			var scribbleButton = document.createElement ('div');
-			scribbleButton.innerHTML='<a style="color:white;"><s>s</s></a>';
-			//BorderColor
-			//border-style: solid;border-color:#68757d;
-			scribbleButton.setAttribute ('class', 'editBtn editscribbleReply btn post-action__button');
-			//
-			console.log("Bold" + div);
-			div.appendChild(boldButton);
-
+            if(advanced){
+                console.log("War mal Object:" + div);
+                var boldButton = document.createElement ('div');
+                boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';
+                //BorderColor
+                //border-style: solid;border-color:#68757d;
+                boldButton.setAttribute ('class', 'editBtn editBoldReply btn post-action__button');
+                //
+                var italicButton = document.createElement ('div');
+                italicButton.innerHTML='<a style="color:white;"><i>i</i></a>';
+                //BorderColor
+                //border-style: solid;border-color:#68757d;
+                italicButton.setAttribute ('class', 'editBtn edititalicReply btn post-action__button');
+                //
+                var underButton = document.createElement ('div');
+                underButton.innerHTML='<a style="color:white;"><u>u</u></a>';
+                //BorderColor
+                //border-style: solid;border-color:#68757d;
+                underButton.setAttribute ('class', 'editBtn editunderReply btn post-action__button');
+                //
+                var scribbleButton = document.createElement ('div');
+                scribbleButton.innerHTML='<a style="color:white;"><s>s</s></a>';
+                //BorderColor
+                //border-style: solid;border-color:#68757d;
+                scribbleButton.setAttribute ('class', 'editBtn editscribbleReply btn post-action__button');
+                //
+                console.log("Bold" + div);
+                div.appendChild(boldButton);
+                $(".editBoldReply").click(function(e) {
+				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<b>","</b>");
+                });
+                console.log("Italic " + div);
+                div.appendChild(italicButton);
+                $(".edititalicReply").click(function(e) {
+                    createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<i>","</i>");
+                });
+                div.appendChild(underButton);
+                $(".editunderReply").click(function(e) {
+                    createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<u>","</u>");
+                });
+                div.appendChild(scribbleButton);
+                $(".editscribbleReply").click(function(e) {
+                    createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<s>","</s>");
+                });
+            }
             var smileyButton = document.createElement ('div');
 			smileyButton.innerHTML='<a style="color:white;">&#128512;</a>';
 			smileyButton.setAttribute ('class', 'editBtn editSmileyReply btn post-action__button');
 			//
 
 			var makroButton = document.createElement ('div');
-			makroButton.innerHTML='<a style="color:white;">Makro</a>';
-			makroButton.setAttribute ('class', 'editBtnBig editMakroReply btn post-action__button');
-			//
-
-			$(".editBoldReply").click(function(e) {
-				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<b>","</b>");
-			});
-			console.log("Italic " + div);
-			div.appendChild(italicButton);
-			$(".edititalicReply").click(function(e) {
-				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<i>","</i>");
-			});
-			div.appendChild(underButton);
-			$(".editunderReply").click(function(e) {
-				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<u>","</u>");
-			});
-			div.appendChild(scribbleButton);
-			$(".editscribbleReply").click(function(e) {
-				createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<s>","</s>");
-			});
+			makroButton.innerHTML='<a style="color:white;">Mkr</a>';
+			makroButton.setAttribute ('class', 'editBtn editMakroReply btn post-action__button');			
             div.appendChild(smileyButton);
             $(".editSmileyReply").click(function(e) {
 				openSmiley(this);
@@ -1374,10 +1393,15 @@ function setInterface(botRunning){
 				var hideRecommend = GM_getValue("hideRecommend");
                 var embedYoutube = GM_getValue("embedYoutube");
                 var comment = GM_getValue("comment");
+                var advanced = GM_getValue("advanced");
 
                 reloadTime=reloadTime/60/1000;
 
-
+                if(advanced){
+					var boxStatusAdvanced = "checked";
+				}else{
+					var boxStatusAdvanced = "";
+				}
                 if(embedYoutube){
 					var boxStatusYoutube = "checked";
 				}else{
@@ -1505,8 +1529,10 @@ function setInterface(botRunning){
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Weck mich auf wenn neuer Artikel du hont!"><input type="checkbox" id="notifyArticle" '+boxStatusNotify+'><span class="label helper">Benachrichtigung wenn ein neuer Artikel vorhanden ist (Benötigt Auf neue Artikel checken!)</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Zack und rüber mit mir!"><input type="checkbox" id="switchArticle" '+boxStatusSwitch+'><span class="label helper">Automatisch auf neuen Artikel wechseln (Benötigt Auf neue Artikel checken!)</span></a><br>';
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Verlinkungen endlich wieder einfach nur eintippen... Puh wie geil ist das denn?"><input type="checkbox" id="clearUrl" '+boxStatusUrl+'><span class="label helper">URLs in Postfähige Form verwandeln</span></a><br>';
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Erweitere Editor Einblenden, sollte nach letztem Disqus Update nicht mehr nötig sein"><input type="checkbox" id="advanced" '+boxStatusAdvanced+'><span class="label helper">Advanced Editor einblenden</span></a><br>';
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Es nervt manchmal, aber glaubt mir es ist zu eurem Besten"><input type="checkbox" id="reloadBot" '+boxStatusReload+'><span class="label helper">Reload Bot - Lädt Disqus automatisch neu (Empfohlen!)</span></a><br>';
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">Reload Interval (In Minuten): </span><input type="Number" id="reloadTime" value="'+reloadTime+'" min="1" max="60"></input><input id="setReloadTime" type="button" value="Speichern" style="margin:20px"></input></a><br>';
+
 
 				blacklistDiv.innerHTML += '<hr><br><h3>Über den Hakbot</h3>';
 				blacklistDiv.innerHTML += '<i>Version: '+GM_info["script"]["version"]+'</i><br>';
@@ -1520,6 +1546,10 @@ function setInterface(botRunning){
 
 				$("#hakMode").change(function(e){
 					GM_setValue("hakMode",this.value);
+					location.reload();
+				});
+                $("#advanced").change(function(e){
+					GM_setValue("advanced",this.value);
 					location.reload();
 				});
                 $("#embedYoutube").click(function(e){
