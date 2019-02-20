@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1
+//@version      3.1.1
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -1394,7 +1394,7 @@ function setInterface(botRunning){
                 var embedYoutube = GM_getValue("embedYoutube");
                 var comment = GM_getValue("comment");
                 var advanced = GM_getValue("advanced");
-
+                console.log("Advanced" + advanced)
                 reloadTime=reloadTime/60/1000;
 
                 if(advanced){
@@ -1549,8 +1549,7 @@ function setInterface(botRunning){
 					location.reload();
 				});
                 $("#advanced").change(function(e){
-					GM_setValue("advanced",this.value);
-					location.reload();
+                    toggleSetting(this,"advanced");
 				});
                 $("#embedYoutube").click(function(e){
 					toggleSetting(this,"embedYoutube");
