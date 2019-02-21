@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1.1
+//@version      3.1.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -82,6 +82,11 @@
 			if (typeof hideRecommend=='undefined'){
 				GM_setValue("hideRecommend",true);
 				hideRecommend = GM_getValue("hideRecommend");
+			}
+            var hideSocial = GM_getValue("hideSocial");
+			if (typeof hideSocial=='undefined'){
+				GM_setValue("hideSocial",true);
+				hideSocial = GM_getValue("hideSocial");
 			}
             var embedYoutube = GM_getValue("embedYoutube");
 			if (typeof embedYoutube=='undefined'){
@@ -226,6 +231,7 @@
 					window.close();
 				}
 			}
+            if (hideSocial) hideSocialBot()
 			//console.log($(".nav-tab.nav-tab--secondary.dropdown.sorting.pull-right"));
 			$(".nav-tab.nav-tab--secondary.dropdown.sorting.pull-right").find("li").click(function(){loading();});
             //var progress = document.createElement ('div');
@@ -267,6 +273,17 @@ function hideRecommendBot(){
 		}
 	},100);
 }
+
+function hideSocialBot(){
+	var social = setInterval(function(){
+		var social=$(".thread-share-bar-buttons");
+		if(social.length > 0){
+			$(".thread-share-bar-buttons").hide();
+			clearInterval(social);
+		}
+	},100);
+}
+
 function quoteBot() {
 	var quoteDiv = document.createElement("div");
 	quoteDiv.innerHTML = "<a class='quoteLable'>Hakquote: Gesamt: <span id='full'></span><span id='fullIndicator'></span> <span class='graphContainer'><span id='allGraph' class='line all'></span></span> Kommentare: <span id='comments'></span><span id='commentsIndicator'></span> <span class='graphContainer'><span id='commentGraph' class='line comment'></span></span> Antworten: <span id='answers'></span> <span id='answersIndicator'></span> <span class='graphContainer'><span id='answerGraph' class='line answers'></span></span></a>";
@@ -1394,9 +1411,15 @@ function setInterface(botRunning){
                 var embedYoutube = GM_getValue("embedYoutube");
                 var comment = GM_getValue("comment");
                 var advanced = GM_getValue("advanced");
-                console.log("Advanced" + advanced)
-                reloadTime=reloadTime/60/1000;
+                var hideSocial = GM_getValue("hideSocial");
 
+                reloadTime=reloadTime/60/1000;
+                console.log("!!!Hide Social "+hideSocial);
+                if(hideSocial){
+					var boxStatusHideSocial = "checked";
+				}else{
+					var boxStatusHideSocial = "";
+				}
                 if(advanced){
 					var boxStatusAdvanced = "checked";
 				}else{
@@ -1517,6 +1540,7 @@ function setInterface(botRunning){
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Ich hasse Diskussionen, ich hasse Antworten, das ist kein Upvote Wert!"><input type="checkbox" id="answerHak" '+boxStatusAnswer+'><span class="label helper">Hak an Kommentarantworten verteilen oder nicht</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Ufff, warum ist mein Topkommi unten, zeig mal jetzt Downvotes du Hurensohn!"><input type="checkbox" id="showDownvotes" '+boxStatusDownvotes+'><span class="label helper">Downvote Zähler anzeigen (Beta)</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Digger Spam mal nicht Empfehlen Button!"><input type="checkbox" id="hideRecommend" '+boxStatusRecommend+'><span class="label helper">Empfehlen ausblenden</span></a><br>';
+                document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Digger ich teile den Scheiß nicht!"><input type="checkbox" id="hideSocial" '+boxStatusHideSocial+'><span class="label helper">Social Media ausblenden</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Fast Send - Schneller Spammen, einfach Enter Drücken"><input type="checkbox" id="fastSend" '+boxStatusFastSend+'><span class="label helper">Fast Send - Enter zum Abschicken von Comments, Shift Enter für neue Zeile</span></a><br>';
                 document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Sneaky Peaky - Zufallszeiten bei Clicks um Menschlich zu wirken"><input type="checkbox" id="natural" '+boxStatusNatural+'><span class="label helper">Natürlicher Modus - zufällige Klickzeiten</span></a><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Nie wieder auf Fake RU-Links reinfallen!"><input type="checkbox" id="fakeBot" '+boxStatus+'><span class="label helper">FakeLinks hervorheben (Benötigt XMLHTTP-Requests)</span></a><br>';
@@ -1548,6 +1572,10 @@ function setInterface(botRunning){
 					GM_setValue("hakMode",this.value);
 					location.reload();
 				});
+                $("#hideSocial").change(function(e){
+                    toggleSetting(this,"hideSocial");
+				});
+
                 $("#advanced").change(function(e){
                     toggleSetting(this,"advanced");
 				});
