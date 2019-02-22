@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1.2
+//@version      3.1.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -1949,26 +1949,27 @@ function addBlacklistButton(){
         if (dropdowns[i].classList.length==1){
             var comment = dropdowns[i].parentNode.parentNode.parentNode.parentNode;
             var link=$(comment).find(".post-byline").find(".author.publisher-anchor-color").find("a").get(0);
-            link=link.href;
-            //console.log(link);
-            if (blacklist.length>0){
-                for(var j=0; j<blacklist.length; j++){
-                    if(link.indexOf(blacklist[j])>-1){
-                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Blacklist entfernen</a>';
-						break;
-                    }else{
-                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';
+            if(typeof link != "undefined"){
+                link=link.href;
+                //console.log(link);
+                if (blacklist.length>0){
+                    for(var j=0; j<blacklist.length; j++){
+                        if(link.indexOf(blacklist[j])>-1){
+                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Blacklist entfernen</a>';
+                            break;
+                        }else{
+                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';
+                        }
                     }
+                }else{
+                    blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';
                 }
-            }else{
-                blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';
+                blacklistUser.addEventListener('click', toggleBlacklist);
+                dropdowns[i].append(blacklistUser);
+                addTTSButton(dropdowns[i]);
+                dropdowns[i].classList.add("done");
+                //console.log("Erledigt");
             }
-            blacklistUser.addEventListener('click', toggleBlacklist);
-            dropdowns[i].append(blacklistUser);
-			addTTSButton(dropdowns[i]);
-            dropdowns[i].classList.add("done");
-            //console.log("Erledigt");
-
         }
     }
 }
@@ -1984,28 +1985,29 @@ function addWhitelistButton(){
         if (dropdowns[i].classList.length==1){
             var comment = dropdowns[i].parentNode.parentNode.parentNode.parentNode;
             var link=$(comment).find(".post-byline").find(".author.publisher-anchor-color").find("a").get(0);
-            link=link.href;
-            console.log(link);
-			console.log(whitelist);
-            if (whitelist.length>0){
-                for(var j=0; j<whitelist.length; j++){
-                    if(link.indexOf(whitelist[j])>-1){
-                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Whitelist entfernen</a>';
-						break;
-                    }else{
-                        blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';
+            if(typeof link != "undefined"){
+                link=link.href;
+                console.log(link);
+                console.log(whitelist);
+                if (whitelist.length>0){
+                    for(var j=0; j<whitelist.length; j++){
+                        if(link.indexOf(whitelist[j])>-1){
+                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Whitelist entfernen</a>';
+                            break;
+                        }else{
+                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';
+                        }
                     }
+                }else{
+                    blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';
                 }
-            }else{
-                blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';
+                blacklistUser.addEventListener('click', toggleWhitelist);
+                console.log(blacklistUser);
+                dropdowns[i].append(blacklistUser);
+                addTTSButton(dropdowns[i]);
+                dropdowns[i].classList.add("done");
+                //console.log("Erledigt");
             }
-            blacklistUser.addEventListener('click', toggleWhitelist);
-			console.log(blacklistUser);
-            dropdowns[i].append(blacklistUser);
-			addTTSButton(dropdowns[i]);
-            dropdowns[i].classList.add("done");
-            //console.log("Erledigt");
-
         }
     }
 }
