@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1.8
+//@version      3.1.9
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -2439,12 +2439,15 @@ function newSubcommentBot(giveHak){
 //=======================================================
 function hideBot(){
     var natural = GM_getValue("natural");
-    var duration = Math.random();
-    duration = duration *150;
-    if (duration < 20){
-        duration = 20;
+    var duration = 20;
+    if(!natural) duration=10;
+    else {
+        duration = Math.random();
+        duration = duration *150;
+        if (duration < 20){
+            duration = 20;
+        }
     }
-    if(!natural)duration=10;
 
 	var checkExist4 = setInterval(function() {
 		$(".vote-up").not(".hover").hover(
@@ -2455,12 +2458,13 @@ function hideBot(){
 			}
 		);
 		$(".voting").addClass("hover");
-        if (document.getElementsByClassName("voters-outer").length && !GM_getValue("dontHide")) {
+        if (document.getElementsByClassName("upvoters-outer").length && !GM_getValue("dontHide")) {
             var annoyingShit = document.getElementsByClassName("tooltip-outer upvoters-outer");
             for (var i = 0; i<annoyingShit.length;i++){
-                if (annoyingShit[i].style.display != "none"){
-                    annoyingShit[i].style.display = "none";
-                }
+                $(annoyingShit[i]).remove();
+                //if (annoyingShit[i].style.display != "none"){
+                //    annoyingShit[i].style.display = "none";
+                //}
             }
         }
         //console.log(document.getElementsByClassName("textarea").length);
