@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1.7
+//@version      3.1.8
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -1112,7 +1112,7 @@ function insertMakro(parent,caller){
 
 function saveMakro(caller,sibling){
 	var makros = getGMArray("makros");
-	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);
+	var textarea = $(caller).closest(".textarea-wrapper").find(".textarea").get(0);
 	if(textarea.innerText.length<2){
 		alert("Makros müssen mindestens 2 Buchstaben lang sein!");
 	}else{
@@ -2445,6 +2445,7 @@ function hideBot(){
         duration = 20;
     }
     if(!natural)duration=10;
+
 	var checkExist4 = setInterval(function() {
 		$(".vote-up").not(".hover").hover(
 			function(){
@@ -2454,7 +2455,7 @@ function hideBot(){
 			}
 		);
 		$(".voting").addClass("hover");
-        if (document.getElementsByClassName("tooltip upvoters").length && !GM_getValue("dontHide")) {
+        if (document.getElementsByClassName("voters-outer").length && !GM_getValue("dontHide")) {
             var annoyingShit = document.getElementsByClassName("tooltip-outer upvoters-outer");
             for (var i = 0; i<annoyingShit.length;i++){
                 if (annoyingShit[i].style.display != "none"){
