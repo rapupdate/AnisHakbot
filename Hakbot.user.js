@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1.4
+//@version      3.1.5
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -197,6 +197,7 @@
 			//=======================================================
 			setInterface(botRunning);
             setAdvancedEditor(advanced);
+            hidePrivacyBot();
 			setReplyOnclick();
             if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
                 hakBot();
@@ -512,8 +513,9 @@ function plugBot(){
     var plugs = [["->Hero Boiz<-","https://plug.dj/rapupdate-cafe/"],["Knarv","https://plug.dj/marios-treue-diener/"],["Shksbr","https://plug.Dj/rapupdatede"]];
     var plugDropDown = document.createElement("li");
     plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
-    plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-community");
-    $(".tab-community").get(0).after(plugDropDown);
+    plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-general");
+    console.log($(".community-name"))
+    $(".community-name").closest("li").after(plugDropDown);
     for (var i = 0; i<plugs.length;i++){
         var option = document.createElement("option");
         option.innerHTML = plugs[i][0];
@@ -537,6 +539,11 @@ function cacheBreaker() {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return text;
+}
+
+function hidePrivacyBot(){
+    $(".privacy-policy-short").closest('li').remove();
+    console.log($(".privacy-policy-short").closest('li'));
 }
 
 function newArticleBot(switchArticle){
