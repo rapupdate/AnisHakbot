@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1.5
+//@version      3.1.7
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -1091,7 +1091,8 @@ function openMakro(caller){
 
 function useMakro(parent,caller){
 	var makros = getGMArray("makros");
-	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);
+	//var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);
+    var textarea = $(caller).closest(".textarea-wrapper").find(".textarea").get(0);
 	textarea.innerHTML=makros[$(parent).closest(".snglMakroContainer").get(0).id];
 	console.log("Textarea:" + textarea.innerHTML);
 	$(caller).parent().parent().parent().parent().parent().find(".btn.post-action__button").get(0).click();
@@ -1100,7 +1101,8 @@ function useMakro(parent,caller){
 
 function insertMakro(parent,caller){
 	var makros = getGMArray("makros");
-	var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);
+	//var textarea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);
+    var textarea = $(caller).closest(".textarea-wrapper").find(".textarea").get(0);
 	console.log($(parent).get(0));
 	textarea.innerText =makros[$(parent).closest(".snglMakroContainer").get(0).id].replace(/(?:<br \/>)/g,'\n' );
 	console.log("Textarea:" + textarea.innerText);
