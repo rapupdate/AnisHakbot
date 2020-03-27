@@ -1,7 +1,7 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.1.9
+//@version      3.2
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
@@ -2458,8 +2458,8 @@ function hideBot(){
 			}
 		);
 		$(".voting").addClass("hover");
-        if (document.getElementsByClassName("upvoters-outer").length && !GM_getValue("dontHide")) {
-            var annoyingShit = document.getElementsByClassName("tooltip-outer upvoters-outer");
+        if (document.getElementsByClassName("voters-outer").length && !GM_getValue("dontHide")) {
+            var annoyingShit = document.getElementsByClassName("voters-outer");
             for (var i = 0; i<annoyingShit.length;i++){
                 $(annoyingShit[i]).remove();
                 //if (annoyingShit[i].style.display != "none"){
