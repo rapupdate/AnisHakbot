@@ -1,12 +1,13 @@
 //==UserScript==
 //@name         RU Bot
 //@namespace    http://tampermonkey.net/
-//@version      3.2
+//@version      3.3
 //@description  Make RU great Again
 //@updateURL    https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@downloadURL  https://raw.githubusercontent.com/rapupdate/AnisHakbot/master/Hakbot.user.js
 //@author       You
 //@match        https://disqus.com/embed/comments/*
+//@match        http://disqus.com/embed/comments/*
 //@require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 //@require      http://benpickles.github.io/peity/jquery.peity.js
 //@run-at       document-start
@@ -24,6 +25,9 @@
 //=======================================================
 //Mainprogramm
 //=======================================================
+const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+});
 (function() {
 	'use strict';
 	//=======================================================
@@ -33,11 +37,11 @@
 	//reloadBot - Lädt Diqus immer mal nach, damit wirkt wie ein echter User
 	//Verrückte Scheiße dieser Bot ist riesig und geht jetzt in Verrsion 2.0, krasse sache
 	//=======================================================
-    console.log("RU-Bot injeziert");
+    console.log("RU-Bot injiziert");
 	var checkDisqus = setInterval(function(){
-		if (document.getElementById("community-tab") && document.getElementsByClassName("nav-secondary").length>0 && document.getElementsByClassName("username").length>0){
-			GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;width:40px;height:38px;float:right;}');
-			GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;width:60px;height:38px;float:right;}');
+		if (document.getElementById("main-nav") && document.getElementsByClassName("nav-primary").length>0 && document.getElementsByClassName("username").length>0){
+			GM_addStyle('.editBtn{font-weight: bold;padding:10px;background-color:#737f85;float:right;}');
+			GM_addStyle('.editBtnBig{font-weight: bold;padding:10px;background-color:#737f85;float:right;}');
 			GM_addStyle('.deleteImage{cursor:pointer;height:17px;float:right;}');
 			GM_addStyle('.editImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
 			GM_addStyle('.insertImageMakro{cursor:pointer;height:17px;padding-right:20px;float:right;}');
@@ -69,6 +73,8 @@
 			GM_addStyle('@keyframes stable {from {color: #2e9fff;}to {color: #656c7a;}}');
 			GM_addStyle('.quoteStable {animation-name: stable;animation-duration: 2s;}');
 			GM_addStyle('.graphContainer {cursor:pointer}');
+            GM_addStyle('#smileyContainer {display:block;margin-bottom:38px;border-top:solid 2px #dbdfe4;padding:10px;}');
+            GM_addStyle('#MakroContainer {display:block;margin-bottom:38px;border-top:solid 2px #dbdfe4;padding:10px;}');
 			//GM_addStyle('.textarea-wrapper--top-level .textarea-wrapper {margin-left: 120px !important;}.avatar img{width: 100px !important;height: 100px !important;}.textarea-wrapper--top-level .postbox {height: 150px !important;}');
 			GM_deleteValue("error");
 			GM_setValue("onceNotified",false);
@@ -199,7 +205,7 @@
             setAdvancedEditor(advanced);
             hidePrivacyBot();
 			setReplyOnclick();
-            if (botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
+            if (botRunning && botSites.indexOf(params.f)>-1){
                 hakBot();
                 hideBot();
                 console.log(reload);
@@ -220,11 +226,10 @@
 			if(hideRecommend)hideRecommendBot();
 			if (comment) commentBot();
             repostBot();
-            plugBot();
+            //plugBot();
 			if (showQuote)quoteBot();
 			statusBot(botRunning,botSites);
-			if (showDownvotes) showDownvotesBot();
-			clearInterval(checkDisqus);
+			if (showDownvotes) showDownvotesBot();			
 			if (quaffles)quaffleBot();
 			if(inIframe()){
 				if(askDisqus&&confirm("Zu DisqusThread wechseln?")){
@@ -235,6 +240,7 @@
             if (hideSocial) hideSocialBot()
 			//console.log($(".nav-tab.nav-tab--secondary.dropdown.sorting.pull-right"));
 			$(".nav-tab.nav-tab--secondary.dropdown.sorting.pull-right").find("li").click(function(){loading();});
+            clearInterval(checkDisqus);
             //var progress = document.createElement ('div');
             //progress.innerHTML = "<progress id='timeToReload'></progress>";
             //$(".nav.nav-primary").children("ul").get(0).after(progress);
@@ -268,7 +274,7 @@ function loading(){
 function hideRecommendBot(){
 	var recommend = setInterval(function(){
 		var recommendButton=document.getElementById("recommend-button");
-		if(typeof recommendButton !="undefined"){
+		if(recommendButton !== null){
 			recommendButton.setAttribute("style", "display:none");
 			clearInterval(recommend);
 		}
@@ -514,8 +520,8 @@ function plugBot(){
     var plugDropDown = document.createElement("li");
     plugDropDown.innerHTML = "<a class='publisher-nav-color'>Plugs: <select id='plugSelect'><option disabled selected value> Auswählen </option>";
     plugDropDown.setAttribute("class","nav-tab nav-tab--primary tab-general");
-    console.log($(".community-name"))
-    $(".community-name").closest("li").after(plugDropDown);
+    console.log($(".tab-conversation--refresh"))
+    $(".tab-conversation--refresh").closest("li").after(plugDropDown);
     for (var i = 0; i<plugs.length;i++){
         var option = document.createElement("option");
         option.innerHTML = plugs[i][0];
@@ -528,7 +534,7 @@ function plugBot(){
 }
 
 function openPlug(select){
-    link = $( "#plugSelect option:selected" ).attr("value");
+    let link = $( "#plugSelect option:selected" ).attr("value");
     GM_openInTab(link,false);
 }
 function cacheBreaker() {
@@ -667,7 +673,7 @@ function clearUrl(textArea){
         var selectedText = getSelectedText();
         var savedSelection = saveSelection(textArea,0);
         textArea.innerHTML=textArea.innerHTML.replace(".net",".Net");
-	textArea.innerHTML=textArea.innerHTML.replace(".ch",".Ch");
+        textArea.innerHTML=textArea.innerHTML.replace(".ch",".Ch");
         textArea.innerHTML=textArea.innerHTML.replace(".com",".Com");
         textArea.innerHTML=textArea.innerHTML.replace(".de",".De");
         textArea.innerHTML=textArea.innerHTML.replace(".ru",".Ru");
@@ -681,26 +687,26 @@ function clearUrl(textArea){
 }
 
 function clearWords(textArea){
-    var expression = /(Mario|Nigga|mario|nigga|Nigger|nigger|Bimbo|bimbo|Harms|harms|Down|down|Rapdeutschland|rapdeutschland|#generischeFrontGenerator)/g;
+    var expression = /(Mario|Nigga|mario|nigga|Nigger|nigger|Bimbo|bimbo|Harms|harms|Down|down|Rapdeutschland|rapdeutschland|#generischeFrontGenerator|#generateFront)/g;
     var regex = new RegExp(expression);
     if(textArea.innerHTML.match(regex)){
         var selectedText = getSelectedText();
         var savedSelection = saveSelection(textArea,0);
         textArea.innerHTML=textArea.innerHTML.replace("Mario","Mаrio");
         textArea.innerHTML=textArea.innerHTML.replace("Nigga","Niggа");
-	textArea.innerHTML=textArea.innerHTML.replace("Nigger","Niggа");
-	textArea.innerHTML=textArea.innerHTML.replace("nigger","Niggа");
-	textArea.innerHTML=textArea.innerHTML.replace("mario","Mаrio");
+        textArea.innerHTML=textArea.innerHTML.replace("Nigger","Niggа");
+        textArea.innerHTML=textArea.innerHTML.replace("nigger","Niggа");
+        textArea.innerHTML=textArea.innerHTML.replace("mario","Mаrio");
         textArea.innerHTML=textArea.innerHTML.replace("nigga","Niggа");
-	textArea.innerHTML=textArea.innerHTML.replace("bimbo","Вimbo");
-	textArea.innerHTML=textArea.innerHTML.replace("Bimbo","Вimbo");
-	textArea.innerHTML=textArea.innerHTML.replace("Harms","Hаrms");
-	textArea.innerHTML=textArea.innerHTML.replace("harms","Hаrms");
-	textArea.innerHTML=textArea.innerHTML.replace("Down","Dоwn");
-	textArea.innerHTML=textArea.innerHTML.replace("down","dоwn");
+        textArea.innerHTML=textArea.innerHTML.replace("bimbo","Вimbo");
+        textArea.innerHTML=textArea.innerHTML.replace("Bimbo","Вimbo");
+        textArea.innerHTML=textArea.innerHTML.replace("Harms","Hаrms");
+        textArea.innerHTML=textArea.innerHTML.replace("harms","Hаrms");
+        textArea.innerHTML=textArea.innerHTML.replace("Down","Dоwn");
+        textArea.innerHTML=textArea.innerHTML.replace("down","dоwn");
 	    textArea.innerHTML=textArea.innerHTML.replace("rapdeutschland","Rаpdeutschland");
 	    textArea.innerHTML=textArea.innerHTML.replace("Rapdeutschland","Rаpdeutschland");
-	if (document.getElementsByName("User Menu")[0].innerText.indexOf("RUCnntn") > -1 || document.getElementsByName("User Menu")[0].innerText.indexOf("RTC") > -1){
+	if (document.getElementsByName("User Menu")[0].innerText.indexOf("RUCnntn") > -1 || document.getElementsByName("User Menu")[0].innerText.indexOf("RTC") > -1 || document.getElementsByName("User Menu")[0].innerText.indexOf("RU-Cnnctn") > -1){
         	textArea.innerText=textArea.innerText.replace("#generischeFrontGenerator",generateFront(textArea));
 	}
         restoreSelection(textArea, savedSelection);
@@ -722,6 +728,7 @@ function setReplyOnclick(){
 
 function addAdvancedEditor(){
     var advanced = GM_getValue("advanced");
+    console.log("Checking Advanced "+advanced)
     if(advanced){
         setAdvancedEditorReply(this,advanced);
     }
@@ -735,72 +742,21 @@ function readComment(comment){
 function setAdvancedEditor(advanced){
 	var checkExistDisqus = setInterval(function() {
 		console.log(document.getElementsByClassName("btn post-action__button"));
-        if (document.getElementsByClassName("btn post-action__button").length > 0 && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced") && document.getElementsByClassName("username").length>0) {
-            console.log(document.getElementsByClassName("btn post-action__button"));
-            if (advanced){
-                    var sndButton = document.getElementsByClassName("btn post-action__button")[0];
-                    var boldButton = document.createElement ('div');
-                    boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';
-                    boldButton.setAttribute ('class', 'editBtn editBold btn post-action__button');
-                    //
-                    var textArea=document.getElementsByClassName("btn post-action__button")[0].parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0];
-                    document.getElementsByClassName("temp-post")[0].appendChild(boldButton);
-                    $(".editBold").click(function(e) {
-                        createTag(textArea,"<b>","</b>");
-                    });
-                    var italicButton = document.createElement ('div');
-                    italicButton.innerHTML='<a style="color:white;"><i>i</i></a>';
-                    italicButton.setAttribute ('class', 'editBtn edititalic btn post-action__button');
-                    //
-                    document.getElementsByClassName("temp-post")[0].appendChild(italicButton);
-                    $(".edititalic").click(function(e) {
-                        createTag(textArea,"<i>","</i>");
-                    });
-                    var underButton = document.createElement ('div');
-                    underButton.innerHTML='<a style="color:white;"><u>u</u></a>';
-                    underButton.setAttribute ('class', 'editBtn editunder btn post-action__button');
-                    //
-                    document.getElementsByClassName("temp-post")[0].appendChild(underButton);
-                    $(".editunder").click(function(e) {
-                        createTag(textArea,"<u>","</u>");
-                    });
-                    var scribbleButton = document.createElement ('div');
-                    scribbleButton.innerHTML='<a style="color:white;"><s>s</s></a>';
-                    scribbleButton.setAttribute ('class', 'editBtn editscribble btn post-action__button');
-                    //
-                    document.getElementsByClassName("temp-post")[0].appendChild(scribbleButton);
-                    $(".editscribble").click(function(e) {
-                        createTag(textArea,"<s>","</s>");
-                    });
-                    var quoteButton = document.createElement ('div');
-                    quoteButton.innerHTML='<a style="color:white;"><blockquote>„"</blockquote></a>';
-                    quoteButton.setAttribute ('class', 'editBtn editquote btn post-action__button');
-                    //
-                    document.getElementsByClassName("temp-post")[0].appendChild(quoteButton);
-                    $(".editquote").click(function(e) {
-                        createTag(textArea,"<blockquote>","</blockquote>");
-                    });
-                    var spoilerButton = document.createElement ('div');
-                    spoilerButton.innerHTML='<a style="color:white;"><spoiler>Spoiler</spoiler></a>';
-                    spoilerButton.setAttribute ('class', 'editBtnBig editspoiler btn post-action__button');
-                    //
-                    document.getElementsByClassName("temp-post")[0].appendChild(spoilerButton);
-                    $(".editspoiler").click(function(e) {
-                        createTag(textArea,"<spoiler>","</spoiler>");
-                    });
-            }
+        if (document.getElementsByClassName("btn post-action__button").length > 0
+            && !document.getElementsByClassName("temp-post")[0].classList.contains("advanced")
+            && document.getElementsByClassName("username").length>0) {
+            console.log("Adding Editor Buttons")
 			var smileyButton = document.createElement ('div');
-			smileyButton.innerHTML='<a style="color:white;">&#128512;</a>';
-			smileyButton.setAttribute ('class', 'editBtn editSmiley btn post-action__button');
-			//
+			smileyButton.innerHTML='&#128512;';
+			smileyButton.setAttribute ('class', 'editBtn editSmiley btn post-action__button full-size-button');
 			document.getElementsByClassName("temp-post")[0].appendChild(smileyButton);
 			$(".editSmiley").click(function(e) {
 				openSmiley(this);
 			});
 
 			var makroButton = document.createElement ('div');
-			makroButton.innerHTML='<a style="color:white;">Mkr</a>';
-			makroButton.setAttribute ('class', 'editMain editBtn editMakro btn post-action__button');
+			makroButton.innerHTML='Makro';
+			makroButton.setAttribute ('class', 'editMain editBtn editMakro btn post-action__button full-size-button');
 			//
 			document.getElementsByClassName("temp-post")[0].appendChild(makroButton);
 			$(".editMakro").click(function(e) {
@@ -831,15 +787,11 @@ function createSmileyDiv(hidden,caller,sibling){
     for (var i=0; i<=79;i++){
         var id=i+12;
         if (i%14==0 && i>0){
-            smileyDiv.innerHTML += "<br>";
+            //smileyDiv.innerHTML += "<br>";
         }
         smileyDiv.innerHTML += "<span id='1285"+id+"' class='smiley'>&#1285"+id+";<span>";
-    }
-    if(sibling.classList.contains("nav-secondary")){
-		sibling.after(smileyDiv);
-	}else{
-		sibling.before(smileyDiv);
-	}
+    }   
+    sibling.before(smileyDiv);
     $(".smiley").click(function(e) {
 		insertSmiley(this.parentNode,caller,this);
 	});
@@ -847,49 +799,41 @@ function createSmileyDiv(hidden,caller,sibling){
 
 function removeSmileyDiv(){
 	console.log("SmileyDiv wird gelöscht");
-	var container = document.getElementById("smileyContainer");
-	console.log(container);
+	var container = document.getElementById("smileyContainer");	
 	if (typeof container != "undefined" && container != null){
-		document.getElementById("smileyContainer").remove();
+		container.remove();
 	}
 }
 
 function insertSmiley(parent,caller,smiley){
-    var textArea = $(caller).parent().parent().parent().parent().parent().find(".textarea").get(0);
+    var textArea = parent.parentNode.querySelector(".textarea");
 	textArea.focus();
 	var selectedText = getSelectedText();
     var aOffset=selectedText.anchorOffset;
     var fOffset=selectedText.focusOffset;
-	if (selectedText.anchorOffset<selectedText.focusOffset && textArea.innerText.length>0){
-        console.log("if");
-        var savedSelection = saveSelection(textArea,9);
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
+	if (selectedText.anchorOffset<selectedText.focusOffset && textArea.innerText.length>0){        
+        let savedSelection = saveSelection(textArea,9);
+		let selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
+		let text = textArea.innerText;
+		let cacheText = text.slice(selectedText.anchorOffset);
 		text = text.slice(0,selectedText.anchorOffset);
 		cacheText = cacheText.replace(selected,"&#"+smiley.id+";"+selected+"&#"+smiley.id+";");
 		text=text+cacheText;
 		textArea.innerText=text;
-        restoreSelection(textArea, savedSelection);
-        console.log(aOffset);
-    }else if(textArea.innerText.length>0){
-        console.log("if");
-        var savedSelection = saveSelection(textArea,9);
-		var selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
-		console.log(selected);
-		var text = textArea.innerText;
-		var cacheText = text.slice(selectedText.anchorOffset);
+        restoreSelection(textArea, savedSelection);        
+    }else if(textArea.innerText.length>0){        
+        let savedSelection = saveSelection(textArea,9);
+		let selected = textArea.innerText.substr(selectedText.anchorOffset,selectedText.focusOffset-selectedText.anchorOffset);
+		let text = textArea.innerText;
+		let cacheText = text.slice(selectedText.anchorOffset);
 		text = text.slice(0,selectedText.anchorOffset);
 		cacheText = cacheText.replace(selected,selected+"&#"+smiley.id+";");
 		text=text+cacheText;
 		textArea.innerText=text;
-        restoreSelection(textArea, savedSelection);
-        console.log(aOffset);
-	}else{
-        console.log("Else");
-        var selectedText = getSelectedText();
-        var savedSelection = saveSelection(textArea,9);
+        restoreSelection(textArea, savedSelection);        
+	}else{        
+        let selectedText = getSelectedText();
+        let savedSelection = saveSelection(textArea,9);
 		textArea.focus();
 		textArea.innerText="&#"+smiley.id+";";
         restoreSelection(textArea, savedSelection);
@@ -924,20 +868,17 @@ function createMakroDiv(hidden,caller,sibling){
 		console.log(text);
         //makroDiv.innerHTML+= "<span id='"+i+"'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";
         if (i==0){
-            makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";
+            makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/014-CaretDown-64.png' class='downImageMakroFirst'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";
         }else if (i==makros.length-1){
             makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakroLast'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";
         }else{
-            makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://image.flaticon.com/icons/svg/25/25243.svg' class='downImageMakro'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";
+            makroDiv.innerHTML+= "<span id='"+i+"' class='snglMakroContainer'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/014-CaretDown-64.png' class='downImageMakro'><img src='https://cdn3.iconfinder.com/data/icons/iconano-web-stuff/512/013-CaretUp-512.png' class='upImageMakro'>"+text+ "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImageMakro'><img src='http://img.freepik.com/freie-ikonen/schaltflache-bearbeiten_318-99688.jpg?size=338&ext=jpg' class='editImageMakro'><img src='http://download.seaicons.com/icons/icons8/windows-8/512/Editing-Paste-icon.png' class='insertImageMakro'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/U2713.svg/945px-U2713.svg.png' class='confirmImageMakro'></span><hr>";
         }
 	}
 	makroDiv.innerHTML+='<h3 id="saveAsMakro" class="clickableText">Text als Makro speichern</h3>';
 	//
-	if(sibling.classList.contains("nav-secondary")){
-		sibling.after(makroDiv);
-	}else{
-		sibling.before(makroDiv);
-	}
+    console.log(sibling)
+	sibling.before(makroDiv);
 	if(hidden){
 		$("#MakroContainer").hide();
 	}
@@ -1007,25 +948,12 @@ function openSmiley(caller){
 	var makroContainer = document.getElementById("MakroContainer");
 	console.log(container);
 	if (typeof container == "undefined" || container == null){
-		if(caller.classList.contains("editMain")){
-			createSmileyDiv(false,caller,document.getElementsByClassName("nav-secondary")[0]);
-		}else{
-			createSmileyDiv(false,caller,caller.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
-		}
+        createSmileyDiv(false,caller,caller.closest(".text-editor-container"));
 		console.log("Creating Smiley Div");
-
 	}else{
-		var isMain = container.parentNode.id == "conversation";
-		if (caller.classList.contains("editMain")&&!isMain){
-			removeSmileyDiv();
-			openSmiley(caller);
-		}else{
-			removeSmileyDiv();
-		}
+        removeSmileyDiv();
 	}
-	if (typeof makroContainer == "undefined" || makroContainer == null){
-
-	}else{
+	if (typeof makroContainer != "undefined" && makroContainer != null){
 		removeMakroDiv();
 	}
 }
@@ -1071,21 +999,10 @@ function openMakro(caller){
 	var container = document.getElementById("MakroContainer");
 	console.log(container);
 	if (typeof container == "undefined" || container == null){
-		if(caller.classList.contains("editMain")){
-			createMakroDiv(false,caller,document.getElementsByClassName("nav-secondary")[0]);
-		}else{
-			createMakroDiv(false,caller,caller.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode);
-		}
+		createMakroDiv(false,caller,caller.closest(".text-editor-container"));
 		console.log("Creating Makro Div");
-
 	}else{
-		var isMain = container.parentNode.id == "conversation";
-		if (caller.classList.contains("editMain")&&!isMain){
-			removeMakroDiv();
-			openMakro(caller);
-		}else{
-			removeMakroDiv();
-		}
+		removeMakroDiv();
 	}
 }
 
@@ -1186,7 +1103,7 @@ function setAdvancedEditorReply(link,advanced){
 		if (typeof div == "object" && !div.classList.contains("advanced")) {
             if(advanced){
                 console.log("War mal Object:" + div);
-                var boldButton = document.createElement ('div');
+                /*var boldButton = document.createElement ('div');
                 boldButton.innerHTML='<a style="color:white;"><b>b</b></a>';
                 //BorderColor
                 //border-style: solid;border-color:#68757d;
@@ -1227,17 +1144,32 @@ function setAdvancedEditorReply(link,advanced){
                 div.appendChild(scribbleButton);
                 $(".editscribbleReply").click(function(e) {
                     createTag(this.parentNode.parentNode.parentNode.parentNode.parentNode.firstChild.getElementsByClassName("textarea")[0],"<s>","</s>");
-                });
+                });*/
             }
             var smileyButton = document.createElement ('div');
+			smileyButton.innerHTML='&#128512;';
+			smileyButton.setAttribute ('class', 'editBtn editSmiley btn post-action__button full-size-button');
+			div.appendChild(smileyButton);
+			$(".editSmiley").click(function(e) {
+				openSmiley(this);
+			});
+
+			var makroButton = document.createElement ('div');
+			makroButton.innerHTML='Makro';
+			makroButton.setAttribute ('class', 'editMain editBtn editMakro btn post-action__button full-size-button');
+			div.appendChild(makroButton);
+			$(".editMakro").click(function(e) {
+				openMakro(this);
+			});
+            /*var smileyButton = document.createElement ('div');
 			smileyButton.innerHTML='<a style="color:white;">&#128512;</a>';
-			smileyButton.setAttribute ('class', 'editBtn editSmileyReply btn post-action__button');
+			smileyButton.setAttribute ('class', 'wysiwyg__item');
 			//
 
 			var makroButton = document.createElement ('div');
 			makroButton.innerHTML='<a style="color:white;">Mkr</a>';
-			makroButton.setAttribute ('class', 'editBtn editMakroReply btn post-action__button');			
-            div.appendChild(smileyButton);
+			makroButton.setAttribute ('class', 'wysiwyg__item');
+            div.appendChild(smileyButton);*/
             $(".editSmileyReply").click(function(e) {
 				openSmiley(this);
 			});
@@ -1257,10 +1189,9 @@ function setAdvancedEditorReply(link,advanced){
 				};
 			});
 			div.classList.add("advanced");
-			//       clearInterval(checkExist);
+            console.log("Advanced set")
 		}
-		//}, 100);
-	},10);
+	},100);
 }
 
 function getSelectedText() {
@@ -1281,6 +1212,7 @@ function getSelectedText() {
 }
 
 function setInterface(botRunning){
+    console.log("Setting the Interface");
 	var blacklist = getGMArray("blacklist");
 	var blacklistClan = getGMArray("blacklistClan");
 	var whitelist = getGMArray("whitelist");
@@ -1328,7 +1260,42 @@ function setInterface(botRunning){
     }
 
     var checkExistDisqus = setInterval(function() {
-        if (document.getElementsByClassName("nav-tab--secondary").length) {
+        console.log("Checking for Menu")
+        if (document.getElementsByClassName("nav-tab--primary").length) {
+            //=======================================================
+            //Sets Toggle Einstellungs Button
+            //=======================================================
+            let blacklistButton = document.createElement ('li');
+            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="Öffnet die Konfigurationsseite für die RU-Toolbox"><span class="label">►Settings</span></a>';
+            blacklistButton.setAttribute ('id', 'blacklistToggle');
+            blacklistButton.setAttribute ('class', 'nav-tab nav-tab--primary dropdown sorting pull-right');
+            blacklistButton.addEventListener('click', function(){toggleBlacklistContainer(this)});
+            document.getElementsByClassName("nav-tab--primary")[0].parentNode.appendChild(blacklistButton);
+            //=======================================================
+            //=======================================================
+            //Reload Button wegen Zinkus
+            //=======================================================
+            blacklistButton = document.createElement ('li');
+            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="reloaded Disqus, klick wenn Zinkus"><span class="label">Zinkus?</span></a>';
+            blacklistButton.setAttribute ('id', 'reloadIconContainer');
+            blacklistButton.setAttribute ('class', 'nav-tab nav-tab--primary dropdown sorting pull-right');
+            blacklistButton.addEventListener('click', zinkus);
+            document.getElementsByClassName("nav-tab--primary")[0].parentNode.appendChild(blacklistButton);
+            //=======================================================
+            //=======================================================
+            //Sets AutoHak Button
+            //=======================================================
+            var botButton = document.createElement ('li');
+            var checked= "";
+            if(botRunning && botSites.indexOf(params.f)>-1){
+                checked = "checked";
+            }
+            botButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="AutoHak Ein/Aus"><input type="checkbox" id="HakBot" '+checked+'><span class="label">Hak</span></a>';
+            botButton.setAttribute ('id', 'myContainer');
+            botButton.setAttribute ('class', 'nav-tab nav-tab--primary dropdown sorting pull-right');
+            botButton.addEventListener('click', toggleBot);
+            document.getElementsByClassName("nav-tab--primary")[0].parentNode.appendChild(botButton);
+            //=======================================================
             //=======================================================
             //Sets Blacklist Div
             //=======================================================
@@ -1349,13 +1316,14 @@ function setInterface(botRunning){
 					blacklistDiv.innerHTML += '<hr><br><details id="whitelistSettings"><summary>Whitelist Einstellungen</summary></details>';
 
 				}
-
-                document.getElementsByClassName("nav nav-secondary")[0].after(blacklistDiv);
+                let eElement = document.getElementById('conversation')
+                eElement.insertBefore(blacklistDiv, eElement.firstChild);
+                //document.getElementsByClassName("nav-tab nav-tab--primary tab-user")[0].after(blacklistDiv);
 				if (mode=="blacklist"){
 					var settings=document.getElementById("blacklistSettings");
 					settings.innerHTML = settings.innerHTML + '<br><h4 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Blacklisted Disqus ID: </h4>'
 					settings.innerHTML = settings.innerHTML + '<ol>';
-					for (var i = 0; i<blacklist.length; i++){
+					for (let i = 0; i<blacklist.length; i++){
 						settings.innerHTML = settings.innerHTML + "<li><a data-dsq-mention=\""+blacklist[i]+":disqus\" href=\"https://disqus.com/by/"+blacklist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+blacklist[i]+"\">@" + blacklist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";
 					}
 					settings.innerHTML = settings.innerHTML + '</ol>';
@@ -1365,7 +1333,7 @@ function setInterface(botRunning){
 					settings.innerHTML = settings.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newBlockedClan"></input><input id="addToClanBlacklist" type="button" value="Auf Blacklist" style="margin:20px"></input>';
 
 					var blacklistClanLi=document.getElementById("blacklistClanList");
-					for (var i = 0; i<blacklistClan.length; i++){
+					for (let i = 0; i<blacklistClan.length; i++){
 						var blacklistClanLis = document.createElement ('li');
 						blacklistClanLis.innerHTML = blacklistClan[i] + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage'><hr>";
 						blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
@@ -1376,9 +1344,9 @@ function setInterface(botRunning){
 
 
 				}else{
-					var settings=document.getElementById("whitelistSettings");
+					settings=document.getElementById("whitelistSettings");
 					settings.innerHTML = settings.innerHTML + '<br><h4 title="User die hier drauf stehen können über das Dropdown im Kommentar hinzugefügt/entfernt werden">Whitelisted Disqus ID: </h4><ol>';
-					for (var i = 0; i<whitelist.length; i++){
+					for (let i = 0; i<whitelist.length; i++){
 						settings.innerHTML = settings.innerHTML + "<li><a data-dsq-mention=\""+whitelist[i]+":disqus\" href=\"https://disqus.com/by/"+whitelist[i]+"/\" rel=\"nofollow noopener\" Data-action=\"profile\" data=\""+whitelist[i]+"\">@" + whitelist[i] + "</a><img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage disqusId'></li><hr>";
 					}
 					settings.innerHTML = settings.innerHTML + '</ol>';
@@ -1387,9 +1355,9 @@ function setInterface(botRunning){
 					settings.innerHTML = settings.innerHTML + '</div><br>';
 
 					settings.innerHTML = settings.innerHTML + '<input type="text" placeholder="Namepattern einfügen" id="newWhitelistedClan"></input><input id="addToClanWhitelist" type="button" value="Auf Whitelist" style="margin:20px"></input>';
-					var blacklistClanLi=document.getElementById("whitelistClanList");
-					for (var i = 0; i<whitelistClan.length; i++){
-						var blacklistClanLis = document.createElement ('li');
+					blacklistClanLi=document.getElementById("whitelistClanList");
+					for (let i = 0; i<whitelistClan.length; i++){
+						blacklistClanLis = document.createElement ('li');
 						blacklistClanLis.innerHTML = whitelistClan[i] + "<img src='https://openclipart.org/download/226230/trash.svg' class='deleteImage'><hr>";
 						blacklistClanLis.setAttribute ('style', 'cursor:pointer;');
 						blacklistClanLi.appendChild(blacklistClanLis);
@@ -1424,123 +1392,98 @@ function setInterface(botRunning){
 
                 reloadTime=reloadTime/60/1000;
                 console.log("!!!Hide Social "+hideSocial);
+                let boxStatusHideSocial = "";
+                let boxStatusAdvanced = "";
+                let boxStatusYoutube = "";
+                let boxStatusRecommend = "";
+                let boxStatusDisqus = "";
+                let boxStatusQuote = "";
+                let boxStatusUrl = "";
+                let boxStatusSwitch = "";
+                let boxStatusDownvotes = "";
+                let boxStatusQuaffles = "";
+                let boxStatusEmbed = "";
+                let boxStatusAnswer = "";
+                let boxStatusFastSend = "";
+                let boxStatusComments = "";
+                let boxStatusNotify = "";
+                let boxStatusSubComments = "";
+                let boxStatusNatural = "";
+                let boxStatus = "";
+                let boxStatusReload = "";
+                let boxStatusComment = "checked";
+                let boxStatusArticle = "checked";
                 if(hideSocial){
-					var boxStatusHideSocial = "checked";
-				}else{
-					var boxStatusHideSocial = "";
+					boxStatusHideSocial = "checked";
 				}
                 if(advanced){
-					var boxStatusAdvanced = "checked";
-				}else{
-					var boxStatusAdvanced = "";
+					boxStatusAdvanced = "checked";
 				}
                 if(embedYoutube){
-					var boxStatusYoutube = "checked";
-				}else{
-					var boxStatusYoutube = "";
+					boxStatusYoutube = "checked";
 				}
 				if(hideRecommend){
-					var boxStatusRecommend = "checked";
-				}else{
-					var boxStatusRecommend = "";
+                    boxStatusRecommend = "checked";
 				}
 				if(askDisqus){
-					var boxStatusDisqus = "checked";
-				}else{
-					var boxStatusDisqus = "";
+					boxStatusDisqus = "checked";
 				}
-
-
 				if(showQuote){
-					var boxStatusQuote = "checked";
-				}else{
-					var boxStatusQuote = "";
+					boxStatusQuote = "checked";
 				}
 
 				if(switchArticle){
-					var boxStatusSwitch = "checked";
-				}else{
-					var boxStatusSwitch = "";
+					boxStatusSwitch = "checked";
 				}
 
 				if (showDownvotes){
-					var boxStatusDownvotes = "checked";
-				}else{
-					var boxStatusDownvotes = "";
+					boxStatusDownvotes = "checked";
 				}
 
 				if(quaffles){
-					var boxStatusQuaffles = "checked";
-				}else{
-					var boxStatusQuaffles = "";
+					boxStatusQuaffles = "checked";
 				}
-
-
 				if(answerHak){
-					var boxStatusAnswer = "checked";
-				}else{
-					var boxStatusAnswer = "";
+					boxStatusAnswer = "checked";
 				}
 				if(embedImages){
-					var boxStatusEmbed = "checked";
-				}else{
-					var boxStatusEmbed = "";
+					boxStatusEmbed = "checked";
 				}
-
 				if(fastSend){
-					var boxStatusFastSend = "checked";
-				}else{
-					var boxStatusFastSend = "";
+					boxStatusFastSend = "checked";
 				}
 
                 if(loadComments){
-					var boxStatusComments = "checked";
-				}else{
-					var boxStatusComments = "";
+					boxStatusComments = "checked";
 				}
 				if(articleNotification){
-					var boxStatusNotify = "checked";
-				}else{
-					var boxStatusNotify = "";
+					boxStatusNotify = "checked";
 				}
-				if(checkArticle){
-					var boxStatusArticle = "checked";
-				}else{
-					var boxStatusArticle = "";
+				if(!checkArticle){
+					boxStatusArticle = "";
 					boxStatusNotify+=" disabled";
 					boxStatusSwitch+=" disabled";
 				}
-                if(comment){
-					var boxStatusComment = "checked";
-				}else{
-					var boxStatusComment = "";
+                if(!comment){
+					boxStatusComment = "";
                     boxStatusEmbed += " disabled";
                     boxStatusYoutube += " disabled";
 				}
+
                 if(clearUrl){
-					var boxStatusUrl = "checked";
-				}else{
-					var boxStatusUrl = "";
+					boxStatusUrl = "checked";
 				}
                 if(loadSubcomments){
-					var boxStatusSubComments = "checked";
-				}else{
-					var boxStatusSubComments = "";
+					boxStatusSubComments = "checked";
 				}
                 if(natural){
-					var boxStatusNatural = "checked";
-				}else{
-					var boxStatusNatural = "";
+					boxStatusNatural = "checked";
 				}
                 if(reload){
-					var boxStatusReload = "checked";
-				}else{
-					var boxStatusReload = "";
+					boxStatusReload = "checked";
 				}
 				if(fakeLinks){
-					var boxStatus = "checked";
-				}else{
-					var boxStatus = "";
+					boxStatus = "checked";
 				}
 				document.getElementById("settings").innerHTML += '<br><a class="dropdown-toggle"  title="Wenn natürlicher Modus an ist, werden bis zu 2 Minuten auf diesen Wert raufgerechnet"><span class="label helper">HakBot Modus: </span><select id="hakMode"><option value="blacklist">Blacklist Modus</option><option value="whitelist">Whitelist Modus</option></select></a><br><br>';
 				document.getElementById("settings").innerHTML += '<a class="dropdown-toggle"  title="Was interessiert mich Rap, ich will Grinden"><input type="checkbox" id="askDisqus" '+boxStatusDisqus+'><span class="label helper">Fullgrind - Disqusthread Only anfragen</span></a><br>';
@@ -1568,7 +1511,7 @@ function setInterface(botRunning){
 
 
 				blacklistDiv.innerHTML += '<hr><br><h3>Über den Hakbot</h3>';
-				blacklistDiv.innerHTML += '<i>Version: '+GM_info["script"]["version"]+'</i><br>';
+				blacklistDiv.innerHTML += '<i>Version: '+GM_info.script.version+'</i><br>';
 				blacklistDiv.innerHTML += '<i>Autor: <a href="https://disqus.com/by/HotLove666/">Anis Fencheltee</a></i><br>';
 				blacklistDiv.innerHTML += '<i>Readme: <a href="https://github.com/rapupdate/AnisHakbot/blob/master/README.md">Klick hier</i><br>';
 				blacklistDiv.innerHTML += '<i>Probleme oder Wünsche? <a href="https://github.com/rapupdate/AnisHakbot/issues">Klick hier</i><br><br>';
@@ -1673,23 +1616,19 @@ function setInterface(botRunning){
 					$(this).siblings('div#wrap').slideToggle(function(){
 						$(this).parent('details').toggleClass('open');
 					});
-				});
-				console.log("")
+				});				
 				if (mode=="blacklist"){
-					var addClanBlacklist = document.getElementById("addToClanBlacklist");
-					var blacklistClanLi=document.getElementById("blacklistClanList");
-					console.log(addClanBlacklist);
+					let addClanBlacklist = document.getElementById("addToClanBlacklist");
+					let blacklistClanLi=document.getElementById("blacklistClanList");
 					addClanBlacklist.addEventListener('click', addToClanBlacklist);
 					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
-						blacklistClanLi.childNodes.forEach(function(li){
-							console.log(li);
+						blacklistClanLi.childNodes.forEach(function(li){							
 							li.addEventListener('click', removeFromClanListOnClick);
 						});
 					}
 				}else{
-					var addClanBlacklist = document.getElementById("addToClanWhitelist");
-					var blacklistClanLi=document.getElementById("whitelistClanList");
-					console.log("Whitelist:" + blacklistClanLi);
+					let addClanBlacklist = document.getElementById("addToClanWhitelist");
+					let blacklistClanLi=document.getElementById("whitelistClanList");
 					addClanBlacklist.addEventListener('click', addToClanWhitelist);
 					if (typeof blacklistClanLi!="undefined" || blacklistClanLi.length>-1){
 						blacklistClanLi.childNodes.forEach(function(li){
@@ -1710,47 +1649,12 @@ function setInterface(botRunning){
 				if(mode=="blacklist"){
 					addBlacklistButton();
 					//addTTSButton();
-				}else{
-					console.log("AddWhitelistButton");
+				}else{					
 					addWhitelistButton();
 					//addTTSButton();
 				}
             },2000);
-            clearInterval(checkExistDisqus);
-            //=======================================================
-            //Sets Toggle Einstellungs Button
-            //=======================================================
-            var blacklistButton = document.createElement ('li');
-            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="Öffnet die Konfigurationsseite für die RU-Toolbox"><span class="label">►Einstellungen</span></a>';
-            blacklistButton.setAttribute ('id', 'blacklistToggle');
-            blacklistButton.setAttribute ('class', 'nav-tab nav-tab--secondary dropdown sorting pull-right');
-            blacklistButton.addEventListener('click', function(){toggleBlacklistContainer(this)});
-            document.getElementsByClassName("nav-tab--secondary")[0].parentNode.appendChild(blacklistButton);
-            //=======================================================
-            //=======================================================
-            //Reload Button wegen Zinkus
-            //=======================================================
-            var blacklistButton = document.createElement ('li');
-            blacklistButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="reloaded Disqus, klick wenn Zinkus"><span class="label">Zinkus?</span></a>';
-            blacklistButton.setAttribute ('id', 'reloadIconContainer');
-            blacklistButton.setAttribute ('class', 'nav-tab nav-tab--secondary dropdown sorting pull-right');
-            blacklistButton.addEventListener('click', zinkus);
-            document.getElementsByClassName("nav-tab--secondary")[0].parentNode.appendChild(blacklistButton);
-            //=======================================================
-            //=======================================================
-            //Sets AutoHak Button
-            //=======================================================
-            var botButton = document.createElement ('li');
-            var checked= "";
-            if(botRunning && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
-                checked = "checked";
-            }
-            botButton.innerHTML = '<a class="dropdown-toggle" style="cursor: pointer;" title="AutoHak Ein/Aus"><input type="checkbox" id="HakBot" '+checked+'><span class="label">Hak Bot</span></a>';
-            botButton.setAttribute ('id', 'myContainer');
-            botButton.setAttribute ('class', 'nav-tab nav-tab--secondary dropdown sorting pull-right');
-            botButton.addEventListener('click', toggleBot);
-            document.getElementsByClassName("nav-tab--secondary")[0].parentNode.appendChild(botButton);
-            //=======================================================
+            clearInterval(checkExistDisqus);            
         }
     }, 100);
 }
@@ -1784,17 +1688,12 @@ function toggleReloadBot(box){
 }
 
 function removeBlacklist(image){
-	var container=image.parentNode;
-	console.log(container.firstChild.href);
-    var link =  container.firstChild.href;
-	console.log(link);
-    var blacklist = getGMArray("blacklist");
-    console.log("Blacklist: "+ blacklist);
+	var container=image.parentNode;	
+    var link = container.firstChild.href;	
+    var blacklist = getGMArray("blacklist");    
     var remove=false;
-    for(var i=0; i<blacklist.length; i++){
-        console.log(blacklist[i]);
-        if(link.indexOf(blacklist[i])>-1){
-            console.log("Freigeschaltet: "+blacklist[i]);
+    for(var i=0; i<blacklist.length; i++){        
+        if(link.indexOf(blacklist[i])>-1){            
             blacklist.splice(i, 1);
             remove=true;
         }
@@ -1802,10 +1701,8 @@ function removeBlacklist(image){
     if(!remove){
         var disqusID= link.substr(0,link.lastIndexOf("/"));
         disqusID= disqusID.substr(disqusID.lastIndexOf("/")+1);
-        blacklist.push(disqusID);
-        console.log("Gesperrt: "+blacklist[i]);
-    }
-    console.log("Blacklist: "+ blacklist);
+        blacklist.push(disqusID);        
+    }    
     setGMArray("blacklist",blacklist);
     location.reload();
 }
@@ -1951,11 +1848,11 @@ function removeFromWhitelistClanListOnClick(evt){
 function addBlacklistButton(){
     var dropdowns=document.getElementsByClassName("dropdown-menu");
     var userDropdowns=[];
-    var blacklist = getGMArray("blacklist");
-	console.log("BlacklistButtonAdding")
+    var blacklist = getGMArray("blacklist");	
     for (var i=1;i<dropdowns.length;i++){
         var blacklistUser = document.createElement ('li');
-        if (dropdowns[i].classList.length==1){
+        blacklistUser.classList.add("dropdown-item")
+        if (dropdowns[i].classList.length===2){
             var comment = dropdowns[i].parentNode.parentNode.parentNode.parentNode;
             var link=$(comment).find(".post-byline").find(".author.publisher-anchor-color").find("a").get(0);
             if(typeof link != "undefined"){
@@ -1964,14 +1861,14 @@ function addBlacklistButton(){
                 if (blacklist.length>0){
                     for(var j=0; j<blacklist.length; j++){
                         if(link.indexOf(blacklist[j])>-1){
-                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Blacklist entfernen</a>';
+                            blacklistUser.innerHTML = '<a class="dropdown-link" style="cursor: pointer;">Benutzer von Blacklist entfernen</a>';
                             break;
                         }else{
-                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';
+                            blacklistUser.innerHTML = '<a class="dropdown-link" style="cursor: pointer;">Benutzer auf Blacklist</a>';
                         }
                     }
                 }else{
-                    blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Blacklist</a>';
+                    blacklistUser.innerHTML = '<a class="dropdown-link" style="cursor: pointer;">Benutzer auf Blacklist</a>';
                 }
                 blacklistUser.addEventListener('click', toggleBlacklist);
                 dropdowns[i].append(blacklistUser);
@@ -1988,10 +1885,11 @@ function addWhitelistButton(){
     var userDropdowns=[];
     var whitelist = getGMArray("whitelist");
 	console.log("WhitelistButtonAdding")
-	console.log(dropdowns)
     for (var i=1;i<dropdowns.length;i++){
         var blacklistUser = document.createElement ('li');
-        if (dropdowns[i].classList.length==1){
+        blacklistUser.classList.add("dropdown-item")
+        console.log(dropdowns[i])
+        if (dropdowns[i].classList.length===2){
             var comment = dropdowns[i].parentNode.parentNode.parentNode.parentNode;
             var link=$(comment).find(".post-byline").find(".author.publisher-anchor-color").find("a").get(0);
             if(typeof link != "undefined"){
@@ -2001,14 +1899,14 @@ function addWhitelistButton(){
                 if (whitelist.length>0){
                     for(var j=0; j<whitelist.length; j++){
                         if(link.indexOf(whitelist[j])>-1){
-                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer von Whitelist entfernen</a>';
+                            blacklistUser.innerHTML = '<a class="dropdown-link" style="cursor: pointer;">Benutzer von Whitelist entfernen</a>';
                             break;
                         }else{
-                            blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';
+                            blacklistUser.innerHTML = '<a class="dropdown-link" style="cursor: pointer;">Benutzer auf Whitelist</a>';
                         }
                     }
                 }else{
-                    blacklistUser.innerHTML = '<a style="cursor: pointer;">Benutzer auf Whitelist</a>';
+                    blacklistUser.innerHTML = '<a class="dropdown-link" style="cursor: pointer;">Benutzer auf Whitelist</a>';
                 }
                 blacklistUser.addEventListener('click', toggleWhitelist);
                 console.log(blacklistUser);
@@ -2023,8 +1921,9 @@ function addWhitelistButton(){
 
 function addTTSButton(container){
 	var ttsButton = document.createElement ('li');
+    ttsButton.classList.add("dropdown-item")
 	//console.log(link);
-	ttsButton.innerHTML = '<a style="cursor: pointer;">Kommentar vorlesen</a>';
+	ttsButton.innerHTML = '<a class="dropdown-link" style="cursor: pointer;">Kommentar vorlesen</a>';
 	ttsButton.addEventListener('click', startTTS);
 	container.append(ttsButton);
 	//dropdowns[i].classList.add("ttsAdded");
@@ -2036,8 +1935,7 @@ function addTTSButton(container){
 
 function startTTS(){
 	var comment = $(this).parents(".post-content").find(".post-message").text();
-	window.speechSynthesis.cancel()
-	console.log(comment);
+	window.speechSynthesis.cancel()	
 	var voice = new SpeechSynthesisUtterance(comment);
 	speechUtteranceChunker(voice, {
     chunkLength: 120
@@ -2167,22 +2065,22 @@ function toggleWhitelist(evt){
 //=======================================================
 function toggleBot(){
     var botRunning = GM_getValue("running");
+    console.log(params.f)
+    var botSites = getGMArray("botSites");
     if(botRunning){
-        GM_setValue("running", false);
-        var botSites = getGMArray("botSites");
+        GM_setValue("running", false);        
         for(var i=0; i<botSites.length; i++){
             console.log(botSites[i]);
-            if(document.getElementsByClassName("community-name")[0].innerText.indexOf(botSites[i])>-1){
+            if(params.f.indexOf(botSites[i])>-1){
                 botSites.splice(i, 1);
-                remove=true;
+                //remove=true;
             }
         }
         setGMArray("botSites",botSites);
         location.reload();
     }else{
-        GM_setValue("running", true);
-        var botSites = getGMArray("botSites");
-        botSites.push(document.getElementsByClassName("community-name")[0].innerText);
+        GM_setValue("running", true);        
+        botSites.push(params.f);
         setGMArray("botSites",botSites);
         location.reload();
     }
@@ -2205,10 +2103,10 @@ function hakBot(){
 function statusBot(running,botSites) {
     var checkExistStatus = setInterval(function() {
         if (document.getElementsByClassName("community-name").length) {
-            if(running && botSites.indexOf(document.getElementsByClassName("community-name")[0].innerText)>-1){
-                document.getElementsByClassName("community-name")[0].style.color = "#228b22";
+            if(running && botSites.indexOf(params.f)>-1){
+                //document.getElementsByClassName("community-name")[0].style.color = "#228b22";
             }else{
-                document.getElementsByClassName("community-name")[0].style.color = "#ee3b3b";
+                //document.getElementsByClassName("community-name")[0].style.color = "#ee3b3b";
             }
             clearInterval(checkExistStatus);
         }
@@ -2260,14 +2158,14 @@ function myLoop (upvoteLinks,i) {
 function blacklistedUser(upvoteLink){
     var blacklist = getGMArray("blacklist");
     var blacklistClan = getGMArray("blacklistClan");
-    for(var i=0; i<blacklist.length; i++){
+    for(let i=0; i<blacklist.length; i++){
         var link=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].href;
         if(link.indexOf(blacklist[i])>-1){
             //console.log("Blacklisted User: "+ blacklist[i]);
             return true;
         }
     }
-    for(var i=0; i<blacklistClan.length; i++){
+    for(let i=0; i<blacklistClan.length; i++){
         var name=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerText;
         //console.log(name);
         if(name.indexOf(blacklistClan[i])>-1){
@@ -2287,7 +2185,7 @@ function whitelistedUser(upvoteLink){
             return true;
         }
     }
-    for(var i=0; i<whitelistClan.length; i++){
+    for(let i=0; i<whitelistClan.length; i++){
         var name=upvoteLink.parentNode.parentNode.parentNode.parentNode.previousSibling.previousSibling.childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerText;
         //console.log(name);
         if(name.indexOf(whitelistClan[i])>-1){
@@ -2317,18 +2215,23 @@ function clickLink(upvoteLink,number){
 	var downvotes = upvoteLink.nextSibling;
 	var reply=false;
 	//console.log(downvotes);
-	if(typeof downvotes != "undefined" && downvotes != null) downvotes=downvotes.nextSibling;
-	else reply = true;
+	//if(downvotes !== null) downvotes=downvotes.nextSibling;
+	//else reply = true;
 	var downVoted = false;
 	//console.log(downvotes);
 	if (!reply){
-		if(typeof downvotes != 'undefined' && downvotes.classList.contains("downvoted")){
+		if(downvotes !== null && downvotes.classList.contains("downvoted")){
 			downVoted = true;
 		}
 	}
 	//console.log(downVoted);
 	var loading = GM_getValue("loading");
-	if(document.getElementsByClassName("open").length || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined" || typeof $(".post-list.loading").get(0)!="undefined" || ($(upvoteLink).parents("ul.children").length>0 && !answerHak) || downVoted || loading){
+	if(document.getElementsByClassName("open").length
+       || typeof $(upvoteLink).closest("li").closest(".post").attr('id') == "undefined"
+       || typeof $(".post-list.loading").get(0)!="undefined"
+       || ($(upvoteLink).parents("ul.children").length>0 && !answerHak)
+       || downVoted
+       || loading){
 		//console.log(upvoteLink);
 		//console.log(downvotes);
 		return;
@@ -2739,7 +2642,7 @@ function fakeLink(comment,linkNormal,commentHtml){
 //Function i copied which makes GM able to save Arrays
 //=======================================================
 function setGMArray(key,array){
-    for (i=0; i<array.length; i++){
+    for (var i=0; i<array.length; i++){
         GM_setValue(key+i , array[i]);
     }
     while(countGMArray(key)>i){
@@ -2925,28 +2828,6 @@ function backupKram(){
     }, 100); // check every 100ms
 }
 
-//=======================================================
-//=======================================================
-//Future Hurensohn Kommentarschreiber, wird nicht verwendet
-//=======================================================
-function futureHurensohnBot(){
-    var duration = Math.random();
-    duration = duration *18000;
-    if (duration < 20){
-        duration = 20;
-    }
-    var checkExist = setInterval(function() {
-        if (document.getElementsByClassName("textarea").length) {
-            //console.log("Exists!");
-            document.getElementsByClassName("textarea")[0].innerHTML="Future ist ein Hurensohn " + duration;
-            document.getElementsByClassName("btn post-action__button")[0].click();
-            //console.log(document.getElementsByClassName("textarea").length);
-            clearInterval(checkExist);
-        }
-    }, duration); // check every 100ms
-    //();
-}
-
 function generateFront(textArea){
     if (textArea.innerHTML.indexOf("#generischeFrontGenerator") > -1){
 		var attackFamilie = Math.random() >= 0.5;
@@ -2970,8 +2851,8 @@ function generateFront(textArea){
             }
             tatTmp.shift()
             console.log(tatTmp)
-            tat2 = tatTmp.join()
-            tat2 = tat2.replaceAll(","," ");
+            tat2 = tatTmp.join(" ")
+            //tat2 = tat2.replaceAll(","," ");
 
         }
 		if (attackFamilie){
